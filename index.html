@@ -2,36 +2,81 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Sistema de Apantallamiento - Subestaciones</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPAT - Sistema de Protección Atmosférica</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="login-section">
-        <h2>Ingreso al Sistema</h2>
-        <input type="text" id="user" placeholder="Usuario">
-        <input type="password" id="pass" placeholder="Contraseña">
-        <button onclick="checkLogin()">Entrar</button>
-    </div>
 
-    <div id="main-panel" style="display:none;">
-        <h1>Cálculo de Apantallamiento</h1>
-        <div class="controls">
-            <label>Largo Zona (m): <input type="number" id="largo" value="50"></label>
-            <label>Ancho Zona (m): <input type="number" id="ancho" value="30"></label>
-            <label>Altura Punta (h): <input type="number" id="altura" value="10"></label>
-            <label>Radio de Esfera (R): <input type="number" id="radio" value="20"></label>
-            <button onclick="renderizar()">Generar Protección</button>
-        </div>
+    <div class="main-container">
         
-        <div class="visualizers">
-            <canvas id="canvas2D" width="400" height="300"></canvas>
-            <div id="container3D"></div>
+        <div id="login-section" class="card fade-in">
+            <div class="brand-header">
+                <div class="logo-icon">⚡</div>
+                <h2>SPAT <span>Subestaciones</span></h2>
+            </div>
+            <p>Ingresa al panel de control de ingeniería</p>
+            <div class="input-group">
+                <input type="text" id="user" required placeholder=" ">
+                <label>Usuario</label>
+            </div>
+            <div class="input-group">
+                <input type="password" id="pass" required placeholder=" ">
+                <label>Contraseña</label>
+            </div>
+            <button class="btn-primary" onclick="checkLogin()">Iniciar Sesión</button>
+        </div>
+
+        <div id="main-panel" class="fade-in" style="display:none;">
+            <header class="app-header">
+                <h1>Módulo de Apantallamiento</h1>
+                <span class="user-badge">Admin</span>
+            </header>
+
+            <div class="dashboard-grid">
+                
+                <aside class="controls-panel card">
+                    <h3>Parámetros de Diseño</h3>
+                    <div class="control-inputs">
+                        <div class="control-box">
+                            <label>Largo Subestación (m)</label>
+                            <input type="number" id="largo" value="50" min="1">
+                        </div>
+                        <div class="control-box">
+                            <label>Ancho Subestación (m)</label>
+                            <input type="number" id="ancho" value="30" min="1">
+                        </div>
+                        <div class="control-box">
+                            <label>Altura Punta (m)</label>
+                            <input type="number" id="altura" value="10" min="1">
+                        </div>
+                        <div class="control-box">
+                            <label>Radio Esfera (R) (m)</label>
+                            <input type="number" id="radio" value="20" min="1">
+                        </div>
+                    </div>
+                    <button class="btn-success" onclick="renderizar()">Aplicar y Calcular</button>
+                    <div id="results-area" class="results-box">
+                        </div>
+                </aside>
+
+                <section class="visualizer-area">
+                    <div class="viz-card card">
+                        <h3>Vista en Planta 2D (Esquema)</h3>
+                        <canvas id="canvas2D"></canvas>
+                    </div>
+                    <div class="viz-card card">
+                        <h3>Simulación Interactiva 3D</h3>
+                        <div id="container3D"></div>
+                    </div>
+                </section>
+            </div>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    
     <script src="app.js"></script>
 </body>
 </html>
