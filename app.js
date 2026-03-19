@@ -1,200 +1,194 @@
-// app.js
+/**
+ * SPAT - Sistema de Protección Atmosférica Profesional
+ * Basado en el Método de la Esfera Rodante (IEC 62305)
+ */
 
-// --- Variables Globales Three.js ---
+// --- Variables Globales de la Escena 3D ---
 let scene, camera, renderer, controls;
-let substationGround, pararrayosPunta, protectionDome; 
+let currentDome, currentMast, currentGround;
 
-// --- 1. Lógica de Login (Actualizada: User 'admin', Pass: cualquiera) ---
+// --- 1. Sistema de Acceso ---
 function checkLogin() {
     const user = document.getElementById('user').value;
-    // En un prototipo, no necesitamos validar el pass para agilizar
-    if(user.toLowerCase() === "admin") {
+    // Login simple para prototipo: usuario 'admin'
+    if (user.toLowerCase() === "admin") {
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('main-panel').style.display = 'block';
         
-        // Inicializar 3D y renderizar por primera vez automáticamente
-        init3D(); 
-        renderizar(); 
+        // Inicializar el motor 3D y ejecutar el primer cálculo
+        init3D();
+        renderizar();
     } else {
-        alert("Usuario incorrecto. Intenta con 'admin'");
+        alert("Usuario no reconocido. Use 'admin' para ingresar.");
     }
 }
 
-// --- 2. Inicialización de Three.js ---
+// --- 2. Inicialización de Three.js (Motor 3D) ---
 function init3D() {
     const container = document.getElementById('container3D');
-    
-    // Obtener dimensiones reales del contenedor CSS
     const width = container.clientWidth;
     const height = container.clientHeight;
 
-    // Escena
+    // Escena y fondo (Blanco limpio)
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff); // FONDO BLANCO puro
+    scene.background = new THREE.Color(0xffffff);
 
-    // Cámara
-    camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    camera.position.set(30, 30, 30); // Un poco más cerca
+    // Cámara Perspectiva
+    camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
+    camera.position.set(40, 40, 40);
 
-    // Renderizador moderno con antialias
+    // Renderizador con suavizado de bordes (Antialias)
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(window.devicePixelRatio); // Mayor nitidez en pantallas Retina
+    renderer.setPixelRatio(window.devicePixelRatio);
     container.appendChild(renderer.domElement);
 
-    // Controles de Órbita
+    // Controles de Órbita (Mouse: rotar, scroll: zoom)
     controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true; // Suaviza el movimiento
+    controls.enableDamping = true; 
 
-    // Iluminación mejorada
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    // Luces (Ambiental para sombras suaves y Direccional para volumen)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     scene.add(ambientLight);
     
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(50, 50, 20);
-    scene.add(directionalLight);
+    const sunLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    sunLight.position.set(10, 20, 10);
+    scene.add(sunLight);
 
-    // Helper de ejes (más sutil)
-    const axesHelper = new THREE.AxesHelper(10);
+    // Guía de ejes (X: Rojo, Y: Verde, Z: Azul)
+    const axesHelper = new THREE.AxesHelper(15);
     scene.add(axesHelper);
 
-    // Manejar redimensionado de ventana
-    window.addEventListener('resize', onWindowResize, false);
+    // Escuchar cambios de tamaño de ventana
+    window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    });
 
     animate();
 }
 
-function onWindowResize() {
-    const container = document.getElementById('container3D');
-    if(!container) return;
-    camera.aspect = container.clientWidth / container.clientHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(container.clientWidth, container.clientHeight);
-}
-
 function animate() {
     requestAnimationFrame(animate);
-    if (controls) controls.update(); 
+    if (controls) controls.update();
     if (renderer) renderer.render(scene, camera);
 }
 
-
-// --- 3. Lógica de Renderizado ---
+// --- 3. Lógica de Ingeniería y Renderizado ---
 function renderizar() {
-    // Entradas
-    const largoVal = parseFloat(document.getElementById('largo').value);
-    const anchoVal = parseFloat(document.getElementById('ancho').value);
-    const hVal = parseFloat(document.getElementById('altura').value); 
-    const RVal = parseFloat(document.getElementById('radio').value);   
+    // Captura de datos desde el HTML
+    const largo = parseFloat(document.getElementById('largo').value);
+    const ancho = parseFloat(document.getElementById('ancho').value);
+    const h = parseFloat(document.getElementById('altura').value); // Altura punta
+    const R = parseFloat(document.getElementById('radio').value);   // Radio esfera
 
-    // Validación de Ingeniería
-    if (hVal >= RVal) {
-        alert("🚨 Error de diseño: La altura (h) debe ser menor que el Radio (R).");
+    // Validación Técnica: h < R (La esfera debe poder tocar la punta y el suelo)
+    if (h >= R) {
+        alert("Error: Según el método de la esfera rodante, la altura del captador (h) debe ser menor al radio de la esfera (R).");
         return;
     }
 
-    // Cálculos rápidos
-    const r_prot_suelo = Math.sqrt(Math.pow(RVal, 2) - Math.pow(RVal - hVal, 2));
-    
-    // Actualizar Panel de resultados UI
-    const resultsArea = document.getElementById('results-area');
-    resultsArea.innerHTML = `<strong>Radio de protección en suelo:</strong> ${r_prot_suelo.toFixed(2)} m`;
+    // Cálculo del Radio de Protección en el Suelo (Nivel 0)
+    // Fórmula: r = sqrt( R² - (R - h)² )
+    const r_suelo = Math.sqrt(Math.pow(R, 2) - Math.pow(R - h, 2));
 
-    // Ejecutar Visualizaciones
-    actualizarCanvas2D(largoVal, anchoVal, hVal, RVal, r_prot_suelo);
-    actualizarEscena3D(largoVal, anchoVal, hVal, RVal);
+    // Actualizar texto de resultados en la UI
+    document.getElementById('results-area').innerHTML = `
+        <strong>Resultados del Cálculo:</strong><br>
+        Radio de protección (Suelo): ${r_suelo.toFixed(2)} m<br>
+        Área protegida aprox: ${(Math.PI * Math.pow(r_suelo, 2)).toFixed(2)} m²
+    `;
+
+    // Ejecutar dibujos
+    dibujar2D(largo, ancho, r_suelo);
+    dibujar3D(largo, ancho, h, R);
 }
 
-
-// --- 4. Funciones de Dibujo ---
-
-function actualizarCanvas2D(largo, ancho, h, R, r_prot_suelo) {
+// --- 4. Visualización 2D (Vista de Planta) ---
+function dibujar2D(largo, ancho, r_suelo) {
     const canvas = document.getElementById('canvas2D');
     const ctx = canvas.getContext('2d');
     
-    // Ajustar resolución interna del canvas
+    // Ajuste dinámico del tamaño del canvas
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    const padding = 20;
-    const scale = Math.min((canvas.width - padding*2) / largo, (canvas.height - padding*2) / ancho);
-    
-    const drawLargo = largo * scale;
-    const drawAncho = ancho * scale;
-    const offsetX = (canvas.width - drawLargo) / 2;
-    const offsetY = (canvas.height - drawAncho) / 2;
+    const scale = Math.min((canvas.width - 40) / largo, (canvas.height - 40) / ancho);
+    const offsetX = (canvas.width - largo * scale) / 2;
+    const offsetY = (canvas.height - ancho * scale) / 2;
 
-    // Dibujo zona (Morado muy clarito)
+    // Dibujo Rectángulo Subestación (Blanco/Morado)
     ctx.fillStyle = "rgba(108, 92, 231, 0.05)";
-    ctx.fillRect(offsetX, offsetY, drawLargo, drawAncho);
+    ctx.fillRect(offsetX, offsetY, largo * scale, ancho * scale);
     ctx.strokeStyle = "#6c5ce7";
-    ctx.lineWidth = 1;
-    ctx.strokeRect(offsetX, offsetY, drawLargo, drawAncho);
-    
-    const centerX = offsetX + drawLargo / 2;
-    const centerY = offsetY + drawAncho / 2;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(offsetX, offsetY, largo * scale, ancho * scale);
 
-    // Círculo protección (Verde acento)
+    // Círculo de protección en el suelo (Verde Tech)
+    const cx = offsetX + (largo * scale) / 2;
+    const cy = offsetY + (ancho * scale) / 2;
+
     ctx.beginPath();
-    ctx.arc(centerX, centerY, r_prot_suelo * scale, 0, 2 * Math.PI);
-    ctx.fillStyle = "rgba(0, 184, 148, 0.1)"; 
+    ctx.arc(cx, cy, r_suelo * scale, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(0, 184, 148, 0.15)";
     ctx.fill();
     ctx.strokeStyle = "#00b894";
-    ctx.lineWidth = 2;
-    ctx.setLineDash([5, 3]); // Línea punteada
+    ctx.setLineDash([5, 5]); // Línea discontinua
     ctx.stroke();
-    ctx.setLineDash([]); // Reset
+    ctx.setLineDash([]); 
 
-    // Punto pararrayos (Morado fuerte)
+    // Punto central (Mástil)
     ctx.beginPath();
-    ctx.arc(centerX, centerY, 4, 0, 2 * Math.PI);
+    ctx.arc(cx, cy, 3, 0, Math.PI * 2);
     ctx.fillStyle = "#6c5ce7";
     ctx.fill();
 }
 
-function actualizarEscena3D(largo, ancho, h, R) {
-    // Limpieza
-    if (substationGround) scene.remove(substationGround);
-    if (pararrayosPunta) scene.remove(pararrayosPunta);
-    if (protectionDome) scene.remove(protectionDome);
+// --- 5. Visualización 3D (Modelo de Revolución) ---
+function dibujar3D(largo, ancho, h, R) {
+    // Limpiar objetos previos
+    if (currentGround) scene.remove(currentGround);
+    if (currentMast) scene.remove(currentMast);
+    if (currentDome) scene.remove(currentDome);
 
-    // 1. Suelo (Gris muy suave, casi blanco)
+    // A. Crear el Suelo
     const groundGeom = new THREE.PlaneGeometry(largo, ancho);
-    const groundMat = new THREE.MeshLambertMaterial({ color: 0xf0f0f0, side: THREE.DoubleSide });
-    substationGround = new THREE.Mesh(groundGeom, groundMat);
-    substationGround.rotation.x = -Math.PI / 2;
-    scene.add(substationGround);
+    const groundMat = new THREE.MeshLambertMaterial({ color: 0xf5f5f5, side: THREE.DoubleSide });
+    currentGround = new THREE.Mesh(groundGeom, groundMat);
+    currentGround.rotation.x = -Math.PI / 2;
+    scene.add(currentGround);
 
-    // 2. Mástil (Morado oscuro)
-    const mastGeom = new THREE.CylinderGeometry(0.15, 0.15, h, 16);
-    const mastMat = new THREE.MeshPhongMaterial({ color: 0x4a148c }); // Deep Purple
-    pararrayosPunta = new THREE.Mesh(mastGeom, mastMat);
-    pararrayosPunta.position.y = h / 2;
-    scene.add(pararrayosPunta);
+    // B. Crear el Mástil (Cilindro morado)
+    const mastGeom = new THREE.CylinderGeometry(0.2, 0.2, h, 16);
+    const mastMat = new THREE.MeshPhongMaterial({ color: 0x6c5ce7 });
+    currentMast = new THREE.Mesh(mastGeom, mastMat);
+    currentMast.position.y = h / 2;
+    scene.add(currentMast);
 
-    // 3. DOMO DE PROTECCIÓN (Verde agua transparente, estilo tecnológico)
+    // C. Crear el Domo de Protección (Esfera Rodante)
+    // Generamos la curva: r(y) = sqrt( R² - (R - h + y)² )
     const points = [];
-    const segments = 25; 
-    
-    for (let i = 0; i <= segments; i++) {
-        const y = (i / segments) * h; 
-        const terminoInterno = R - h + y;
-        const r_horizontal = Math.sqrt(Math.pow(R, 2) - Math.pow(terminoInterno, 2));
-        points.push(new THREE.Vector2(r_horizontal, y));
+    const steps = 30;
+    for (let i = 0; i <= steps; i++) {
+        const y = (i / steps) * h;
+        const r_y = Math.sqrt(Math.pow(R, 2) - Math.pow((R - h + y), 2));
+        points.push(new THREE.Vector2(r_y, y));
     }
 
-    const latheGeom = new THREE.LatheGeometry(points, 40);
-    const latheMat = new THREE.MeshPhongMaterial({ 
-        color: 0x00cec9, // Cyan/Verde agua
-        opacity: 0.25, 
+    // Convertir curva en sólido de revolución (Lathe)
+    const domeGeom = new THREE.LatheGeometry(points, 64);
+    const domeMat = new THREE.MeshPhongMaterial({
+        color: 0x00cec9, // Verde Agua / Cyan
         transparent: true,
+        opacity: 0.3,
         side: THREE.DoubleSide,
-        specular: 0xeeffff, // Brillo metálico
-        shininess: 100
+        specular: 0xffffff,
+        shininess: 80
     });
     
-    protectionDome = new THREE.Mesh(latheGeom, latheMat);
-    scene.add(protectionDome);
+    currentDome = new THREE.Mesh(domeGeom, domeMat);
+    scene.add(currentDome);
 }
