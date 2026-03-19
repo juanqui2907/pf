@@ -1,149 +1,791 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SPAT v5.0 — Esfera Rodante</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPAT v5.0 — Sistema de Protección Atmosférica</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+
+  :root {
+    --bg:       #f5f3ff;
+    --panel:    #ffffff;
+    --border:   #d4c8f8;
+    --accent:   #7c3aed;
+    --accent2:  #a855f7;
+    --green:    #6d28d9;
+    --text:     #1e1333;
+    --text-dim: #7c6aaa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: var(--panel);
+    border-bottom: 2px solid var(--border);
+    flex-shrink: 0;
+    box-shadow: 0 2px 12px rgba(124,58,237,0.08);
+  }
+  .header-logo {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 18px;
+    color: var(--accent);
+    letter-spacing: 3px;
+  }
+  .header-logo span { color: var(--accent2); }
+  .header-status {
+    display: flex; gap: 16px; align-items: center;
+    font-size: 12px; color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px rgba(124,58,237,0.5);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── LAYOUT ── */
+  .main {
+    display: grid;
+    grid-template-columns: 280px 1fr 260px;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── PANELES ── */
+  .panel {
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .panel:last-child { border-right: none; border-left: 1px solid var(--border); }
+
+  .panel-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  /* ── CAMPOS ── */
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
+  .field-label {
+    font-size: 11px; letter-spacing: 1px; color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+    display: flex; justify-content: space-between;
+  }
+  .field-label span { color: var(--accent); font-weight: bold; }
+
+  input[type="range"] {
+    width: 100%; -webkit-appearance: none;
+    height: 3px; background: var(--border); border-radius: 2px; cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 8px rgba(124,58,237,0.4); cursor: pointer;
+  }
+  input[type="number"] {
+    background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    padding: 6px 10px; border-radius: 4px; width: 100%;
+    font-family: 'Share Tech Mono', monospace; font-size: 13px;
+    transition: border 0.2s;
+  }
+  input[type="number"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+
+  /* ── BOTONES ── */
+  .btn {
+    padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer;
+    font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 14px;
+    letter-spacing: 2px; transition: all 0.2s; width: 100%;
+  }
+  .btn-primary {
+    background: var(--accent); color: #fff;
+    box-shadow: 0 4px 16px rgba(124,58,237,0.3);
+  }
+  .btn-primary:hover { background: #6d28d9; box-shadow: 0 6px 20px rgba(124,58,237,0.45); transform: translateY(-1px); }
+  .btn-secondary {
+    background: transparent; color: var(--text-dim);
+    border: 1px solid var(--border); margin-top: -4px;
+  }
+  .btn-secondary:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  /* ── MODO ── */
+  .mode-selector { display: flex; gap: 4px; }
+  .mode-btn {
+    flex: 1; padding: 7px; font-size: 11px; letter-spacing: 1px;
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text-dim); cursor: pointer; border-radius: 4px;
+    font-family: 'Share Tech Mono', monospace; transition: all 0.2s;
+  }
+  .mode-btn.active {
+    background: rgba(124,58,237,0.12); border-color: var(--accent); color: var(--accent);
+    font-weight: bold;
+  }
+
+  /* ── VIEWPORT 3D ── */
+  #viewport { position: relative; background: #ede9fe; }
+  #container3D { width: 100%; height: 100%; }
+
+  .viewport-overlay {
+    position: absolute; top: 12px; left: 12px;
+    font-family: 'Share Tech Mono', monospace; font-size: 10px;
+    color: var(--text-dim); pointer-events: none; line-height: 1.8;
+    background: rgba(255,255,255,0.7); padding: 6px 10px; border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+  .viewport-mode {
+    position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+    font-family: 'Share Tech Mono', monospace; font-size: 11px;
+    color: var(--accent); letter-spacing: 2px; pointer-events: none;
+    background: rgba(255,255,255,0.85); padding: 4px 12px; border-radius: 20px;
+    border: 1px solid rgba(124,58,237,0.3); white-space: nowrap;
+  }
+
+  /* ── RESULTADOS ── */
+  .results-card {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px;
+  }
+  .results-card .card-title {
+    font-size: 10px; letter-spacing: 2px; color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace; margin-bottom: 10px;
+  }
+  .stat-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-label { color: var(--text-dim); font-size: 12px; }
+  .stat-val { color: var(--accent); font-family: 'Share Tech Mono', monospace; font-weight: bold; }
+  .stat-val.warn { color: #dc2626; }
+  .stat-val.ok   { color: #059669; }
+
+  /* ── LEYENDA ── */
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-dim); }
+  .legend-dot   { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── TABS ── */
+  .tab-bar { display: flex; gap: 2px; margin-bottom: 4px; }
+  .tab {
+    flex: 1; padding: 6px; font-size: 11px; text-align: center; cursor: pointer;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 3px;
+    color: var(--text-dim); font-family: 'Share Tech Mono', monospace; transition: all 0.2s;
+  }
+  .tab.active { background: rgba(124,58,237,0.1); border-color: var(--accent); color: var(--accent); }
+
+  #canvas2D {
+    width: 100%; aspect-ratio: 1;
+    background: #f5f3ff; border-radius: 4px; border: 1px solid var(--border);
+  }
+
+  /* ── SEPARADOR ── */
+  .sep { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); flex-shrink: 0; }
+
+  /* ── ALERTA ── */
+  .alert-box {
+    background: rgba(220,38,38,0.07); border: 1px solid rgba(220,38,38,0.35);
+    border-radius: 4px; padding: 10px 12px; font-size: 12px; color: #dc2626; display: none;
+  }
+  .alert-box.show { display: block; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
 </head>
 <body>
 
-  <!-- ═══════════════════════════════════════════
-       HEADER
-  ═══════════════════════════════════════════ -->
-  <header class="header">
-    <div class="header-logo">SPAT <span>v5.0</span> — ESFERA RODANTE</div>
-    <div class="header-status">
-      <div class="dot"></div>
-      <span>SISTEMA ACTIVO</span>
-      <span>NFC 17-102 / IEC 62305</span>
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">SPAT <span>v5.0</span> — ESFERA RODANTE</div>
+  <div class="header-status">
+    <div class="dot"></div>
+    <span>SISTEMA ACTIVO</span>
+    <span>NFC 17-102 / IEC 62305</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- PANEL IZQUIERDO -->
+  <div class="panel">
+    <div class="panel-title">⚡ Parámetros de Entrada</div>
+
+    <div class="field-group">
+      <div class="field-label">LARGO (m) <span id="lbl-L">50</span></div>
+      <input type="range"  id="s-largo"  min="10" max="150" value="50" oninput="syncVal('s-largo','n-largo','lbl-L'); autoRender()">
+      <input type="number" id="n-largo"  value="50" min="10" max="150" oninput="syncVal('n-largo','s-largo','lbl-L'); autoRender()">
     </div>
-  </header>
 
-  <!-- ═══════════════════════════════════════════
-       LAYOUT PRINCIPAL
-  ═══════════════════════════════════════════ -->
-  <div class="main">
+    <div class="field-group">
+      <div class="field-label">ANCHO (m) <span id="lbl-A">30</span></div>
+      <input type="range"  id="s-ancho"  min="10" max="100" value="30" oninput="syncVal('s-ancho','n-ancho','lbl-A'); autoRender()">
+      <input type="number" id="n-ancho"  value="30" min="10" max="100" oninput="syncVal('n-ancho','s-ancho','lbl-A'); autoRender()">
+    </div>
 
-    <!-- PANEL IZQUIERDO -->
-    <aside class="panel panel--left">
-      <div class="panel-title">⚡ Parámetros de Entrada</div>
+    <div class="field-group">
+      <div class="field-label">ALTURA EQUIPO CRÍTICO (m) <span id="lbl-He">6</span></div>
+      <input type="range"  id="s-equipo" min="1" max="30" value="6" oninput="syncVal('s-equipo','n-equipo','lbl-He'); autoRender()">
+      <input type="number" id="n-equipo" value="6" min="1" max="30" oninput="syncVal('n-equipo','s-equipo','lbl-He'); autoRender()">
+    </div>
 
-      <div class="field-group">
-        <div class="field-label">LARGO (m) <span id="lbl-L">50</span></div>
-        <input type="range"  id="s-largo"  min="10" max="150" value="50" />
-        <input type="number" id="n-largo"  min="10" max="150" value="50" />
-      </div>
+    <div class="sep"></div>
+    <div class="panel-title">🛡 Esfera Rodante</div>
 
-      <div class="field-group">
-        <div class="field-label">ANCHO (m) <span id="lbl-A">30</span></div>
-        <input type="range"  id="s-ancho"  min="10" max="100" value="30" />
-        <input type="number" id="n-ancho"  min="10" max="100" value="30" />
-      </div>
+    <div class="field-group">
+      <div class="field-label">RADIO ESFERA R (m) <span id="lbl-R">30</span></div>
+      <input type="range"  id="s-radio"  min="10" max="60" value="30" oninput="syncVal('s-radio','n-radio','lbl-R'); autoRender()">
+      <input type="number" id="n-radio"  value="30" min="10" max="60" oninput="syncVal('n-radio','s-radio','lbl-R'); autoRender()">
+    </div>
 
-      <div class="field-group">
-        <div class="field-label">ALTURA EQUIPO CRÍTICO (m) <span id="lbl-He">6</span></div>
-        <input type="range"  id="s-equipo" min="1" max="30" value="6" />
-        <input type="number" id="n-equipo" min="1" max="30" value="6" />
-      </div>
+    <div class="field-group">
+      <div class="field-label">ALTURA PUNTA CAPTADORA (m) <span id="lbl-Hp">8</span></div>
+      <input type="range"  id="s-punta"  min="1" max="25" value="8" oninput="syncVal('s-punta','n-punta','lbl-Hp'); autoRender()">
+      <input type="number" id="n-punta"  value="8" min="1" max="25" oninput="syncVal('n-punta','s-punta','lbl-Hp'); autoRender()">
+    </div>
 
-      <div class="sep"></div>
-      <div class="panel-title">🛡 Esfera Rodante</div>
+    <div class="sep"></div>
+    <div class="panel-title">📐 Modo de Posición</div>
 
-      <div class="field-group">
-        <div class="field-label">RADIO ESFERA R (m) <span id="lbl-R">30</span></div>
-        <input type="range"  id="s-radio"  min="10" max="60" value="30" />
-        <input type="number" id="n-radio"  min="10" max="60" value="30" />
-      </div>
+    <div class="mode-selector">
+      <button class="mode-btn active" id="mode-auto"  onclick="setMode('auto')">AUTO</button>
+      <button class="mode-btn"        id="mode-perim" onclick="setMode('perim')">PERÍMETRO</button>
+      <button class="mode-btn"        id="mode-grid"  onclick="setMode('grid')">GRILLA</button>
+    </div>
 
-      <div class="field-group">
-        <div class="field-label">ALTURA PUNTA CAPTADORA (m) <span id="lbl-Hp">8</span></div>
-        <input type="range"  id="s-punta"  min="1" max="25" value="8" />
-        <input type="number" id="n-punta"  min="1" max="25" value="8" />
-      </div>
+    <div class="alert-box" id="alert-box">⚠ El radio de la esfera debe ser mayor que la altura total (pórtico + punta).</div>
 
-      <div class="sep"></div>
-      <div class="panel-title">📐 Modo de Posición</div>
+    <button class="btn btn-primary"   onclick="renderizar()">▶ CALCULAR Y RENDERIZAR</button>
+    <button class="btn btn-secondary" onclick="resetCamara()">↺ RESETEAR CÁMARA</button>
 
-      <div class="mode-selector">
-        <button class="mode-btn active" id="mode-auto"  data-mode="auto">AUTO</button>
-        <button class="mode-btn"        id="mode-perim" data-mode="perim">PERÍMETRO</button>
-        <button class="mode-btn"        id="mode-grid"  data-mode="grid">GRILLA</button>
-      </div>
+    <div class="sep"></div>
+    <div class="panel-title">LEYENDA</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="legend-item"><div class="legend-dot" style="background:#7c3aed;box-shadow:0 0 6px rgba(124,58,237,0.4)"></div> Domo de Protección</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#dc2626"></div> Zona No Protegida</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#a855f7;box-shadow:0 0 6px rgba(168,85,247,0.4)"></div> Punta Captadora</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#6366f1"></div> Estructura Civil</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div> Transformador</div>
+    </div>
+  </div>
 
-      <div class="alert-box" id="alert-box">
-        ⚠ El radio de la esfera debe ser mayor que la altura total (pórtico + punta).
-      </div>
+  <!-- VIEWPORT 3D -->
+  <div id="viewport">
+    <div id="container3D"></div>
+    <div class="viewport-overlay" id="vp-info">MODO: —<br>PUNTAS: —<br>COB: —</div>
+    <div class="viewport-mode">ÓRBITA LIBRE · SCROLL ZOOM · DOBLE-CLIC RESET</div>
+  </div>
 
-      <button class="btn btn--primary" id="btn-render">▶ CALCULAR Y RENDERIZAR</button>
-      <button class="btn btn--secondary" id="btn-reset-cam">↺ RESETEAR CÁMARA</button>
+  <!-- PANEL DERECHO -->
+  <div class="panel">
+    <div class="panel-title">📊 Resultados</div>
 
-      <div class="sep"></div>
-      <div class="panel-title">LEYENDA</div>
-      <ul class="legend">
-        <li><span class="legend-dot" style="background:#00d4ff;box-shadow:0 0 6px #00d4ff"></span> Domo de Protección</li>
-        <li><span class="legend-dot" style="background:#ff6b35;box-shadow:0 0 6px #ff6b35"></span> Zona No Protegida</li>
-        <li><span class="legend-dot" style="background:#00ff88;box-shadow:0 0 6px #00ff88"></span> Punta Captadora</li>
-        <li><span class="legend-dot" style="background:#4a90d9"></span> Estructura Civil</li>
-        <li><span class="legend-dot" style="background:#ffd700"></span> Transformador</li>
-      </ul>
-    </aside>
+    <div class="results-card">
+      <div class="card-title">GEOMETRÍA DE PROTECCIÓN</div>
+      <div class="stat-row"><span class="stat-label">Radio eficaz en suelo</span>     <span class="stat-val" id="r-r_suelo">—</span></div>
+      <div class="stat-row"><span class="stat-label">Puntas captadoras</span>          <span class="stat-val" id="r-npuntas">—</span></div>
+      <div class="stat-row"><span class="stat-label">Altura total (pórtico+punta)</span><span class="stat-val" id="r-htotal">—</span></div>
+      <div class="stat-row"><span class="stat-label">Cobertura estimada</span>         <span class="stat-val ok" id="r-cobertura">—</span></div>
+    </div>
 
-    <!-- VIEWPORT 3D -->
-    <section id="viewport">
-      <div id="container3D"></div>
-      <div class="vp-overlay" id="vp-info">
-        MODO: —<br>PUNTAS: —<br>COB: —
-      </div>
-      <div class="vp-mode">ÓRBITA LIBRE · SCROLL ZOOM · DOBLE-CLIC RESET</div>
-    </section>
+    <div class="results-card">
+      <div class="card-title">NIVEL DE PROTECCIÓN (NP)</div>
+      <div class="stat-row"><span class="stat-label">R = 20m → NP I</span>   <span class="stat-val" id="np-I">●</span></div>
+      <div class="stat-row"><span class="stat-label">R = 30m → NP II</span>  <span class="stat-val" id="np-II">●</span></div>
+      <div class="stat-row"><span class="stat-label">R = 45m → NP III</span> <span class="stat-val" id="np-III">●</span></div>
+      <div class="stat-row"><span class="stat-label">R = 60m → NP IV</span>  <span class="stat-val" id="np-IV">●</span></div>
+    </div>
 
-    <!-- PANEL DERECHO -->
-    <aside class="panel panel--right">
-      <div class="panel-title">📊 Resultados</div>
+    <div class="sep"></div>
+    <div class="panel-title">🗺 PLANTA 2D</div>
+    <div class="tab-bar">
+      <div class="tab active" id="tab-planta">PLANTA</div>
+      <div class="tab" id="tab-corte" onclick="toggleCorte()">CORTE</div>
+    </div>
+    <canvas id="canvas2D"></canvas>
 
-      <div class="results-card">
-        <div class="card-title">GEOMETRÍA DE PROTECCIÓN</div>
-        <div class="stat-row"><span class="stat-label">Radio eficaz en suelo</span>    <span class="stat-val" id="r-r_suelo">—</span></div>
-        <div class="stat-row"><span class="stat-label">Puntas captadoras</span>         <span class="stat-val" id="r-npuntas">—</span></div>
-        <div class="stat-row"><span class="stat-label">Altura total</span>              <span class="stat-val" id="r-htotal">—</span></div>
-        <div class="stat-row"><span class="stat-label">Cobertura estimada</span>        <span class="stat-val" id="r-cobertura">—</span></div>
-      </div>
+    <div class="sep"></div>
+    <div class="results-card">
+      <div class="card-title">NORMA APLICABLE</div>
+      <div class="stat-row"><span class="stat-label">IEC 62305-3</span> <span class="stat-val ok">✓</span></div>
+      <div class="stat-row"><span class="stat-label">NFC 17-102</span>  <span class="stat-val ok">✓</span></div>
+      <div class="stat-row"><span class="stat-label">IEEE Std 998</span> <span class="stat-val ok">✓</span></div>
+    </div>
+  </div>
 
-      <div class="results-card">
-        <div class="card-title">NIVEL DE PROTECCIÓN (NP)</div>
-        <div class="stat-row"><span class="stat-label">R = 20 m → NP I</span>   <span class="stat-val" id="np-I">●</span></div>
-        <div class="stat-row"><span class="stat-label">R = 30 m → NP II</span>  <span class="stat-val" id="np-II">●</span></div>
-        <div class="stat-row"><span class="stat-label">R = 45 m → NP III</span> <span class="stat-val" id="np-III">●</span></div>
-        <div class="stat-row"><span class="stat-label">R = 60 m → NP IV</span>  <span class="stat-val" id="np-IV">●</span></div>
-      </div>
+</div>
 
-      <div class="sep"></div>
-      <div class="panel-title">🗺 PLANTA 2D</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ── OrbitControls r128 inline ── */
+(function(){const e=THREE;class t extends e.EventDispatcher{constructor(t,i){super();this.object=t;this.domElement=i;this.enabled=true;this.target=new e.Vector3();this.minDistance=0;this.maxDistance=Infinity;this.minPolarAngle=0;this.maxPolarAngle=Math.PI;this.enableDamping=false;this.dampingFactor=0.05;this.enableZoom=true;this.zoomSpeed=1;this.enableRotate=true;this.rotateSpeed=1;this.enablePan=true;this.panSpeed=1;this.screenSpacePanning=true;const r=new e.Vector2(),s=new e.Vector2(),n=new e.Vector2();let o=0,a=0,l=1,c=new e.Vector3(),h=new e.Spherical(),d=new e.Spherical(),p=new e.Vector3(),f=new e.Vector2(),m=new e.Vector2();const V=e=>{if(this.enabled===false)return;if(e.type==='wheel'){if(this.enableZoom===false)return;e.preventDefault();if(e.deltaY<0)l/=Math.pow(0.95,this.zoomSpeed);else if(e.deltaY>0)l*=Math.pow(0.95,this.zoomSpeed);}};const E=e=>{if(this.enabled===false)return;e.preventDefault();if(e.touches.length===1){s.set(e.touches[0].pageX,e.touches[0].pageY);n.subVectors(s,r);o-=(n.x/i.clientHeight)*Math.PI*this.rotateSpeed;a-=(n.y/i.clientHeight)*Math.PI*this.rotateSpeed;}r.copy(s);this.update();};const T=e=>{if(this.enabled===false)return;if(e.touches.length===1){r.set(e.touches[0].pageX,e.touches[0].pageY);s.copy(r);}};i.addEventListener('wheel',V,{passive:false});i.addEventListener('touchstart',T,{passive:false});i.addEventListener('touchmove',E,{passive:false});let A=false,L=false;const M=e=>{if(!this.enabled)return;if(e.button===0){A=true;r.set(e.clientX,e.clientY);}if(e.button===2){L=true;f.set(e.clientX,e.clientY);}};const S=e=>{if(!this.enabled)return;if(A){s.set(e.clientX,e.clientY);n.subVectors(s,r);o-=(n.x/i.clientHeight)*Math.PI*this.rotateSpeed;a-=(n.y/i.clientHeight)*Math.PI*this.rotateSpeed;r.copy(s);}if(L){m.set(e.clientX,e.clientY);const t=new e.Vector2().subVectors(m,f);if(this.screenSpacePanning){p.setFromMatrixColumn(this.object.matrix,0);p.multiplyScalar(-t.x*(new e.Vector3().subVectors(this.object.position,this.target).length()/i.clientHeight)*this.panSpeed);c.add(p);p.setFromMatrixColumn(this.object.matrix,1);p.multiplyScalar(t.y*(new e.Vector3().subVectors(this.object.position,this.target).length()/i.clientHeight)*this.panSpeed);c.add(p);}f.copy(m);}};const P=()=>{A=false;L=false;};i.addEventListener('mousedown',M);i.addEventListener('mousemove',S);i.addEventListener('mouseup',P);this.update=()=>{const r=new e.Spherical();r.setFromVector3(new e.Vector3().subVectors(this.object.position,this.target));if(this.enableDamping){r.theta+=o*this.dampingFactor;r.phi+=a*this.dampingFactor;o*=(1-this.dampingFactor);a*=(1-this.dampingFactor);}else{r.theta+=o;r.phi+=a;o=0;a=0;}r.phi=Math.max(this.minPolarAngle,Math.min(this.maxPolarAngle,r.phi));r.makeSafe();r.radius*=l;r.radius=Math.max(this.minDistance,Math.min(this.maxDistance,r.radius));l=1;this.target.add(c);c.set(0,0,0);const s=new e.Vector3().setFromSpherical(r).add(this.target);this.object.position.copy(s);this.object.lookAt(this.target);this.object.updateMatrixWorld();return false;};this.dispose=()=>{i.removeEventListener('wheel',V);i.removeEventListener('mousedown',M);i.removeEventListener('mousemove',S);i.removeEventListener('mouseup',P);i.removeEventListener('touchstart',T);i.removeEventListener('touchmove',E);};}}THREE.OrbitControls=t;})();
+</script>
 
-      <div class="tab-bar">
-        <button class="tab active" id="tab-planta">PLANTA</button>
-        <button class="tab"        id="tab-corte">CORTE</button>
-      </div>
-      <canvas id="canvas2D"></canvas>
+<script>
+/* ══════════════════════════════════════════════════════
+   SPAT v5.0 — LÓGICA PRINCIPAL (paleta morada)
+══════════════════════════════════════════════════════ */
+let scene, camera, renderer, controls;
+let substationGrp, protectionGrp;
+let currentMode = 'auto';
+let renderTimer  = null;
+let initialized  = false;
 
-      <div class="sep"></div>
-      <div class="results-card">
-        <div class="card-title">NORMA APLICABLE</div>
-        <div class="stat-row"><span class="stat-label">IEC 62305-3</span> <span class="stat-val ok">✓</span></div>
-        <div class="stat-row"><span class="stat-label">NFC 17-102</span>  <span class="stat-val ok">✓</span></div>
-        <div class="stat-row"><span class="stat-label">IEEE Std 998</span> <span class="stat-val ok">✓</span></div>
-      </div>
-    </aside>
+/* ── Colores 3D acordes a la paleta ── */
+const C = {
+  dome:      0x7c3aed,  // morado principal → domos
+  domeWF:    0x9333ea,  // morado medio    → wireframe
+  mast:      0xa855f7,  // lila           → mástiles
+  ring:      0x7c3aed,  // morado         → círculo suelo
+  steel:     0x6366f1,  // índigo         → columnas
+  beam:      0x818cf8,  // índigo claro   → vigas
+  concrete:  0xddd6fe,  // lavanda        → piso/muros
+  trafo:     0x8b5cf6,  // violeta        → transformador
+  radiator:  0xa78bfa,  // lavanda media  → radiadores
+  insulator: 0xe9d5ff,  // lavanda pálido → aisladores
+  copper:    0xc4b5fd,  // violeta claro  → barras
+  ground:    0xede9fe,  // fondo 3D suelo
+  sky:       0xf5f3ff,  // fondo 3D cielo
+  grid1:     0xc4b5fd,
+  grid2:     0xddd6fe,
+  wire:      0xa855f7,  // cables bajada
+  perimeter: 0xdc2626,  // perímetro tierra
+};
 
-  </div><!-- /.main -->
+/* ── Sync slider ↔ number ── */
+function syncVal(fromId, toId, lblId) {
+  const v = document.getElementById(fromId).value;
+  document.getElementById(toId).value   = v;
+  document.getElementById(lblId).textContent = v;
+}
 
-  <!-- DEPENDENCIAS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+function setMode(m) {
+  currentMode = m;
+  ['auto','perim','grid'].forEach(x =>
+    document.getElementById('mode-'+x).classList.toggle('active', x===m)
+  );
+  autoRender();
+}
 
-  <!-- MÓDULOS PROPIOS -->
-  <script src="ui.js"></script>
-  <script src="app.js"></script>
+function autoRender() {
+  if (!initialized) return;
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(renderizar, 200);
+}
 
+/* ══════════════════════════════════════════
+   INIT THREE.JS
+══════════════════════════════════════════ */
+function init3D() {
+  const container = document.getElementById('container3D');
+
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(C.sky);
+  scene.fog = new THREE.FogExp2(C.sky, 0.006);
+
+  camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 2000);
+  camera.position.set(80, 70, 80);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
+  container.appendChild(renderer.domElement);
+
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.minDistance   = 10;
+  controls.maxDistance   = 500;
+  controls.target.set(0, 10, 0);
+
+  renderer.domElement.addEventListener('dblclick', resetCamara);
+
+  /* Iluminación suave para tema claro */
+  scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.2);
+  sun.position.set(60, 120, 40);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  Object.assign(sun.shadow.camera, { near:0.1, far:500, left:-120, right:120, top:120, bottom:-120 });
+  scene.add(sun);
+  const fill = new THREE.DirectionalLight(0xd8b4fe, 0.4);
+  fill.position.set(-60, 40, -60);
+  scene.add(fill);
+
+  scene.add(new THREE.GridHelper(400, 40, C.grid1, C.grid2));
+
+  const ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(400, 400),
+    new THREE.MeshStandardMaterial({ color: C.ground, roughness: 1 })
+  );
+  ground.rotation.x = -Math.PI / 2;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  substationGrp = new THREE.Group();
+  protectionGrp = new THREE.Group();
+  scene.add(substationGrp);
+  scene.add(protectionGrp);
+
+  (function loop() {
+    requestAnimationFrame(loop);
+    controls.update();
+    renderer.render(scene, camera);
+  })();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+  });
+
+  initialized = true;
+}
+
+function resetCamara() {
+  camera.position.set(80, 70, 80);
+  controls.target.set(0, 10, 0);
+}
+
+/* ══════════════════════════════════════════
+   CALCULAR POSICIONES DE PUNTAS
+══════════════════════════════════════════ */
+function calcularPosicionesPuntas(L, A, H_punta, R, modo) {
+  const H_col    = 8;
+  const H_equipo = parseFloat(document.getElementById('n-equipo').value) || 6;
+  const H_total  = H_col + H_punta;
+  const r_suelo  = H_total < R
+    ? Math.sqrt(R*R - (R - H_total)*(R - H_total))
+    : R;
+
+  const delta = H_equipo - H_col;
+  let r_equipo = delta >= 0 && delta <= H_punta
+    ? Math.sqrt(R*R - (R - H_punta + delta)*(R - H_punta + delta))
+    : delta < 0
+      ? Math.sqrt(R*R - (R - H_equipo)*(R - H_equipo))
+      : 0;
+
+  const puntas = [];
+
+  if (modo === 'grid') {
+    const paso = r_suelo * 1.5;
+    const nX = Math.max(2, Math.ceil(L / paso) + 1);
+    const nZ = Math.max(2, Math.ceil(A / paso) + 1);
+    for (let i = 0; i < nX; i++)
+      for (let j = 0; j < nZ; j++)
+        puntas.push({ x: -L/2 + (i/(nX-1))*L, z: -A/2 + (j/(nZ-1))*A });
+  } else {
+    puntas.push({ x:-L/2, z:-A/2 }, { x:L/2, z:-A/2 },
+                 { x:-L/2, z: A/2 }, { x:L/2, z: A/2 });
+
+    if (modo === 'auto') {
+      const dMax = 2 * r_suelo * 0.85;
+      const nL = Math.ceil(L / dMax) - 1;
+      const nA = Math.ceil(A / dMax) - 1;
+      for (let i = 1; i < nL; i++) {
+        const t = i / nL;
+        puntas.push({ x: -L/2 + t*L, z: -A/2 });
+        puntas.push({ x: -L/2 + t*L, z:  A/2 });
+      }
+      for (let i = 1; i < nA; i++) {
+        const t = i / nA;
+        puntas.push({ x: -L/2, z: -A/2 + t*A });
+        puntas.push({ x:  L/2, z: -A/2 + t*A });
+      }
+      if (Math.hypot(L/2, A/2) > r_suelo) {
+        const paso = dMax * 0.9;
+        const cX = Math.ceil(L / paso), cZ = Math.ceil(A / paso);
+        for (let ci = 1; ci < cX; ci++)
+          for (let cj = 1; cj < cZ; cj++) {
+            const ix = -L/2 + (ci/cX)*L, iz = -A/2 + (cj/cZ)*A;
+            if (puntas.every(p => Math.hypot(p.x-ix, p.z-iz) > r_suelo*0.9))
+              puntas.push({ x: ix, z: iz });
+          }
+      }
+    }
+  }
+  return { puntas, r_suelo, r_equipo };
+}
+
+/* ══════════════════════════════════════════
+   RENDERIZAR
+══════════════════════════════════════════ */
+function renderizar() {
+  const L       = parseFloat(document.getElementById('n-largo').value)  || 50;
+  const A       = parseFloat(document.getElementById('n-ancho').value)  || 30;
+  const H_punta = parseFloat(document.getElementById('n-punta').value)  || 8;
+  const H_col   = 8;
+  const R       = parseFloat(document.getElementById('n-radio').value)  || 30;
+  const H_equipo= parseFloat(document.getElementById('n-equipo').value) || 6;
+
+  document.getElementById('alert-box').classList.toggle('show', H_punta + H_col >= R * 1.8);
+
+  while (substationGrp.children.length) substationGrp.remove(substationGrp.children[0]);
+  while (protectionGrp.children.length)  protectionGrp.remove(protectionGrp.children[0]);
+
+  const { puntas, r_suelo } = calcularPosicionesPuntas(L, A, H_punta, R, currentMode);
+
+  construirSubestacion(L, A, H_col, H_equipo);
+  puntas.forEach(p => construirModuloProteccion(p.x, p.z, H_col, H_punta, R));
+
+  /* Cables de bajada */
+  puntas.forEach(p => {
+    const mat = new THREE.LineBasicMaterial({ color: C.wire, transparent: true, opacity: 0.5 });
+    const geo = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(p.x, 0, p.z),
+      new THREE.Vector3(p.x, H_col + H_punta, p.z)
+    ]);
+    protectionGrp.add(new THREE.Line(geo, mat));
+  });
+
+  const cobertura = estimarCobertura(L, A, puntas, r_suelo);
+  actualizarResultados(R, r_suelo, puntas.length, H_col + H_punta, cobertura);
+  actualizarVista2D(L, A, r_suelo, puntas);
+  actualizarNiveles(R);
+  document.getElementById('vp-info').innerHTML =
+    `MODO: ${currentMode.toUpperCase()}<br>PUNTAS: ${puntas.length}<br>COB: ${cobertura}%`;
+}
+
+/* ══════════════════════════════════════════
+   SUBESTACIÓN 3D
+══════════════════════════════════════════ */
+function construirSubestacion(L, A, H_col, H_equipo) {
+  const g = substationGrp;
+  const mk = (geo, color, x, y, z, roughness=0.7, metalness=0) => {
+    const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color, roughness, metalness}));
+    m.position.set(x, y, z);
+    m.castShadow = m.receiveShadow = true;
+    g.add(m); return m;
+  };
+
+  mk(new THREE.BoxGeometry(L, 0.2, A), C.concrete, 0, 0.1, 0, 0.9);
+
+  [[L,0.6,0.3,0,0.3,-A/2],[L,0.6,0.3,0,0.3,A/2],
+   [0.3,0.6,A,-L/2,0.3,0],[0.3,0.6,A,L/2,0.3,0]
+  ].forEach(([w,h,d,x,y,z]) => mk(new THREE.BoxGeometry(w,h,d), C.concrete, x,y,z, 0.9));
+
+  const posCol = [];
+  for (const ix of [-L/2, L/2])
+    for (let iz = -A/2; iz <= A/2+0.01; iz += Math.min(A,15)) posCol.push({x:ix,z:iz});
+  for (const iz of [-A/2, A/2])
+    for (let ix = -L/2+15; ix < L/2; ix += Math.min(L,15)) posCol.push({x:ix,z:iz});
+  posCol.forEach(p => mk(new THREE.BoxGeometry(0.5,H_col,0.5), C.steel, p.x, H_col/2, p.z, 0.4, 0.6));
+
+  [[-A/2],[A/2]].forEach(([z]) => mk(new THREE.BoxGeometry(L,0.3,0.3), C.beam, 0, H_col, z, 0.3, 0.7));
+  [[-L/2],[L/2]].forEach(([x]) => mk(new THREE.BoxGeometry(0.3,0.3,A), C.beam, x, H_col, 0, 0.3, 0.7));
+
+  mk(new THREE.BoxGeometry(L*0.25, H_equipo, A*0.35), C.trafo, 0, H_equipo/2, 0, 0.3, 0.5);
+  for (let i=-3; i<=3; i++)
+    mk(new THREE.BoxGeometry(0.15, H_equipo*0.8, A*0.32), C.radiator, i*0.6 - L*0.12, H_equipo/2, 0, 0.4, 0.6);
+
+  const aisPos = [
+    {x:-L*0.3,z:-A*0.15},{x:-L*0.1,z:-A*0.15},{x:L*0.1,z:-A*0.15},
+    {x:-L*0.3,z: A*0.15},{x:-L*0.1,z: A*0.15},{x:L*0.1,z: A*0.15},
+  ];
+  aisPos.forEach(p => {
+    for (let seg=0; seg<4; seg++) {
+      mk(new THREE.CylinderGeometry(0.15,0.15,0.4,8), C.insulator, p.x, 1+seg*0.6, p.z, 0.6);
+      mk(new THREE.CylinderGeometry(0.35,0.35,0.08,12), C.insulator, p.x, 1+seg*0.6+0.24, p.z, 0.6);
+    }
+    mk(new THREE.CylinderGeometry(0.04,0.04,2,6), C.copper, p.x, 4, p.z, 0.3, 0.9);
+  });
+
+  const pts = [[-L/2,-A/2],[L/2,-A/2],[L/2,A/2],[-L/2,A/2],[-L/2,-A/2]]
+    .map(([x,z]) => new THREE.Vector3(x,0.3,z));
+  g.add(new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(pts),
+    new THREE.LineBasicMaterial({color: C.perimeter, transparent:true, opacity:0.7})
+  ));
+}
+
+/* ══════════════════════════════════════════
+   MÓDULO PROTECCIÓN (punta + domo)
+══════════════════════════════════════════ */
+function construirModuloProteccion(x, z, H_col, H_punta, R) {
+  const g     = protectionGrp;
+  const yBase = H_col;
+
+  /* Mástil */
+  const mastMat = new THREE.MeshStandardMaterial({color:C.mast, metalness:0.9, roughness:0.1});
+  const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.08,H_punta+0.5,8), mastMat);
+  mast.position.set(x, yBase + H_punta/2 + 0.25, z);
+  mast.castShadow = true;
+  g.add(mast);
+
+  const punta = new THREE.Mesh(new THREE.SphereGeometry(0.18,12,12), mastMat);
+  punta.position.set(x, yBase + H_punta + 0.5, z);
+  g.add(punta);
+
+  const aura = new THREE.Mesh(new THREE.SphereGeometry(0.5,12,12),
+    new THREE.MeshBasicMaterial({color:C.mast, transparent:true, opacity:0.12, side:THREE.DoubleSide}));
+  aura.position.set(x, yBase + H_punta + 0.5, z);
+  g.add(aura);
+
+  /* Domo — perfil por la geometría de esfera rodante */
+  const pts = [];
+  for (let i=0; i<=32; i++) {
+    const h = (i/32) * H_punta;
+    const d = H_punta - h;
+    pts.push(new THREE.Vector2(Math.sqrt(Math.max(0, R*R - (R-d)*(R-d))), h));
+  }
+  const domoGeo = new THREE.LatheGeometry(pts, 48);
+
+  const domo = new THREE.Mesh(domoGeo, new THREE.MeshPhongMaterial({
+    color: C.dome, transparent:true, opacity:0.10,
+    side:THREE.DoubleSide, shininess:80, specular:0xddd6fe
+  }));
+  domo.position.set(x, yBase, z);
+  g.add(domo);
+
+  const domoWF = new THREE.Mesh(domoGeo, new THREE.MeshBasicMaterial({
+    color: C.domeWF, wireframe:true, transparent:true, opacity:0.07
+  }));
+  domoWF.position.set(x, yBase, z);
+  g.add(domoWF);
+
+  /* Círculo en suelo */
+  const r_base = pts[0].x;
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(r_base-0.1, r_base+0.1, 64),
+    new THREE.MeshBasicMaterial({color:C.ring, transparent:true, opacity:0.35, side:THREE.DoubleSide})
+  );
+  ring.rotation.x = -Math.PI/2;
+  ring.position.set(x, 0.05, z);
+  g.add(ring);
+}
+
+/* ══════════════════════════════════════════
+   COBERTURA
+══════════════════════════════════════════ */
+function estimarCobertura(L, A, puntas, r_suelo) {
+  const N = 20; let cubiertos = 0;
+  for (let i=0; i<=N; i++)
+    for (let j=0; j<=N; j++) {
+      const px = -L/2+(i/N)*L, pz = -A/2+(j/N)*A;
+      if (puntas.some(p => Math.hypot(p.x-px, p.z-pz) <= r_suelo)) cubiertos++;
+    }
+  return Math.round(cubiertos / (N+1)**2 * 100);
+}
+
+/* ══════════════════════════════════════════
+   UI
+══════════════════════════════════════════ */
+function actualizarResultados(R, r_suelo, nPuntas, hTotal, cobertura) {
+  document.getElementById('r-r_suelo').textContent  = r_suelo.toFixed(2)+' m';
+  document.getElementById('r-npuntas').textContent  = nPuntas;
+  document.getElementById('r-htotal').textContent   = hTotal.toFixed(1)+' m';
+  const c = document.getElementById('r-cobertura');
+  c.textContent = cobertura+'%';
+  c.className   = 'stat-val '+(cobertura>=95?'ok':cobertura>=70?'':'warn');
+}
+
+function actualizarNiveles(R) {
+  [{id:'np-I',Rref:20},{id:'np-II',Rref:30},{id:'np-III',Rref:45},{id:'np-IV',Rref:60}]
+  .forEach(({id,Rref}) => {
+    const el = document.getElementById(id);
+    if (R <= Rref) { el.textContent='● ACTIVO'; el.className='stat-val ok'; }
+    else           { el.textContent='○ —';       el.className='stat-val'; el.style.color='var(--text-dim)'; }
+  });
+}
+
+/* ══════════════════════════════════════════
+   CANVAS 2D
+══════════════════════════════════════════ */
+function actualizarVista2D(L, A, r_suelo, puntas) {
+  const canvas = document.getElementById('canvas2D');
+  const ctx    = canvas.getContext('2d');
+  const W = canvas.offsetWidth, Hc = canvas.offsetHeight || W;
+  canvas.width = W; canvas.height = Hc;
+
+  const scale = Math.min((W*0.7)/L, (Hc*0.7)/A);
+  const cx = W/2, cy = Hc/2;
+
+  ctx.fillStyle = '#f5f3ff'; ctx.fillRect(0,0,W,Hc);
+
+  /* Grid */
+  ctx.strokeStyle='#e9d5ff'; ctx.lineWidth=0.5;
+  for(let i=0;i<W;i+=20){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,Hc);ctx.stroke();}
+  for(let j=0;j<Hc;j+=20){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke();}
+
+  /* Domos */
+  puntas.forEach(p => {
+    const px=cx+p.x*scale, pz=cy+p.z*scale, r=r_suelo*scale;
+    const grad=ctx.createRadialGradient(px,pz,0,px,pz,r);
+    grad.addColorStop(0,'rgba(124,58,237,0.18)');
+    grad.addColorStop(1,'rgba(124,58,237,0)');
+    ctx.beginPath(); ctx.arc(px,pz,r,0,Math.PI*2);
+    ctx.fillStyle=grad; ctx.fill();
+    ctx.strokeStyle='rgba(124,58,237,0.5)'; ctx.lineWidth=1; ctx.stroke();
+  });
+
+  /* Subestación */
+  ctx.strokeStyle='#6366f1'; ctx.lineWidth=2;
+  ctx.strokeRect(cx-L*scale/2, cy-A*scale/2, L*scale, A*scale);
+  ctx.fillStyle='rgba(99,102,241,0.05)';
+  ctx.fillRect(cx-L*scale/2, cy-A*scale/2, L*scale, A*scale);
+
+  /* Trafo */
+  const tW=L*0.25*scale, tH=A*0.35*scale;
+  ctx.fillStyle='rgba(139,92,246,0.25)';
+  ctx.fillRect(cx-tW/2, cy-tH/2, tW, tH);
+  ctx.strokeStyle='#8b5cf6'; ctx.lineWidth=1;
+  ctx.strokeRect(cx-tW/2, cy-tH/2, tW, tH);
+
+  /* Puntas */
+  puntas.forEach(p => {
+    const px=cx+p.x*scale, pz=cy+p.z*scale;
+    ctx.beginPath(); ctx.arc(px,pz,3,0,Math.PI*2);
+    ctx.fillStyle='#7c3aed'; ctx.fill();
+    ctx.beginPath(); ctx.arc(px,pz,6,0,Math.PI*2);
+    ctx.strokeStyle='rgba(124,58,237,0.35)'; ctx.lineWidth=1; ctx.stroke();
+  });
+
+  /* Escala */
+  const em=10, ep=em*scale, ex=W-20, ey=Hc-16;
+  ctx.strokeStyle='#7c6aaa'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(ex-ep,ey); ctx.lineTo(ex,ey); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(ex-ep,ey-4); ctx.lineTo(ex-ep,ey+4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(ex,ey-4);    ctx.lineTo(ex,ey+4);    ctx.stroke();
+  ctx.fillStyle='#7c6aaa'; ctx.font='9px "Share Tech Mono",monospace';
+  ctx.textAlign='center'; ctx.fillText(em+'m', ex-ep/2, ey-6);
+}
+
+let modoCorte = false;
+function toggleCorte() {
+  modoCorte = !modoCorte;
+  document.getElementById('tab-planta').classList.toggle('active', !modoCorte);
+  document.getElementById('tab-corte').classList.toggle('active',   modoCorte);
+}
+
+/* ── ARRANQUE ── */
+window.addEventListener('load', () => { init3D(); renderizar(); });
+</script>
 </body>
 </html>
