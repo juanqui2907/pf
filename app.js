@@ -1,60 +1,62 @@
 /**
- * SPAT - Sistema de Protección Atmosférica Unificado
- * Basado en el Método de la Esfera Rodante (IEC 62305)
- * Visualización Multipararrayos y Subestación 3D
+ * SPAT v2.0 - Sistema de Protección Atmosférica Profesional
+ * Renderizado de Pórticos de Subestación y Esferas Rodantes Múltiples
  */
 
-// --- Variables Globales ---
 let scene, camera, renderer, controls;
-let pararrayosGroup = new THREE.Group(); 
-let subestacionMesh, groundMesh;
+let mainGroup = new THREE.Group(); 
 
-// --- 1. Sistema de Acceso ---
+// --- 1. Gestión de Acceso ---
 function checkLogin() {
     const user = document.getElementById('user').value;
     if (user.toLowerCase() === "admin") {
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('main-panel').style.display = 'block';
         
-        // Delay para asegurar que el contenedor 3D exista en el DOM
+        // Inicialización con retardo para asegurar que el div tenga dimensiones
         setTimeout(() => {
             init3D();
             renderizar();
-        }, 150);
+        }, 200);
     } else {
-        alert("Usuario no reconocido. Use 'admin' para ingresar.");
+        alert("Acceso denegado. Intente con el usuario 'admin'.");
     }
 }
 
-// --- 2. Inicialización de Motor 3D ---
+// --- 2. Inicialización del Motor 3D ---
 function init3D() {
     const container = document.getElementById('container3D');
-    const width = container.clientWidth;
-    const height = container.clientHeight || 500; // Asegura altura mínima
+    if (!container) return;
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
+    scene.background = new THREE.Color(0xffffff); // Fondo Blanco
 
-    camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
-    camera.position.set(60, 60, 60);
+    camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.set(50, 50, 50);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(width, height);
+    renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
+    container.innerHTML = ""; // Limpiar antes de insertar
     container.appendChild(renderer.domElement);
 
     controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true; 
+    controls.enableDamping = true;
 
-    // Iluminación
+    // Iluminación para resaltar estructuras metálicas
     scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-    const sun = new THREE.DirectionalLight(0xffffff, 0.6);
-    sun.position.set(50, 100, 50);
-    scene.add(sun);
+    const light = new THREE.DirectionalLight(0xffffff, 0.8);
+    light.position.set(50, 100, 50);
+    scene.add(light);
 
-    // Ejes y Grupo de Objetos
-    scene.add(new THREE.AxesHelper(20));
-    scene.add(pararrayosGroup);
+    scene.add(mainGroup);
+
+    // Ajuste automático si cambias el tamaño de la ventana
+    window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    });
 
     animate();
 }
@@ -65,138 +67,134 @@ function animate() {
     if (renderer) renderer.render(scene, camera);
 }
 
-// --- 3. Lógica de Cálculo y Renderizado ---
+// --- 3. Lógica de Generación ---
 function renderizar() {
-    const largo = parseFloat(document.getElementById('largo').value);
-    const ancho = parseFloat(document.getElementById('ancho').value);
-    const hPunta = parseFloat(document.getElementById('altura').value);
+    const L = parseFloat(document.getElementById('largo').value);
+    const A = parseFloat(document.getElementById('ancho').value);
+    const H = parseFloat(document.getElementById('altura').value);
     const R = parseFloat(document.getElementById('radio').value);
-    const hEquipos = 5; // Altura fija de los equipos de la subestación
 
-    if (hPunta >= R) {
-        alert("Error: La altura h debe ser menor al radio de la esfera R.");
+    if (H >= R) {
+        alert("⚠️ Error Técnico: La altura de la punta (H) debe ser menor al radio de la esfera (R).");
         return;
     }
 
-    // A. Cálculos de Ingeniería
-    const r_suelo = Math.sqrt(Math.pow(R, 2) - Math.pow(R - hPunta, 2));
-    document.getElementById('results-area').innerHTML = `
-        <strong>Resultados:</strong><br>
-        Radio prot. suelo: ${r_suelo.toFixed(2)} m<br>
-        Configuración: 4 Puntas Captadoras
-    `;
+    // Limpiar escena anterior
+    while(mainGroup.children.length > 0) mainGroup.remove(mainGroup.children[0]);
 
-    // B. Dibujar Subestación 3D (Volumen)
-    if (subestacionMesh) scene.remove(subestacionMesh);
-    if (groundMesh) scene.remove(groundMesh);
+    // A. Dibujar la Subestación (Pórticos y Vigas)
+    crearEstructuraSubestacion(L, A, 6); // Altura de pórtico fija en 6m
 
-    // Suelo
-    const groundGeo = new THREE.PlaneGeometry(largo * 2, ancho * 2);
-    const groundMat = new THREE.MeshLambertMaterial({ color: 0xf0f0f0 });
-    groundMesh = new THREE.Mesh(groundGeo, groundMat);
-    groundMesh.rotation.x = -Math.PI / 2;
-    scene.add(groundMesh);
-
-    // Cuerpo de la subestación
-    const geoSub = new THREE.BoxGeometry(largo, hEquipos, ancho);
-    const matSub = new THREE.MeshLambertMaterial({ 
-        color: 0x6c5ce7, 
-        transparent: true, 
-        opacity: 0.15 
-    });
-    subestacionMesh = new THREE.Mesh(geoSub, matSub);
-    subestacionMesh.position.y = hEquipos / 2;
-    scene.add(subestacionMesh);
-
-    // C. Dibujar Múltiples Pararrayos
-    actualizarMultiplesPararrayos(largo, ancho, hPunta, R);
-
-    // D. Dibujar 2D
-    dibujar2D(largo, ancho, r_suelo);
-}
-
-function actualizarMultiplesPararrayos(largo, ancho, h, R) {
-    while(pararrayosGroup.children.length > 0) pararrayosGroup.remove(pararrayosGroup.children[0]);
-
-    // Colocamos uno en cada esquina de la zona definida
-    const coords = [
-        {x: -largo/2, z: -ancho/2},
-        {x: largo/2, z: -ancho/2},
-        {x: -largo/2, z: ancho/2},
-        {x: largo/2, z: ancho/2}
+    // B. Dibujar los 4 Pararrayos en las esquinas
+    const esquinas = [
+        {x: -L/2, z: -A/2}, {x: L/2, z: -A/2},
+        {x: -L/2, z: A/2},  {x: L/2, z: A/2}
     ];
 
-    coords.forEach(pos => {
-        const p = crearUnPararrayosCompleto(h, R);
-        p.position.set(pos.x, 0, pos.z);
-        pararrayosGroup.add(p);
+    esquinas.forEach(pos => {
+        crearPuntaCaptadora(pos.x, pos.z, H, R);
     });
+
+    // C. Actualizar cálculos y 2D
+    const r_suelo = Math.sqrt(Math.pow(R, 2) - Math.pow(R - H, 2));
+    document.getElementById('results-area').innerHTML = `
+        <strong>Ingeniería de Detalle:</strong><br>
+        • Radio de esfera: ${R}m<br>
+        • Protección en suelo: ${r_suelo.toFixed(2)}m por punta<br>
+        • Estado: Zona Cubierta (Multi-esfera)
+    `;
+    dibujar2D(L, A, r_suelo);
 }
 
-function crearUnPararrayosCompleto(h, R) {
-    const grupo = new THREE.Group();
+// --- 4. Constructores de Geometría ---
 
-    // Mástil
-    const mastGeo = new THREE.CylinderGeometry(0.15, 0.15, h, 16);
-    const mastMat = new THREE.MeshPhongMaterial({ color: 0x2d3436 });
-    const mast = new THREE.Mesh(mastGeo, mastMat);
-    mast.position.y = h / 2;
-    grupo.add(mast);
+function crearEstructuraSubestacion(L, A, hPortico) {
+    const matMetal = new THREE.MeshLambertMaterial({ color: 0xbdc3c7 }); // Gris metálico
+    const matEquipos = new THREE.MeshLambertMaterial({ color: 0x6c5ce7, transparent: true, opacity: 0.3 });
 
-    // Domo de Esfera Rodante
+    // Dibujar columnas en las esquinas
+    const colGeo = new THREE.CylinderGeometry(0.3, 0.3, hPortico, 8);
+    const posCol = [{x:-L/2, z:-A/2}, {x:L/2, z:-A/2}, {x:-L/2, z:A/2}, {x:L/2, z:A/2}];
+    
+    posCol.forEach(p => {
+        const col = new THREE.Mesh(colGeo, matMetal);
+        col.position.set(p.x, hPortico/2, p.z);
+        mainGroup.add(col);
+    });
+
+    // Dibujar Vigas superiores (Pórticos)
+    const vigaL = new THREE.BoxGeometry(L, 0.2, 0.2);
+    const v1 = new THREE.Mesh(vigaL, matMetal);
+    v1.position.set(0, hPortico, -A/2);
+    mainGroup.add(v1);
+
+    const v2 = new THREE.Mesh(vigaL, matMetal);
+    v2.position.set(0, hPortico, A/2);
+    mainGroup.add(v2);
+
+    // Representación de transformador central
+    const transfo = new THREE.Mesh(new THREE.BoxGeometry(L*0.4, 4, A*0.4), matEquipos);
+    transfo.position.y = 2;
+    mainGroup.add(transfo);
+}
+
+function crearPuntaCaptadora(x, z, h, R) {
+    const grupoPunta = new THREE.Group();
+
+    // Mástil delgado
+    const mast = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.1, 0.1, h, 12),
+        new THREE.MeshPhongMaterial({ color: 0x2c3e50 })
+    );
+    mast.position.y = h/2;
+    grupoPunta.add(mast);
+
+    // Domo de protección (Cálculo de la curva de esfera rodante)
     const points = [];
     for (let i = 0; i <= 20; i++) {
         const y = (i / 20) * h;
         const r_y = Math.sqrt(Math.pow(R, 2) - Math.pow((R - h + y), 2));
         points.push(new THREE.Vector2(r_y, y));
     }
-    const domeGeo = new THREE.LatheGeometry(points, 32);
     const domeMat = new THREE.MeshPhongMaterial({
         color: 0x00cec9,
         transparent: true,
-        opacity: 0.25,
+        opacity: 0.2,
         side: THREE.DoubleSide
     });
-    const dome = new THREE.Mesh(domeGeo, domeMat);
-    grupo.add(dome);
+    const dome = new THREE.Mesh(new THREE.LatheGeometry(points, 32), domeMat);
+    grupoPunta.add(dome);
 
-    return grupo;
+    grupoPunta.position.set(x, 0, z);
+    mainGroup.add(grupoPunta);
 }
 
-function dibujar2D(largo, ancho, r_suelo) {
+function dibujar2D(L, A, r_suelo) {
     const canvas = document.getElementById('canvas2D');
     const ctx = canvas.getContext('2d');
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
 
-    const scale = Math.min(canvas.width / (largo * 1.8), canvas.height / (ancho * 1.8));
+    const scale = Math.min(canvas.width / (L * 2), canvas.height / (A * 2));
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Área Subestación
+    // Área subestación
     ctx.strokeStyle = "#6c5ce7";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(cx - (largo*scale)/2, cy - (ancho*scale)/2, largo*scale, ancho*scale);
+    ctx.setLineDash([2, 2]);
+    ctx.strokeRect(cx - (L*scale)/2, cy - (A*scale)/2, L*scale, A*scale);
+    ctx.setLineDash([]);
 
-    // Círculos de protección (4 esquinas)
+    // Círculos de protección
     const offsets = [{x:-1,z:-1}, {x:1,z:-1}, {x:-1,z:1}, {x:1,z:1}];
     offsets.forEach(o => {
-        const px = cx + (o.x * largo*scale/2);
-        const py = cy + (o.z * ancho*scale/2);
-        
         ctx.beginPath();
-        ctx.arc(px, py, r_suelo * scale, 0, Math.PI*2);
-        ctx.fillStyle = "rgba(0, 206, 201, 0.15)";
+        ctx.arc(cx + (o.x * L*scale/2), cy + (o.z * A*scale/2), r_suelo * scale, 0, Math.PI*2);
+        ctx.fillStyle = "rgba(0, 206, 201, 0.1)";
         ctx.fill();
-        ctx.strokeStyle = "rgba(0, 206, 201, 0.5)";
+        ctx.strokeStyle = "#00cec9";
         ctx.stroke();
-        
-        // Punto de ubicación
-        ctx.beginPath();
-        ctx.arc(px, py, 3, 0, Math.PI*2);
-        ctx.fillStyle = "#6c5ce7";
-        ctx.fill();
     });
 }
