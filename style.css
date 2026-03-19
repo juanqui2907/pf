@@ -1,0 +1,282 @@
+/* style.css */
+
+/* --- Variables y Reset --- */
+:root {
+    --primary-color: #6c5ce7; /* Morado Principal */
+    --primary-dark: #5a4bcf;
+    --primary-light: #a29bfe;
+    --bg-color: #f4f7f6; /* Blanco azulado muy suave */
+    --card-color: #ffffff;
+    --text-main: #2d3436;
+    --text-light: #636e72;
+    --accent-green: #00b894;
+    --shadow: 0 10px 20px rgba(0,0,0,0.05);
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.main-container {
+    width: 100%;
+    max-width: 1400px;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* --- Animaciones --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* --- Estilos de Tarjetas (Cards) --- */
+.card {
+    background: var(--card-color);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(108, 92, 231, 0.1);
+}
+
+/* --- SECCIÓN LOGIN --- */
+#login-section {
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.brand-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.logo-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+}
+
+.brand-header h2 {
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.brand-header h2 span {
+    color: var(--primary-color);
+    font-weight: 300;
+}
+
+#login-section p {
+    color: var(--text-light);
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+}
+
+/* Inputs Modernos (Material Style) */
+.input-group {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 10px;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    background: none;
+    outline: none;
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.input-group label {
+    position: absolute;
+    left: 15px;
+    top: 14px;
+    color: var(--text-light);
+    pointer-events: none;
+    transition: var(--transition);
+}
+
+.input-group input:focus,
+.input-group input:valid {
+    border-color: var(--primary-color);
+}
+
+.input-group input:focus ~ label,
+.input-group input:valid ~ label {
+    top: -10px;
+    left: 10px;
+    font-size: 0.8rem;
+    padding: 0 5px;
+    background-color: var(--card-color);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* Botones */
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+/* --- PANEL PRINCIPAL --- */
+#main-panel {
+    width: 100%;
+    align-self: flex-start;
+}
+
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(108, 92, 231, 0.1);
+}
+
+.app-header h1 {
+    font-size: 1.8rem;
+    color: var(--text-main);
+}
+
+.user-badge {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+/* Dashboard Grid Layout */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+/* Paneles de Control */
+.controls-panel h3, .viz-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.control-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.control-box label {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-bottom: 5px;
+    display: block;
+}
+
+.control-box input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #fafafa;
+}
+
+.btn-success {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary-color); /* Usamos morado también aquí para consistencia */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-success:hover {
+    background-color: var(--primary-dark);
+}
+
+.results-box {
+    margin-top: 20px;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--primary-dark);
+    border-left: 4px solid var(--primary-color);
+}
+
+/* Área de Visualización */
+.visualizer-area {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 20px;
+}
+
+.viz-card {
+    padding: 20px;
+}
+
+canvas#canvas2D {
+    width: 100%;
+    height: 150px; /* Alto fijo para el 2D */
+    background-color: #fcfcfc;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+#container3D {
+    width: 100%;
+    height: 400px; /* Alto mayor para el 3D interactivo */
+    background-color: #eee;
+    border-radius: 8px;
+    overflow: hidden; /* Importante para Three.js */
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
