@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Apantallamiento - Subestaciones</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="login-section">
+        <h2>Ingreso al Sistema</h2>
+        <input type="text" id="user" placeholder="Usuario">
+        <input type="password" id="pass" placeholder="Contraseña">
+        <button onclick="checkLogin()">Entrar</button>
+    </div>
+
+    <div id="main-panel" style="display:none;">
+        <h1>Cálculo de Apantallamiento</h1>
+        <div class="controls">
+            <label>Largo Zona (m): <input type="number" id="largo" value="50"></label>
+            <label>Ancho Zona (m): <input type="number" id="ancho" value="30"></label>
+            <label>Altura Punta (h): <input type="number" id="altura" value="10"></label>
+            <label>Radio de Esfera (R): <input type="number" id="radio" value="20"></label>
+            <button onclick="renderizar()">Generar Protección</button>
+        </div>
+        
+        <div class="visualizers">
+            <canvas id="canvas2D" width="400" height="300"></canvas>
+            <div id="container3D"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <script src="app.js"></script>
+</body>
+</html>
