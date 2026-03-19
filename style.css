@@ -1,282 +1,382 @@
-/* style.css */
+/* ═══════════════════════════════════════════════════════
+   SPAT v5.0 — ESTILOS
+   Fuentes: Rajdhani (títulos) + Share Tech Mono (datos)
+═══════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
 
-/* --- Variables y Reset --- */
+/* ── Variables ── */
 :root {
-    --primary-color: #6c5ce7; /* Morado Principal */
-    --primary-dark: #5a4bcf;
-    --primary-light: #a29bfe;
-    --bg-color: #f4f7f6; /* Blanco azulado muy suave */
-    --card-color: #ffffff;
-    --text-main: #2d3436;
-    --text-light: #636e72;
-    --accent-green: #00b894;
-    --shadow: 0 10px 20px rgba(0,0,0,0.05);
-    --transition: all 0.3s ease;
+  --bg:       #0a0e1a;
+  --panel:    #0f1526;
+  --border:   #1e2d4a;
+  --accent:   #00d4ff;
+  --accent2:  #ff6b35;
+  --green:    #00ff88;
+  --text:     #c8d8f0;
+  --text-dim: #5a7a9a;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* ── Reset ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* ── Base ── */
 body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-main);
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.main-container {
-    width: 100%;
-    max-width: 1400px;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* ══════════════════════════════════════
+   HEADER
+══════════════════════════════════════ */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
-/* --- Animaciones --- */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+.header-logo {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 18px;
+  color: var(--accent);
+  letter-spacing: 3px;
+}
+.header-logo span { color: var(--accent2); }
+
+.header-status {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-dim);
+  font-family: 'Share Tech Mono', monospace;
 }
 
-.fade-in {
-    animation: fadeIn 0.5s ease forwards;
+/* Indicador de estado parpadeante */
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* ══════════════════════════════════════
+   LAYOUT PRINCIPAL
+══════════════════════════════════════ */
+.main {
+  display: grid;
+  grid-template-columns: 280px 1fr 260px;
+  flex: 1;
+  overflow: hidden;
 }
 
-/* --- Estilos de Tarjetas (Cards) --- */
-.card {
-    background: var(--card-color);
-    border-radius: 15px;
-    padding: 30px;
-    box-shadow: var(--shadow);
-    border: 1px solid rgba(108, 92, 231, 0.1);
+/* ══════════════════════════════════════
+   PANELES LATERALES
+══════════════════════════════════════ */
+.panel {
+  background: var(--panel);
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.panel--left  { border-right: 1px solid var(--border); }
+.panel--right { border-left:  1px solid var(--border); }
+
+/* Scrollbar fina */
+.panel::-webkit-scrollbar { width: 4px; }
+.panel::-webkit-scrollbar-track { background: var(--bg); }
+.panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.panel-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  text-transform: uppercase;
 }
 
-/* --- SECCIÓN LOGIN --- */
-#login-section {
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
+/* ══════════════════════════════════════
+   CAMPOS DE ENTRADA
+══════════════════════════════════════ */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.brand-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 10px;
+.field-label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  font-family: 'Share Tech Mono', monospace;
+  display: flex;
+  justify-content: space-between;
+}
+.field-label span { color: var(--accent); }
+
+/* Slider */
+input[type="range"] {
+  width: 100%;
+  -webkit-appearance: none;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  cursor: pointer;
 }
 
-.logo-icon {
-    font-size: 2rem;
-    color: var(--primary-color);
+/* Number input */
+input[type="number"] {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: 4px;
+  width: 100%;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  transition: border 0.2s;
+}
+input[type="number"]:focus {
+  outline: none;
+  border-color: var(--accent);
 }
 
-.brand-header h2 {
-    font-weight: 600;
-    color: var(--text-main);
+/* ══════════════════════════════════════
+   BOTONES
+══════════════════════════════════════ */
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 2px;
+  transition: all 0.2s;
+  width: 100%;
+}
+.btn--primary {
+  background: var(--accent);
+  color: #000;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+.btn--primary:hover {
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.6);
+  transform: translateY(-1px);
+}
+.btn--secondary {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+.btn--secondary:hover {
+  border-color: var(--accent2);
+  color: var(--accent2);
 }
 
-.brand-header h2 span {
-    color: var(--primary-color);
-    font-weight: 300;
+/* ══════════════════════════════════════
+   SELECTOR DE MODO
+══════════════════════════════════════ */
+.mode-selector {
+  display: flex;
+  gap: 4px;
+}
+.mode-btn {
+  flex: 1;
+  padding: 7px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: 'Share Tech Mono', monospace;
+  transition: all 0.2s;
+}
+.mode-btn.active {
+  background: rgba(0, 212, 255, 0.15);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
-#login-section p {
-    color: var(--text-light);
-    margin-bottom: 30px;
-    font-size: 0.9rem;
+/* ══════════════════════════════════════
+   ALERTA
+══════════════════════════════════════ */
+.alert-box {
+  background: rgba(255, 107, 53, 0.1);
+  border: 1px solid rgba(255, 107, 53, 0.4);
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--accent2);
+  display: none;
+}
+.alert-box.show { display: block; }
+
+/* ══════════════════════════════════════
+   LEYENDA
+══════════════════════════════════════ */
+.legend {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
 }
 
-/* Inputs Modernos (Material Style) */
-.input-group {
-    position: relative;
-    margin-bottom: 25px;
+/* ══════════════════════════════════════
+   VIEWPORT 3D
+══════════════════════════════════════ */
+#viewport {
+  position: relative;
+  background: #050810;
 }
-
-.input-group input {
-    width: 100%;
-    padding: 12px 10px;
-    border: 2px solid #eee;
-    border-radius: 8px;
-    background: none;
-    outline: none;
-    font-size: 1rem;
-    transition: var(--transition);
-}
-
-.input-group label {
-    position: absolute;
-    left: 15px;
-    top: 14px;
-    color: var(--text-light);
-    pointer-events: none;
-    transition: var(--transition);
-}
-
-.input-group input:focus,
-.input-group input:valid {
-    border-color: var(--primary-color);
-}
-
-.input-group input:focus ~ label,
-.input-group input:valid ~ label {
-    top: -10px;
-    left: 10px;
-    font-size: 0.8rem;
-    padding: 0 5px;
-    background-color: var(--card-color);
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-/* Botones */
-.btn-primary {
-    width: 100%;
-    padding: 12px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.btn-primary:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-}
-
-/* --- PANEL PRINCIPAL --- */
-#main-panel {
-    width: 100%;
-    align-self: flex-start;
-}
-
-.app-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid rgba(108, 92, 231, 0.1);
-}
-
-.app-header h1 {
-    font-size: 1.8rem;
-    color: var(--text-main);
-}
-
-.user-badge {
-    background-color: var(--primary-light);
-    color: var(--primary-dark);
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.8rem;
-}
-
-/* Dashboard Grid Layout */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 20px;
-    align-items: start;
-}
-
-/* Paneles de Control */
-.controls-panel h3, .viz-card h3 {
-    font-size: 1.1rem;
-    margin-bottom: 20px;
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-.control-inputs {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.control-box label {
-    font-size: 0.85rem;
-    color: var(--text-light);
-    margin-bottom: 5px;
-    display: block;
-}
-
-.control-box input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background-color: #fafafa;
-}
-
-.btn-success {
-    width: 100%;
-    padding: 12px;
-    background-color: var(--primary-color); /* Usamos morado también aquí para consistencia */
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.btn-success:hover {
-    background-color: var(--primary-dark);
-}
-
-.results-box {
-    margin-top: 20px;
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    color: var(--primary-dark);
-    border-left: 4px solid var(--primary-color);
-}
-
-/* Área de Visualización */
-.visualizer-area {
-    display: grid;
-    grid-template-rows: auto 1fr;
-    gap: 20px;
-}
-
-.viz-card {
-    padding: 20px;
-}
-
-canvas#canvas2D {
-    width: 100%;
-    height: 150px; /* Alto fijo para el 2D */
-    background-color: #fcfcfc;
-    border-radius: 8px;
-    border: 1px solid #eee;
-}
-
 #container3D {
-    width: 100%;
-    height: 400px; /* Alto mayor para el 3D interactivo */
-    background-color: #eee;
-    border-radius: 8px;
-    overflow: hidden; /* Importante para Three.js */
+  width: 100%;
+  height: 100%;
 }
 
-/* Responsive */
-@media (max-width: 900px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-    }
+.vp-overlay {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  pointer-events: none;
+  line-height: 1.8;
+}
+
+.vp-mode {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  white-space: nowrap;
+}
+
+/* ══════════════════════════════════════
+   TARJETAS DE RESULTADOS
+══════════════════════════════════════ */
+.results-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+}
+.card-title {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  font-family: 'Share Tech Mono', monospace;
+  margin-bottom: 10px;
+}
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-label { color: var(--text-dim); font-size: 12px; }
+.stat-val {
+  color: var(--accent);
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: bold;
+}
+.stat-val.ok   { color: var(--green); }
+.stat-val.warn { color: var(--accent2); }
+
+/* ══════════════════════════════════════
+   TABS + CANVAS 2D
+══════════════════════════════════════ */
+.tab-bar {
+  display: flex;
+  gap: 2px;
+}
+.tab {
+  flex: 1;
+  padding: 6px;
+  font-size: 11px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-dim);
+  font-family: 'Share Tech Mono', monospace;
+  transition: all 0.2s;
+}
+.tab.active {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+#canvas2D {
+  width: 100%;
+  aspect-ratio: 1;
+  background: #050810;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  display: block;
+}
+
+/* ══════════════════════════════════════
+   SEPARADOR DECORATIVO
+══════════════════════════════════════ */
+.sep {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  flex-shrink: 0;
 }
