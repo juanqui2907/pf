@@ -1,70 +1,60 @@
 /**
- * SPAT - Sistema de Protección Atmosférica Profesional
+ * SPAT - Sistema de Protección Atmosférica Unificado
  * Basado en el Método de la Esfera Rodante (IEC 62305)
+ * Visualización Multipararrayos y Subestación 3D
  */
 
-// --- Variables Globales de la Escena 3D ---
+// --- Variables Globales ---
 let scene, camera, renderer, controls;
-let currentDome, currentMast, currentGround;
+let pararrayosGroup = new THREE.Group(); 
+let subestacionMesh, groundMesh;
 
 // --- 1. Sistema de Acceso ---
 function checkLogin() {
     const user = document.getElementById('user').value;
-    // Login simple para prototipo: usuario 'admin'
     if (user.toLowerCase() === "admin") {
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('main-panel').style.display = 'block';
         
-        // Inicializar el motor 3D y ejecutar el primer cálculo
-        init3D();
-        renderizar();
+        // Delay para asegurar que el contenedor 3D exista en el DOM
+        setTimeout(() => {
+            init3D();
+            renderizar();
+        }, 150);
     } else {
         alert("Usuario no reconocido. Use 'admin' para ingresar.");
     }
 }
 
-// --- 2. Inicialización de Three.js (Motor 3D) ---
+// --- 2. Inicialización de Motor 3D ---
 function init3D() {
     const container = document.getElementById('container3D');
     const width = container.clientWidth;
-    const height = container.clientHeight;
+    const height = container.clientHeight || 500; // Asegura altura mínima
 
-    // Escena y fondo (Blanco limpio)
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xffffff);
 
-    // Cámara Perspectiva
     camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
-    camera.position.set(40, 40, 40);
+    camera.position.set(60, 60, 60);
 
-    // Renderizador con suavizado de bordes (Antialias)
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(window.devicePixelRatio);
     container.appendChild(renderer.domElement);
 
-    // Controles de Órbita (Mouse: rotar, scroll: zoom)
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true; 
 
-    // Luces (Ambiental para sombras suaves y Direccional para volumen)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-    scene.add(ambientLight);
-    
-    const sunLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    sunLight.position.set(10, 20, 10);
-    scene.add(sunLight);
+    // Iluminación
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+    const sun = new THREE.DirectionalLight(0xffffff, 0.6);
+    sun.position.set(50, 100, 50);
+    scene.add(sun);
 
-    // Guía de ejes (X: Rojo, Y: Verde, Z: Azul)
-    const axesHelper = new THREE.AxesHelper(15);
-    scene.add(axesHelper);
-
-    // Escuchar cambios de tamaño de ventana
-    window.addEventListener('resize', () => {
-        camera.aspect = container.clientWidth / container.clientHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(container.clientWidth, container.clientHeight);
-    });
+    // Ejes y Grupo de Objetos
+    scene.add(new THREE.AxesHelper(20));
+    scene.add(pararrayosGroup);
 
     animate();
 }
@@ -75,120 +65,138 @@ function animate() {
     if (renderer) renderer.render(scene, camera);
 }
 
-// --- 3. Lógica de Ingeniería y Renderizado ---
+// --- 3. Lógica de Cálculo y Renderizado ---
 function renderizar() {
-    // Captura de datos desde el HTML
     const largo = parseFloat(document.getElementById('largo').value);
     const ancho = parseFloat(document.getElementById('ancho').value);
-    const h = parseFloat(document.getElementById('altura').value); // Altura punta
-    const R = parseFloat(document.getElementById('radio').value);   // Radio esfera
+    const hPunta = parseFloat(document.getElementById('altura').value);
+    const R = parseFloat(document.getElementById('radio').value);
+    const hEquipos = 5; // Altura fija de los equipos de la subestación
 
-    // Validación Técnica: h < R (La esfera debe poder tocar la punta y el suelo)
-    if (h >= R) {
-        alert("Error: Según el método de la esfera rodante, la altura del captador (h) debe ser menor al radio de la esfera (R).");
+    if (hPunta >= R) {
+        alert("Error: La altura h debe ser menor al radio de la esfera R.");
         return;
     }
 
-    // Cálculo del Radio de Protección en el Suelo (Nivel 0)
-    // Fórmula: r = sqrt( R² - (R - h)² )
-    const r_suelo = Math.sqrt(Math.pow(R, 2) - Math.pow(R - h, 2));
-
-    // Actualizar texto de resultados en la UI
+    // A. Cálculos de Ingeniería
+    const r_suelo = Math.sqrt(Math.pow(R, 2) - Math.pow(R - hPunta, 2));
     document.getElementById('results-area').innerHTML = `
-        <strong>Resultados del Cálculo:</strong><br>
-        Radio de protección (Suelo): ${r_suelo.toFixed(2)} m<br>
-        Área protegida aprox: ${(Math.PI * Math.pow(r_suelo, 2)).toFixed(2)} m²
+        <strong>Resultados:</strong><br>
+        Radio prot. suelo: ${r_suelo.toFixed(2)} m<br>
+        Configuración: 4 Puntas Captadoras
     `;
 
-    // Ejecutar dibujos
+    // B. Dibujar Subestación 3D (Volumen)
+    if (subestacionMesh) scene.remove(subestacionMesh);
+    if (groundMesh) scene.remove(groundMesh);
+
+    // Suelo
+    const groundGeo = new THREE.PlaneGeometry(largo * 2, ancho * 2);
+    const groundMat = new THREE.MeshLambertMaterial({ color: 0xf0f0f0 });
+    groundMesh = new THREE.Mesh(groundGeo, groundMat);
+    groundMesh.rotation.x = -Math.PI / 2;
+    scene.add(groundMesh);
+
+    // Cuerpo de la subestación
+    const geoSub = new THREE.BoxGeometry(largo, hEquipos, ancho);
+    const matSub = new THREE.MeshLambertMaterial({ 
+        color: 0x6c5ce7, 
+        transparent: true, 
+        opacity: 0.15 
+    });
+    subestacionMesh = new THREE.Mesh(geoSub, matSub);
+    subestacionMesh.position.y = hEquipos / 2;
+    scene.add(subestacionMesh);
+
+    // C. Dibujar Múltiples Pararrayos
+    actualizarMultiplesPararrayos(largo, ancho, hPunta, R);
+
+    // D. Dibujar 2D
     dibujar2D(largo, ancho, r_suelo);
-    dibujar3D(largo, ancho, h, R);
 }
 
-// --- 4. Visualización 2D (Vista de Planta) ---
-function dibujar2D(largo, ancho, r_suelo) {
-    const canvas = document.getElementById('canvas2D');
-    const ctx = canvas.getContext('2d');
-    
-    // Ajuste dinámico del tamaño del canvas
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
+function actualizarMultiplesPararrayos(largo, ancho, h, R) {
+    while(pararrayosGroup.children.length > 0) pararrayosGroup.remove(pararrayosGroup.children[0]);
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    const scale = Math.min((canvas.width - 40) / largo, (canvas.height - 40) / ancho);
-    const offsetX = (canvas.width - largo * scale) / 2;
-    const offsetY = (canvas.height - ancho * scale) / 2;
+    // Colocamos uno en cada esquina de la zona definida
+    const coords = [
+        {x: -largo/2, z: -ancho/2},
+        {x: largo/2, z: -ancho/2},
+        {x: -largo/2, z: ancho/2},
+        {x: largo/2, z: ancho/2}
+    ];
 
-    // Dibujo Rectángulo Subestación (Blanco/Morado)
-    ctx.fillStyle = "rgba(108, 92, 231, 0.05)";
-    ctx.fillRect(offsetX, offsetY, largo * scale, ancho * scale);
-    ctx.strokeStyle = "#6c5ce7";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(offsetX, offsetY, largo * scale, ancho * scale);
-
-    // Círculo de protección en el suelo (Verde Tech)
-    const cx = offsetX + (largo * scale) / 2;
-    const cy = offsetY + (ancho * scale) / 2;
-
-    ctx.beginPath();
-    ctx.arc(cx, cy, r_suelo * scale, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(0, 184, 148, 0.15)";
-    ctx.fill();
-    ctx.strokeStyle = "#00b894";
-    ctx.setLineDash([5, 5]); // Línea discontinua
-    ctx.stroke();
-    ctx.setLineDash([]); 
-
-    // Punto central (Mástil)
-    ctx.beginPath();
-    ctx.arc(cx, cy, 3, 0, Math.PI * 2);
-    ctx.fillStyle = "#6c5ce7";
-    ctx.fill();
+    coords.forEach(pos => {
+        const p = crearUnPararrayosCompleto(h, R);
+        p.position.set(pos.x, 0, pos.z);
+        pararrayosGroup.add(p);
+    });
 }
 
-// --- 5. Visualización 3D (Modelo de Revolución) ---
-function dibujar3D(largo, ancho, h, R) {
-    // Limpiar objetos previos
-    if (currentGround) scene.remove(currentGround);
-    if (currentMast) scene.remove(currentMast);
-    if (currentDome) scene.remove(currentDome);
+function crearUnPararrayosCompleto(h, R) {
+    const grupo = new THREE.Group();
 
-    // A. Crear el Suelo
-    const groundGeom = new THREE.PlaneGeometry(largo, ancho);
-    const groundMat = new THREE.MeshLambertMaterial({ color: 0xf5f5f5, side: THREE.DoubleSide });
-    currentGround = new THREE.Mesh(groundGeom, groundMat);
-    currentGround.rotation.x = -Math.PI / 2;
-    scene.add(currentGround);
+    // Mástil
+    const mastGeo = new THREE.CylinderGeometry(0.15, 0.15, h, 16);
+    const mastMat = new THREE.MeshPhongMaterial({ color: 0x2d3436 });
+    const mast = new THREE.Mesh(mastGeo, mastMat);
+    mast.position.y = h / 2;
+    grupo.add(mast);
 
-    // B. Crear el Mástil (Cilindro morado)
-    const mastGeom = new THREE.CylinderGeometry(0.2, 0.2, h, 16);
-    const mastMat = new THREE.MeshPhongMaterial({ color: 0x6c5ce7 });
-    currentMast = new THREE.Mesh(mastGeom, mastMat);
-    currentMast.position.y = h / 2;
-    scene.add(currentMast);
-
-    // C. Crear el Domo de Protección (Esfera Rodante)
-    // Generamos la curva: r(y) = sqrt( R² - (R - h + y)² )
+    // Domo de Esfera Rodante
     const points = [];
-    const steps = 30;
-    for (let i = 0; i <= steps; i++) {
-        const y = (i / steps) * h;
+    for (let i = 0; i <= 20; i++) {
+        const y = (i / 20) * h;
         const r_y = Math.sqrt(Math.pow(R, 2) - Math.pow((R - h + y), 2));
         points.push(new THREE.Vector2(r_y, y));
     }
-
-    // Convertir curva en sólido de revolución (Lathe)
-    const domeGeom = new THREE.LatheGeometry(points, 64);
+    const domeGeo = new THREE.LatheGeometry(points, 32);
     const domeMat = new THREE.MeshPhongMaterial({
-        color: 0x00cec9, // Verde Agua / Cyan
+        color: 0x00cec9,
         transparent: true,
-        opacity: 0.3,
-        side: THREE.DoubleSide,
-        specular: 0xffffff,
-        shininess: 80
+        opacity: 0.25,
+        side: THREE.DoubleSide
     });
-    
-    currentDome = new THREE.Mesh(domeGeom, domeMat);
-    scene.add(currentDome);
+    const dome = new THREE.Mesh(domeGeo, domeMat);
+    grupo.add(dome);
+
+    return grupo;
+}
+
+function dibujar2D(largo, ancho, r_suelo) {
+    const canvas = document.getElementById('canvas2D');
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    const scale = Math.min(canvas.width / (largo * 1.8), canvas.height / (ancho * 1.8));
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Área Subestación
+    ctx.strokeStyle = "#6c5ce7";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(cx - (largo*scale)/2, cy - (ancho*scale)/2, largo*scale, ancho*scale);
+
+    // Círculos de protección (4 esquinas)
+    const offsets = [{x:-1,z:-1}, {x:1,z:-1}, {x:-1,z:1}, {x:1,z:1}];
+    offsets.forEach(o => {
+        const px = cx + (o.x * largo*scale/2);
+        const py = cy + (o.z * ancho*scale/2);
+        
+        ctx.beginPath();
+        ctx.arc(px, py, r_suelo * scale, 0, Math.PI*2);
+        ctx.fillStyle = "rgba(0, 206, 201, 0.15)";
+        ctx.fill();
+        ctx.strokeStyle = "rgba(0, 206, 201, 0.5)";
+        ctx.stroke();
+        
+        // Punto de ubicación
+        ctx.beginPath();
+        ctx.arc(px, py, 3, 0, Math.PI*2);
+        ctx.fillStyle = "#6c5ce7";
+        ctx.fill();
+    });
 }
