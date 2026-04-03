@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SPAT v5.0 — Sistema de Protección Atmosférica</title>
+<title>SPAT v6.0 — IEEE 998-2012 · Esfera Rodante</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
 
@@ -13,9 +13,11 @@
     --border:   #d4c8f8;
     --accent:   #7c3aed;
     --accent2:  #a855f7;
-    --green:    #6d28d9;
+    --green:    #059669;
+    --red:      #dc2626;
     --text:     #1e1333;
     --text-dim: #7c6aaa;
+    --ieee:     #1d4ed8;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,12 +32,11 @@
     overflow: hidden;
   }
 
-  /* ── HEADER ── */
   .header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 20px;
+    padding: 8px 20px;
     background: var(--panel);
     border-bottom: 2px solid var(--border);
     flex-shrink: 0;
@@ -43,58 +44,109 @@
   }
   .header-logo {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 18px;
+    font-size: 16px;
     color: var(--accent);
     letter-spacing: 3px;
   }
   .header-logo span { color: var(--accent2); }
+  .header-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--ieee);
+    background: rgba(29,78,216,0.08);
+    border: 1px solid rgba(29,78,216,0.25);
+    padding: 3px 8px;
+    border-radius: 3px;
+    letter-spacing: 1px;
+  }
   .header-status {
-    display: flex; gap: 16px; align-items: center;
-    font-size: 12px; color: var(--text-dim);
+    display: flex; gap: 12px; align-items: center;
+    font-size: 11px; color: var(--text-dim);
     font-family: 'Share Tech Mono', monospace;
   }
-  .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 8px rgba(124,58,237,0.5);
-    animation: pulse 2s infinite;
-  }
+  .dot { width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(124,58,237,0.5);animation:pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  /* ── LAYOUT ── */
   .main {
     display: grid;
-    grid-template-columns: 280px 1fr 260px;
+    grid-template-columns: 290px 1fr 270px;
     flex: 1;
     overflow: hidden;
   }
 
-  /* ── PANELES ── */
   .panel {
     background: var(--panel);
     border-right: 1px solid var(--border);
-    padding: 16px;
+    padding: 12px 14px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 10px;
   }
   .panel:last-child { border-right: none; border-left: 1px solid var(--border); }
 
   .panel-title {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
+    font-size: 9px;
     letter-spacing: 3px;
     color: var(--accent);
     border-bottom: 1px solid var(--border);
-    padding-bottom: 8px;
+    padding-bottom: 6px;
     text-transform: uppercase;
   }
 
-  /* ── CAMPOS ── */
-  .field-group { display: flex; flex-direction: column; gap: 6px; }
+  /* ── IEEE 998 SECTION ── */
+  .ieee-section {
+    background: linear-gradient(135deg, rgba(29,78,216,0.04), rgba(124,58,237,0.04));
+    border: 1px solid rgba(29,78,216,0.2);
+    border-radius: 6px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .ieee-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--ieee);
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ieee-title::before {
+    content: '';
+    width: 3px; height: 3px;
+    background: var(--ieee);
+    border-radius: 50%;
+  }
+
+  /* Cadena de cálculo IEEE 998 */
+  .calc-chain {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 4px;
+    padding: 8px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+  }
+  .calc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 0;
+    border-bottom: 1px dotted rgba(124,58,237,0.15);
+  }
+  .calc-row:last-child { border-bottom: none; }
+  .calc-label { color: var(--text-dim); font-size: 10px; }
+  .calc-val { color: var(--ieee); font-weight: bold; }
+  .calc-formula { color: rgba(124,58,237,0.5); font-size: 9px; }
+
+  .field-group { display: flex; flex-direction: column; gap: 5px; }
   .field-label {
-    font-size: 11px; letter-spacing: 1px; color: var(--text-dim);
+    font-size: 10px; letter-spacing: 1px; color: var(--text-dim);
     font-family: 'Share Tech Mono', monospace;
     display: flex; justify-content: space-between;
   }
@@ -105,189 +157,307 @@
     height: 3px; background: var(--border); border-radius: 2px; cursor: pointer;
   }
   input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+    -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%;
     background: var(--accent); box-shadow: 0 0 8px rgba(124,58,237,0.4); cursor: pointer;
   }
-  input[type="number"] {
+  input[type="number"], input[type="text"] {
     background: var(--bg); border: 1px solid var(--border); color: var(--text);
-    padding: 6px 10px; border-radius: 4px; width: 100%;
-    font-family: 'Share Tech Mono', monospace; font-size: 13px;
+    padding: 5px 8px; border-radius: 4px; width: 100%;
+    font-family: 'Share Tech Mono', monospace; font-size: 12px;
     transition: border 0.2s;
   }
   input[type="number"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
 
-  /* ── BOTONES ── */
+  /* Radio calculado (readonly) */
+  .radio-computed {
+    background: rgba(124,58,237,0.06);
+    border: 1.5px solid rgba(124,58,237,0.3);
+    border-radius: 4px;
+    padding: 8px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  .radio-computed .label { font-size: 10px; color: var(--text-dim); }
+  .radio-computed .value { font-size: 18px; color: var(--accent); font-weight: bold; }
+  .radio-computed .unit  { font-size: 11px; color: var(--text-dim); }
+
+  .np-badge {
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+  .np-I   { background: rgba(220,38,38,0.12);  color: #dc2626; border: 1px solid rgba(220,38,38,0.3); }
+  .np-II  { background: rgba(234,88,12,0.12);  color: #ea580c; border: 1px solid rgba(234,88,12,0.3); }
+  .np-III { background: rgba(202,138,4,0.12);  color: #ca8a04; border: 1px solid rgba(202,138,4,0.3); }
+  .np-IV  { background: rgba(5,150,105,0.12);  color: #059669; border: 1px solid rgba(5,150,105,0.3); }
+
   .btn {
-    padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer;
-    font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 14px;
+    padding: 9px 14px; border: none; border-radius: 5px; cursor: pointer;
+    font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 13px;
     letter-spacing: 2px; transition: all 0.2s; width: 100%;
   }
-  .btn-primary {
-    background: var(--accent); color: #fff;
-    box-shadow: 0 4px 16px rgba(124,58,237,0.3);
-  }
-  .btn-primary:hover { background: #6d28d9; box-shadow: 0 6px 20px rgba(124,58,237,0.45); transform: translateY(-1px); }
-  .btn-secondary {
-    background: transparent; color: var(--text-dim);
-    border: 1px solid var(--border); margin-top: -4px;
-  }
+  .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 4px 16px rgba(124,58,237,0.3); }
+  .btn-primary:hover { background: #6d28d9; transform: translateY(-1px); }
+  .btn-secondary { background: transparent; color: var(--text-dim); border: 1px solid var(--border); margin-top: -4px; }
   .btn-secondary:hover { border-color: var(--accent2); color: var(--accent2); }
 
-  /* ── MODO ── */
-  .mode-selector { display: flex; gap: 4px; }
+  .mode-selector { display: flex; gap: 3px; }
   .mode-btn {
-    flex: 1; padding: 7px; font-size: 11px; letter-spacing: 1px;
+    flex: 1; padding: 6px; font-size: 10px; letter-spacing: 1px;
     background: var(--bg); border: 1px solid var(--border);
     color: var(--text-dim); cursor: pointer; border-radius: 4px;
     font-family: 'Share Tech Mono', monospace; transition: all 0.2s;
   }
-  .mode-btn.active {
-    background: rgba(124,58,237,0.12); border-color: var(--accent); color: var(--accent);
-    font-weight: bold;
-  }
+  .mode-btn.active { background: rgba(124,58,237,0.12); border-color: var(--accent); color: var(--accent); font-weight: bold; }
 
-  /* ── VIEWPORT 3D ── */
+  /* Sphere toggle */
+  .toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+  .toggle {
+    position: relative; width: 36px; height: 18px;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute; cursor: pointer; inset: 0;
+    background: var(--border); border-radius: 18px; transition: 0.3s;
+  }
+  .toggle-slider::before {
+    position: absolute; content: '';
+    width: 12px; height: 12px;
+    left: 3px; top: 3px;
+    background: white; border-radius: 50%; transition: 0.3s;
+  }
+  .toggle input:checked + .toggle-slider { background: var(--accent); }
+  .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+
   #viewport { position: relative; background: #ede9fe; }
   #container3D { width: 100%; height: 100%; }
 
   .viewport-overlay {
-    position: absolute; top: 12px; left: 12px;
-    font-family: 'Share Tech Mono', monospace; font-size: 10px;
-    color: var(--text-dim); pointer-events: none; line-height: 1.8;
-    background: rgba(255,255,255,0.7); padding: 6px 10px; border-radius: 6px;
+    position: absolute; top: 10px; left: 10px;
+    font-family: 'Share Tech Mono', monospace; font-size: 9px;
+    color: var(--text-dim); pointer-events: none; line-height: 1.9;
+    background: rgba(255,255,255,0.82); padding: 6px 10px; border-radius: 5px;
     border: 1px solid var(--border);
   }
   .viewport-mode {
-    position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
-    font-family: 'Share Tech Mono', monospace; font-size: 11px;
+    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+    font-family: 'Share Tech Mono', monospace; font-size: 10px;
     color: var(--accent); letter-spacing: 2px; pointer-events: none;
-    background: rgba(255,255,255,0.85); padding: 4px 12px; border-radius: 20px;
+    background: rgba(255,255,255,0.88); padding: 3px 10px; border-radius: 20px;
     border: 1px solid rgba(124,58,237,0.3); white-space: nowrap;
   }
 
-  /* ── RESULTADOS ── */
+  /* IEEE badge en viewport */
+  .viewport-ieee {
+    position: absolute; top: 10px; right: 10px;
+    font-family: 'Share Tech Mono', monospace; font-size: 9px;
+    color: var(--ieee); background: rgba(29,78,216,0.08);
+    border: 1px solid rgba(29,78,216,0.2);
+    padding: 4px 8px; border-radius: 4px; pointer-events: none;
+    line-height: 1.7;
+  }
+
   .results-card {
     background: var(--bg); border: 1px solid var(--border);
-    border-radius: 8px; padding: 12px;
+    border-radius: 7px; padding: 10px;
   }
   .results-card .card-title {
-    font-size: 10px; letter-spacing: 2px; color: var(--text-dim);
-    font-family: 'Share Tech Mono', monospace; margin-bottom: 10px;
+    font-size: 9px; letter-spacing: 2px; color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace; margin-bottom: 8px;
   }
   .stat-row {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+    padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 12px;
   }
   .stat-row:last-child { border-bottom: none; }
-  .stat-label { color: var(--text-dim); font-size: 12px; }
+  .stat-label { color: var(--text-dim); font-size: 11px; }
   .stat-val { color: var(--accent); font-family: 'Share Tech Mono', monospace; font-weight: bold; }
   .stat-val.warn { color: #dc2626; }
   .stat-val.ok   { color: #059669; }
 
-  /* ── LEYENDA ── */
-  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-dim); }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-dim); }
   .legend-dot   { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
-  /* ── TABS ── */
   .tab-bar { display: flex; gap: 2px; margin-bottom: 4px; }
   .tab {
-    flex: 1; padding: 6px; font-size: 11px; text-align: center; cursor: pointer;
+    flex: 1; padding: 5px; font-size: 10px; text-align: center; cursor: pointer;
     background: var(--bg); border: 1px solid var(--border); border-radius: 3px;
     color: var(--text-dim); font-family: 'Share Tech Mono', monospace; transition: all 0.2s;
   }
   .tab.active { background: rgba(124,58,237,0.1); border-color: var(--accent); color: var(--accent); }
 
-  #canvas2D {
-    width: 100%; aspect-ratio: 1;
-    background: #f5f3ff; border-radius: 4px; border: 1px solid var(--border);
-  }
+  #canvas2D { width: 100%; aspect-ratio: 1; background: #f5f3ff; border-radius: 4px; border: 1px solid var(--border); }
 
-  /* ── SEPARADOR ── */
   .sep { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); flex-shrink: 0; }
 
-  /* ── ALERTA ── */
   .alert-box {
     background: rgba(220,38,38,0.07); border: 1px solid rgba(220,38,38,0.35);
-    border-radius: 4px; padding: 10px 12px; font-size: 12px; color: #dc2626; display: none;
+    border-radius: 4px; padding: 8px 10px; font-size: 11px; color: #dc2626; display: none;
   }
   .alert-box.show { display: block; }
 
-  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar { width: 3px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
-  <div class="header-logo">SPAT <span>v5.0</span> — ESFERA RODANTE</div>
+  <div class="header-logo">SPAT <span>v6.0</span></div>
+  <div class="header-badge">IEEE STD 998-2012 · MÉTODO ELECTROGEOMÉTRICO</div>
   <div class="header-status">
     <div class="dot"></div>
     <span>SISTEMA ACTIVO</span>
   </div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
   <!-- PANEL IZQUIERDO -->
   <div class="panel">
-    <div class="panel-title">⚡ Parámetros de Entrada</div>
+    <div class="panel-title">⚡ Parámetros de Subestación</div>
 
     <div class="field-group">
       <div class="field-label">LARGO (m) <span id="lbl-L">50</span></div>
-      <input type="range"  id="s-largo"  min="10" max="150" value="50" oninput="syncVal('s-largo','n-largo','lbl-L'); autoRender()">
-      <input type="number" id="n-largo"  value="50" min="10" max="150" oninput="syncVal('n-largo','s-largo','lbl-L'); autoRender()">
+      <input type="range" id="s-largo" min="10" max="200" value="50" oninput="syncVal('s-largo','n-largo','lbl-L'); calcIEEE()">
+      <input type="number" id="n-largo" value="50" min="10" max="200" oninput="syncVal('n-largo','s-largo','lbl-L'); calcIEEE()">
     </div>
 
     <div class="field-group">
       <div class="field-label">ANCHO (m) <span id="lbl-A">30</span></div>
-      <input type="range"  id="s-ancho"  min="10" max="100" value="30" oninput="syncVal('s-ancho','n-ancho','lbl-A'); autoRender()">
-      <input type="number" id="n-ancho"  value="30" min="10" max="100" oninput="syncVal('n-ancho','s-ancho','lbl-A'); autoRender()">
+      <input type="range" id="s-ancho" min="10" max="150" value="30" oninput="syncVal('s-ancho','n-ancho','lbl-A'); calcIEEE()">
+      <input type="number" id="n-ancho" value="30" min="10" max="150" oninput="syncVal('n-ancho','s-ancho','lbl-A'); calcIEEE()">
     </div>
 
     <div class="field-group">
       <div class="field-label">ALTURA EQUIPO CRÍTICO (m) <span id="lbl-He">6</span></div>
-      <input type="range"  id="s-equipo" min="1" max="30" value="6" oninput="syncVal('s-equipo','n-equipo','lbl-He'); autoRender()">
-      <input type="number" id="n-equipo" value="6" min="1" max="30" oninput="syncVal('n-equipo','s-equipo','lbl-He'); autoRender()">
-    </div>
-
-    <div class="sep"></div>
-    <div class="panel-title">🛡 Esfera Rodante</div>
-
-    <div class="field-group">
-      <div class="field-label">RADIO ESFERA R (m) <span id="lbl-R">30</span></div>
-      <input type="range"  id="s-radio"  min="10" max="60" value="30" oninput="syncVal('s-radio','n-radio','lbl-R'); autoRender()">
-      <input type="number" id="n-radio"  value="30" min="10" max="60" oninput="syncVal('n-radio','s-radio','lbl-R'); autoRender()">
+      <input type="range" id="s-equipo" min="1" max="30" value="6" oninput="syncVal('s-equipo','n-equipo','lbl-He'); calcIEEE()">
+      <input type="number" id="n-equipo" value="6" min="1" max="30" oninput="syncVal('n-equipo','s-equipo','lbl-He'); calcIEEE()">
     </div>
 
     <div class="field-group">
       <div class="field-label">ALTURA PUNTA CAPTADORA (m) <span id="lbl-Hp">8</span></div>
-      <input type="range"  id="s-punta"  min="1" max="25" value="8" oninput="syncVal('s-punta','n-punta','lbl-Hp'); autoRender()">
-      <input type="number" id="n-punta"  value="8" min="1" max="25" oninput="syncVal('n-punta','s-punta','lbl-Hp'); autoRender()">
+      <input type="range" id="s-punta" min="1" max="25" value="8" oninput="syncVal('s-punta','n-punta','lbl-Hp'); calcIEEE()">
+      <input type="number" id="n-punta" value="8" min="1" max="25" oninput="syncVal('n-punta','s-punta','lbl-Hp'); calcIEEE()">
     </div>
 
     <div class="sep"></div>
-    <div class="panel-title">📐 Modo de Posición</div>
 
-    <div class="mode-selector">
-      <button class="mode-btn active" id="mode-auto"  onclick="setMode('auto')">AUTO</button>
-      <button class="mode-btn"        id="mode-perim" onclick="setMode('perim')">PERÍMETRO</button>
-      <button class="mode-btn"        id="mode-grid"  onclick="setMode('grid')">GRILLA</button>
+    <!-- ═══ SECCIÓN IEEE 998 ═══ -->
+    <div class="panel-title">🔬 Cálculo IEEE 998-2012</div>
+
+    <div class="ieee-section">
+      <div class="ieee-title">DATOS DE ENTRADA NORMA</div>
+
+      <div class="field-group">
+        <div class="field-label">BIL — Nivel Básico Aislamiento (kV) <span id="lbl-BIL">650</span></div>
+        <input type="range" id="s-bil" min="95" max="1800" value="650" step="5" oninput="syncVal('s-bil','n-bil','lbl-BIL'); calcIEEE()">
+        <input type="number" id="n-bil" value="650" min="95" max="1800" oninput="syncVal('n-bil','s-bil','lbl-BIL'); calcIEEE()">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">h — Altura conductor/barra (m) <span id="lbl-h">8</span></div>
+        <input type="range" id="s-h" min="1" max="30" value="8" oninput="syncVal('s-h','n-h','lbl-h'); calcIEEE()">
+        <input type="number" id="n-h" value="8" min="1" max="30" oninput="syncVal('n-h','s-h','lbl-h'); calcIEEE()">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">r — Radio conductor metálico (m) <span id="lbl-r">0.0148</span></div>
+        <input type="number" id="n-r" value="0.0148" min="0.001" max="0.1" step="0.001" oninput="document.getElementById('lbl-r').textContent=this.value; calcIEEE()">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">k — Factor tipo (1.0=cable, 1.2=mástil)</div>
+        <div class="mode-selector">
+          <button class="mode-btn" id="k-cable" onclick="setK(1.0)">CABLE k=1.0</button>
+          <button class="mode-btn active" id="k-mastil" onclick="setK(1.2)">MÁSTIL k=1.2</button>
+        </div>
+      </div>
     </div>
 
-    <div class="alert-box" id="alert-box">⚠ El radio de la esfera debe ser mayor que la altura total (pórtico + punta).</div>
+    <!-- Cadena de cálculo -->
+    <div class="calc-chain">
+      <div class="ieee-title" style="margin-bottom:4px">CADENA DE CÁLCULO</div>
+      <div class="calc-row">
+        <span class="calc-label">Rc (corona)</span>
+        <span><span class="calc-val" id="cc-Rc">—</span> <span class="calc-formula">m</span></span>
+      </div>
+      <div class="calc-row">
+        <span class="calc-label">Zs (impedancia)</span>
+        <span><span class="calc-val" id="cc-Zs">—</span> <span class="calc-formula">Ω</span></span>
+      </div>
+      <div class="calc-row">
+        <span class="calc-label">Is = 2.2·BIL/Zs</span>
+        <span><span class="calc-val" id="cc-Is">—</span> <span class="calc-formula">kA</span></span>
+      </div>
+      <div class="calc-row">
+        <span class="calc-label">S = 8·k·Is^0.65</span>
+        <span><span class="calc-val" id="cc-S">—</span> <span class="calc-formula">m</span></span>
+      </div>
+    </div>
 
-    <button class="btn btn-primary"   onclick="renderizar()">▶ CALCULAR Y RENDERIZAR</button>
+    <!-- Radio resultante -->
+    <div class="radio-computed">
+      <div>
+        <div class="label">RADIO DE ESFERA (IEEE 998)</div>
+        <div style="font-size:9px;color:rgba(29,78,216,0.6);font-family:'Share Tech Mono',monospace;margin-top:2px" id="np-label">NP —</div>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:4px">
+        <div class="value" id="radio-display">—</div>
+        <div class="unit">m</div>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- Modo posición -->
+    <div class="panel-title">📐 Modo de Posición Punta</div>
+    <div class="mode-selector">
+      <button class="mode-btn active" id="mode-auto" onclick="setMode('auto')">AUTO</button>
+      <button class="mode-btn" id="mode-perim" onclick="setMode('perim')">PERÍMETRO</button>
+      <button class="mode-btn" id="mode-grid" onclick="setMode('grid')">GRILLA</button>
+    </div>
+
+    <!-- Toggles de visualización -->
+    <div class="panel-title">👁 Visualización 3D</div>
+    <div class="toggle-row">
+      <span>Mostrar esferas rodantes</span>
+      <label class="toggle"><input type="checkbox" id="toggle-spheres" checked onchange="autoRender()"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <span>Mostrar domos de cobertura</span>
+      <label class="toggle"><input type="checkbox" id="toggle-domes" checked onchange="autoRender()"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <span>Opacidad esfera</span>
+      <input type="range" id="sphere-opacity" min="5" max="40" value="18" style="width:80px" oninput="autoRender()">
+    </div>
+
+    <div class="alert-box" id="alert-box">⚠ La altura total (pórtico+punta) supera el radio. Verificar parámetros.</div>
+
+    <button class="btn btn-primary" onclick="renderizar()">▶ CALCULAR Y RENDERIZAR</button>
     <button class="btn btn-secondary" onclick="resetCamara()">↺ RESETEAR CÁMARA</button>
 
     <div class="sep"></div>
     <div class="panel-title">LEYENDA</div>
-    <div style="display:flex;flex-direction:column;gap:8px">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="legend-item"><div class="legend-dot" style="background:#7c3aed;opacity:0.6;border:2px solid #7c3aed"></div> Esfera Rodante (imagin.)</div>
       <div class="legend-item"><div class="legend-dot" style="background:#7c3aed;box-shadow:0 0 6px rgba(124,58,237,0.4)"></div> Domo de Protección</div>
       <div class="legend-item"><div class="legend-dot" style="background:#dc2626"></div> Zona No Protegida</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#a855f7;box-shadow:0 0 6px rgba(168,85,247,0.4)"></div> Punta Captadora</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#a855f7"></div> Punta Captadora</div>
       <div class="legend-item"><div class="legend-dot" style="background:#6366f1"></div> Estructura Civil</div>
       <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div> Transformador</div>
     </div>
@@ -296,13 +466,21 @@
   <!-- VIEWPORT 3D -->
   <div id="viewport">
     <div id="container3D"></div>
-    <div class="viewport-overlay" id="vp-info">MODO: —<br>PUNTAS: —<br>COB: —</div>
+    <div class="viewport-overlay" id="vp-info">MODO: —<br>PUNTAS: —<br>COB: —<br>R esfera: —</div>
     <div class="viewport-mode">ÓRBITA LIBRE · SCROLL ZOOM · DOBLE-CLIC RESET</div>
+    <div class="viewport-ieee" id="vp-ieee">—</div>
   </div>
 
   <!-- PANEL DERECHO -->
   <div class="panel">
     <div class="panel-title">📊 Resultados</div>
+
+    <div class="results-card">
+      <div class="card-title">PARÁMETROS IEEE 998</div>
+      <div class="stat-row"><span class="stat-label">Zs (impedancia corona)</span> <span class="stat-val" id="r-Zs">—</span></div>
+      <div class="stat-row"><span class="stat-label">Is (corriente permis.)</span>  <span class="stat-val" id="r-Is">—</span></div>
+      <div class="stat-row"><span class="stat-label">S = Radio esfera (k·mástil)</span><span class="stat-val" id="r-S">—</span></div>
+    </div>
 
     <div class="results-card">
       <div class="card-title">GEOMETRÍA DE PROTECCIÓN</div>
@@ -313,27 +491,33 @@
     </div>
 
     <div class="results-card">
-      <div class="card-title">NIVEL DE PROTECCIÓN (NP)</div>
-      <div class="stat-row"><span class="stat-label">R = 20m → NP I</span>   <span class="stat-val" id="np-I">●</span></div>
-      <div class="stat-row"><span class="stat-label">R = 30m → NP II</span>  <span class="stat-val" id="np-II">●</span></div>
-      <div class="stat-row"><span class="stat-label">R = 45m → NP III</span> <span class="stat-val" id="np-III">●</span></div>
-      <div class="stat-row"><span class="stat-label">R = 60m → NP IV</span>  <span class="stat-val" id="np-IV">●</span></div>
+      <div class="card-title">NIVEL DE PROTECCIÓN (IEEE 998 Tab.1)</div>
+      <div class="stat-row"><span class="stat-label">NP I  · R = 20 m</span>  <span class="stat-val" id="np-I">●</span></div>
+      <div class="stat-row"><span class="stat-label">NP II · R = 30 m</span>  <span class="stat-val" id="np-II">●</span></div>
+      <div class="stat-row"><span class="stat-label">NP III· R = 45 m</span>  <span class="stat-val" id="np-III">●</span></div>
+      <div class="stat-row"><span class="stat-label">NP IV · R = 60 m</span>  <span class="stat-val" id="np-IV">●</span></div>
+    </div>
+
+    <div class="results-card">
+      <div class="card-title">VERIFICACIÓN PROTECCIÓN</div>
+      <div class="stat-row"><span class="stat-label">r_suelo ≥ diagonal/2</span> <span class="stat-val" id="r-check-lat">—</span></div>
+      <div class="stat-row"><span class="stat-label">Eq. protegido (altura)</span> <span class="stat-val" id="r-check-eq">—</span></div>
     </div>
 
     <div class="sep"></div>
     <div class="panel-title">🗺 PLANTA 2D</div>
     <div class="tab-bar">
-      <div class="tab active" id="tab-planta">PLANTA</div>
-      <div class="tab" id="tab-corte" onclick="toggleCorte()">CORTE</div>
+      <div class="tab active" id="tab-planta" onclick="setTab('planta')">PLANTA</div>
+      <div class="tab" id="tab-corte" onclick="setTab('corte')">CORTE</div>
     </div>
     <canvas id="canvas2D"></canvas>
 
     <div class="sep"></div>
     <div class="results-card">
       <div class="card-title">NORMA APLICABLE</div>
-      <div class="stat-row"><span class="stat-label">IEC 62305-3</span> <span class="stat-val ok">✓</span></div>
-      <div class="stat-row"><span class="stat-label">NFC 17-102</span>  <span class="stat-val ok">✓</span></div>
-      <div class="stat-row"><span class="stat-label">IEEE Std 998</span> <span class="stat-val ok">✓</span></div>
+      <div class="stat-row"><span class="stat-label">IEEE Std 998-2012</span>  <span class="stat-val ok">✓ PRINCIPAL</span></div>
+      <div class="stat-row"><span class="stat-label">IEC 62305-3</span>        <span class="stat-val ok">✓</span></div>
+      <div class="stat-row"><span class="stat-label">NFC 17-102</span>         <span class="stat-val ok">✓</span></div>
     </div>
   </div>
 
@@ -347,48 +531,139 @@
 
 <script>
 /* ══════════════════════════════════════════════════════
-   SPAT v5.0 — LÓGICA PRINCIPAL (paleta morada)
+   SPAT v6.0 — IEEE 998-2012 · Esfera Rodante con esferas reales
 ══════════════════════════════════════════════════════ */
+
 let scene, camera, renderer, controls;
 let substationGrp, protectionGrp;
 let currentMode = 'auto';
-let renderTimer  = null;
-let initialized  = false;
+let currentK    = 1.2;
+let renderTimer = null;
+let initialized = false;
+let currentTab  = 'planta';
 
-/* ── Colores 3D acordes a la paleta ── */
 const C = {
-  dome:      0x7c3aed,  // morado principal → domos
-  domeWF:    0x9333ea,  // morado medio    → wireframe
-  mast:      0xa855f7,  // lila           → mástiles
-  ring:      0x7c3aed,  // morado         → círculo suelo
-  steel:     0x6366f1,  // índigo         → columnas
-  beam:      0x818cf8,  // índigo claro   → vigas
-  concrete:  0xddd6fe,  // lavanda        → piso/muros
-  trafo:     0x8b5cf6,  // violeta        → transformador
-  radiator:  0xa78bfa,  // lavanda media  → radiadores
-  insulator: 0xe9d5ff,  // lavanda pálido → aisladores
-  copper:    0xc4b5fd,  // violeta claro  → barras
-  ground:    0xede9fe,  // fondo 3D suelo
-  sky:       0xf5f3ff,  // fondo 3D cielo
+  dome:      0x7c3aed,
+  domeWF:    0x9333ea,
+  sphere:    0x4f46e5,  // azul índigo para esfera rodante
+  sphereWF:  0x818cf8,
+  mast:      0xa855f7,
+  ring:      0x7c3aed,
+  steel:     0x6366f1,
+  beam:      0x818cf8,
+  concrete:  0xddd6fe,
+  trafo:     0x8b5cf6,
+  radiator:  0xa78bfa,
+  insulator: 0xe9d5ff,
+  copper:    0xc4b5fd,
+  ground:    0xede9fe,
+  sky:       0xf5f3ff,
   grid1:     0xc4b5fd,
   grid2:     0xddd6fe,
-  wire:      0xa855f7,  // cables bajada
-  perimeter: 0xdc2626,  // perímetro tierra
+  wire:      0xa855f7,
 };
 
-/* ── Sync slider ↔ number ── */
+/* ══════════════════════════════════════════
+   IEEE 998-2012 — CÁLCULO DEL RADIO
+   Ec.1: Zs = 60·√[ln(2h/Rc)·ln(2h/r)]
+   Ec.5: Is = 2.2·BIL / Zs
+   Ec.6: S  = 8·k·Is^0.65
+══════════════════════════════════════════ */
+function resolverRcNewton(BIL, h, E0=1500) {
+  // Ec.2: Rc·ln(2h/Rc) = BIL/E0  → resolver por Newton-Raphson
+  const target = BIL / E0;
+  let Rc = target * 0.5; // semilla inicial
+  for (let i = 0; i < 50; i++) {
+    const f  = Rc * Math.log(2 * h / Rc) - target;
+    const fp = Math.log(2 * h / Rc) - 1;
+    const dR = f / fp;
+    Rc -= dR;
+    if (Math.abs(dR) < 1e-9) break;
+    if (Rc <= 0) { Rc = 0.001; }
+  }
+  return Math.max(0.001, Rc);
+}
+
+function calcIEEE998() {
+  const BIL = parseFloat(document.getElementById('n-bil').value) || 650;
+  const h   = parseFloat(document.getElementById('n-h').value)   || 8;
+  const r   = parseFloat(document.getElementById('n-r').value)   || 0.0148;
+  const k   = currentK;
+  const E0  = 1500; // kV/m — valor estándar IEEE 998
+
+  // Paso 1 — Radio de corona Rc (Ec.2)
+  const Rc = resolverRcNewton(BIL, h, E0);
+
+  // Paso 2 — Impedancia de sobretensión bajo corona (Ec.1 / Anexo C)
+  const Zs = 60 * Math.sqrt(Math.log(2 * h / Rc) * Math.log(2 * h / r));
+
+  // Paso 3 — Corriente de choque permitida (Ec.5)
+  const Is = (2.2 * BIL) / Zs;
+
+  // Paso 4 — Radio de la esfera / distancia de choque (Ec.6)
+  const S = 8 * k * Math.pow(Is, 0.65);
+
+  return { Rc, Zs, Is, S };
+}
+
+function calcIEEE() {
+  const { Rc, Zs, Is, S } = calcIEEE998();
+
+  // Actualizar cadena de cálculo
+  document.getElementById('cc-Rc').textContent = Rc.toFixed(4);
+  document.getElementById('cc-Zs').textContent = Zs.toFixed(1);
+  document.getElementById('cc-Is').textContent = Is.toFixed(3);
+  document.getElementById('cc-S').textContent  = S.toFixed(2);
+
+  // Mostrar radio resultante
+  document.getElementById('radio-display').textContent = S.toFixed(1);
+
+  // Nivel de protección
+  let np = '';
+  if      (S <= 20) np = 'NP I';
+  else if (S <= 30) np = 'NP II';
+  else if (S <= 45) np = 'NP III';
+  else              np = 'NP IV';
+  document.getElementById('np-label').textContent = np;
+
+  if (initialized) autoRender();
+  return { Rc, Zs, Is, S };
+}
+
+function setK(val) {
+  currentK = val;
+  document.getElementById('k-cable').classList.toggle('active', val === 1.0);
+  document.getElementById('k-mastil').classList.toggle('active', val === 1.2);
+  calcIEEE();
+}
+
 function syncVal(fromId, toId, lblId) {
   const v = document.getElementById(fromId).value;
-  document.getElementById(toId).value   = v;
-  document.getElementById(lblId).textContent = v;
+  document.getElementById(toId).value = v;
+  if (lblId) document.getElementById(lblId).textContent = v;
 }
 
 function setMode(m) {
   currentMode = m;
   ['auto','perim','grid'].forEach(x =>
-    document.getElementById('mode-'+x).classList.toggle('active', x===m)
+    document.getElementById('mode-'+x).classList.toggle('active', x === m)
   );
   autoRender();
+}
+
+function setTab(t) {
+  currentTab = t;
+  document.getElementById('tab-planta').classList.toggle('active', t === 'planta');
+  document.getElementById('tab-corte').classList.toggle('active', t === 'corte');
+  const { S } = calcIEEE998();
+  const L = parseFloat(document.getElementById('n-largo').value) || 50;
+  const A = parseFloat(document.getElementById('n-ancho').value) || 30;
+  const H_col = 8;
+  const H_punta = parseFloat(document.getElementById('n-punta').value) || 8;
+  const H_total = H_col + H_punta;
+  const r_suelo = H_total < S ? Math.sqrt(S*S - (S-H_total)*(S-H_total)) : S;
+  const puntas = calcularPosicionesPuntas(L, A, H_punta, S, currentMode).puntas;
+  actualizarVista2D(L, A, r_suelo, puntas, S, H_total);
 }
 
 function autoRender() {
@@ -402,46 +677,44 @@ function autoRender() {
 ══════════════════════════════════════════ */
 function init3D() {
   const container = document.getElementById('container3D');
-
   scene = new THREE.Scene();
   scene.background = new THREE.Color(C.sky);
-  scene.fog = new THREE.FogExp2(C.sky, 0.006);
+  scene.fog = new THREE.FogExp2(C.sky, 0.005);
 
   camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 2000);
-  camera.position.set(80, 70, 80);
+  camera.position.set(90, 75, 90);
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(container.clientWidth, container.clientHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   container.appendChild(renderer.domElement);
 
   controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
   controls.minDistance   = 10;
-  controls.maxDistance   = 500;
+  controls.maxDistance   = 600;
   controls.target.set(0, 10, 0);
 
   renderer.domElement.addEventListener('dblclick', resetCamara);
 
-  /* Iluminación suave para tema claro */
   scene.add(new THREE.AmbientLight(0xffffff, 0.9));
   const sun = new THREE.DirectionalLight(0xffffff, 1.2);
   sun.position.set(60, 120, 40);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
-  Object.assign(sun.shadow.camera, { near:0.1, far:500, left:-120, right:120, top:120, bottom:-120 });
+  Object.assign(sun.shadow.camera, { near:0.1, far:600, left:-150, right:150, top:150, bottom:-150 });
   scene.add(sun);
   const fill = new THREE.DirectionalLight(0xd8b4fe, 0.4);
   fill.position.set(-60, 40, -60);
   scene.add(fill);
 
-  scene.add(new THREE.GridHelper(400, 40, C.grid1, C.grid2));
+  scene.add(new THREE.GridHelper(500, 50, C.grid1, C.grid2));
 
   const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(400, 400),
+    new THREE.PlaneGeometry(500, 500),
     new THREE.MeshStandardMaterial({ color: C.ground, roughness: 1 })
   );
   ground.rotation.x = -Math.PI / 2;
@@ -469,7 +742,7 @@ function init3D() {
 }
 
 function resetCamara() {
-  camera.position.set(80, 70, 80);
+  camera.position.set(90, 75, 90);
   controls.target.set(0, 10, 0);
 }
 
@@ -484,13 +757,6 @@ function calcularPosicionesPuntas(L, A, H_punta, R, modo) {
     ? Math.sqrt(R*R - (R - H_total)*(R - H_total))
     : R;
 
-  const delta = H_equipo - H_col;
-  let r_equipo = delta >= 0 && delta <= H_punta
-    ? Math.sqrt(R*R - (R - H_punta + delta)*(R - H_punta + delta))
-    : delta < 0
-      ? Math.sqrt(R*R - (R - H_equipo)*(R - H_equipo))
-      : 0;
-
   const puntas = [];
 
   if (modo === 'grid') {
@@ -501,9 +767,10 @@ function calcularPosicionesPuntas(L, A, H_punta, R, modo) {
       for (let j = 0; j < nZ; j++)
         puntas.push({ x: -L/2 + (i/(nX-1))*L, z: -A/2 + (j/(nZ-1))*A });
   } else {
-    puntas.push({ x:-L/2, z:-A/2 }, { x:L/2, z:-A/2 },
-                 { x:-L/2, z: A/2 }, { x:L/2, z: A/2 });
-
+    puntas.push(
+      { x:-L/2, z:-A/2 }, { x:L/2, z:-A/2 },
+      { x:-L/2, z: A/2 }, { x:L/2, z: A/2 }
+    );
     if (modo === 'auto') {
       const dMax = 2 * r_suelo * 0.85;
       const nL = Math.ceil(L / dMax) - 1;
@@ -530,19 +797,21 @@ function calcularPosicionesPuntas(L, A, H_punta, R, modo) {
       }
     }
   }
-  return { puntas, r_suelo, r_equipo };
+  return { puntas, r_suelo };
 }
 
 /* ══════════════════════════════════════════
    RENDERIZAR
 ══════════════════════════════════════════ */
 function renderizar() {
-  const L       = parseFloat(document.getElementById('n-largo').value)  || 50;
-  const A       = parseFloat(document.getElementById('n-ancho').value)  || 30;
-  const H_punta = parseFloat(document.getElementById('n-punta').value)  || 8;
-  const H_col   = 8;
-  const R       = parseFloat(document.getElementById('n-radio').value)  || 30;
-  const H_equipo= parseFloat(document.getElementById('n-equipo').value) || 6;
+  const L        = parseFloat(document.getElementById('n-largo').value)  || 50;
+  const A        = parseFloat(document.getElementById('n-ancho').value)  || 30;
+  const H_punta  = parseFloat(document.getElementById('n-punta').value)  || 8;
+  const H_col    = 8;
+  const H_equipo = parseFloat(document.getElementById('n-equipo').value) || 6;
+
+  // ══ Radio IEEE 998
+  const { Rc, Zs, Is, S: R } = calcIEEE998();
 
   document.getElementById('alert-box').classList.toggle('show', H_punta + H_col >= R * 1.8);
 
@@ -552,11 +821,16 @@ function renderizar() {
   const { puntas, r_suelo } = calcularPosicionesPuntas(L, A, H_punta, R, currentMode);
 
   construirSubestacion(L, A, H_col, H_equipo);
-  puntas.forEach(p => construirModuloProteccion(p.x, p.z, H_col, H_punta, R));
 
-  /* Cables de bajada */
+  const showSpheres = document.getElementById('toggle-spheres').checked;
+  const showDomes   = document.getElementById('toggle-domes').checked;
+  const sphereOpac  = parseInt(document.getElementById('sphere-opacity').value) / 100;
+
+  puntas.forEach(p => construirModuloProteccion(p.x, p.z, H_col, H_punta, R, showSpheres, showDomes, sphereOpac));
+
+  // Cables de bajada
   puntas.forEach(p => {
-    const mat = new THREE.LineBasicMaterial({ color: C.wire, transparent: true, opacity: 0.5 });
+    const mat = new THREE.LineBasicMaterial({ color: C.wire, transparent: true, opacity: 0.4 });
     const geo = new THREE.BufferGeometry().setFromPoints([
       new THREE.Vector3(p.x, 0, p.z),
       new THREE.Vector3(p.x, H_col + H_punta, p.z)
@@ -565,11 +839,17 @@ function renderizar() {
   });
 
   const cobertura = estimarCobertura(L, A, puntas, r_suelo);
-  actualizarResultados(R, r_suelo, puntas.length, H_col + H_punta, cobertura);
-  actualizarVista2D(L, A, r_suelo, puntas);
+  actualizarResultados(R, r_suelo, puntas.length, H_col + H_punta, cobertura, Zs, Is, L, A);
+  actualizarVista2D(L, A, r_suelo, puntas, R, H_col + H_punta);
   actualizarNiveles(R);
+
+  // Overlay viewport
   document.getElementById('vp-info').innerHTML =
-    `MODO: ${currentMode.toUpperCase()}<br>PUNTAS: ${puntas.length}<br>COB: ${cobertura}%`;
+    `MODO: ${currentMode.toUpperCase()}<br>PUNTAS: ${puntas.length}<br>COB: ${cobertura}%<br>R: ${R.toFixed(1)} m`;
+
+  // Badge IEEE
+  document.getElementById('vp-ieee').innerHTML =
+    `IEEE 998-2012<br>Zs = ${Zs.toFixed(0)} Ω<br>Is = ${Is.toFixed(3)} kA<br>S = ${R.toFixed(2)} m`;
 }
 
 /* ══════════════════════════════════════════
@@ -584,109 +864,169 @@ function construirSubestacion(L, A, H_col, H_equipo) {
     g.add(m); return m;
   };
 
+  // Piso
   mk(new THREE.BoxGeometry(L, 0.2, A), C.concrete, 0, 0.1, 0, 0.9);
 
-  [[L,0.6,0.3,0,0.3,-A/2],[L,0.6,0.3,0,0.3,A/2],
-   [0.3,0.6,A,-L/2,0.3,0],[0.3,0.6,A,L/2,0.3,0]
-  ].forEach(([w,h,d,x,y,z]) => mk(new THREE.BoxGeometry(w,h,d), C.concrete, x,y,z, 0.9));
+  // Muros perimetrales
+  [
+    [L, 0.6, 0.3, 0, 0.3, -A/2],
+    [L, 0.6, 0.3, 0, 0.3,  A/2],
+    [0.3, 0.6, A, -L/2, 0.3, 0],
+    [0.3, 0.6, A,  L/2, 0.3, 0]
+  ].forEach(([w, h, d, x, y, z]) => mk(new THREE.BoxGeometry(w, h, d), C.concrete, x, y, z));
 
-  const posCol = [];
-  for (const ix of [-L/2, L/2])
-    for (let iz = -A/2; iz <= A/2+0.01; iz += Math.min(A,15)) posCol.push({x:ix,z:iz});
-  for (const iz of [-A/2, A/2])
-    for (let ix = -L/2+15; ix < L/2; ix += Math.min(L,15)) posCol.push({x:ix,z:iz});
-  posCol.forEach(p => mk(new THREE.BoxGeometry(0.5,H_col,0.5), C.steel, p.x, H_col/2, p.z, 0.4, 0.6));
-
-  [[-A/2],[A/2]].forEach(([z]) => mk(new THREE.BoxGeometry(L,0.3,0.3), C.beam, 0, H_col, z, 0.3, 0.7));
-  [[-L/2],[L/2]].forEach(([x]) => mk(new THREE.BoxGeometry(0.3,0.3,A), C.beam, x, H_col, 0, 0.3, 0.7));
-
-  mk(new THREE.BoxGeometry(L*0.25, H_equipo, A*0.35), C.trafo, 0, H_equipo/2, 0, 0.3, 0.5);
-  for (let i=-3; i<=3; i++)
-    mk(new THREE.BoxGeometry(0.15, H_equipo*0.8, A*0.32), C.radiator, i*0.6 - L*0.12, H_equipo/2, 0, 0.4, 0.6);
-
-  const aisPos = [
-    {x:-L*0.3,z:-A*0.15},{x:-L*0.1,z:-A*0.15},{x:L*0.1,z:-A*0.15},
-    {x:-L*0.3,z: A*0.15},{x:-L*0.1,z: A*0.15},{x:L*0.1,z: A*0.15},
+  // Pórticos (columnas en esquinas y lados)
+  const postes = [
+    [-L/2, -A/2], [L/2, -A/2], [-L/2, A/2], [L/2, A/2],
+    [0, -A/2], [0, A/2], [-L/2, 0], [L/2, 0]
   ];
-  aisPos.forEach(p => {
-    for (let seg=0; seg<4; seg++) {
-      mk(new THREE.CylinderGeometry(0.15,0.15,0.4,8), C.insulator, p.x, 1+seg*0.6, p.z, 0.6);
-      mk(new THREE.CylinderGeometry(0.35,0.35,0.08,12), C.insulator, p.x, 1+seg*0.6+0.24, p.z, 0.6);
-    }
-    mk(new THREE.CylinderGeometry(0.04,0.04,2,6), C.copper, p.x, 4, p.z, 0.3, 0.9);
+  postes.forEach(([px, pz]) => {
+    mk(new THREE.BoxGeometry(0.25, H_col, 0.25), C.steel, px, H_col/2, pz, 0.5, 0.8);
   });
 
-  const pts = [[-L/2,-A/2],[L/2,-A/2],[L/2,A/2],[-L/2,A/2],[-L/2,-A/2]]
-    .map(([x,z]) => new THREE.Vector3(x,0.3,z));
-  g.add(new THREE.Line(
-    new THREE.BufferGeometry().setFromPoints(pts),
-    new THREE.LineBasicMaterial({color: C.perimeter, transparent:true, opacity:0.7})
-  ));
+  // Vigas horizontales
+  mk(new THREE.BoxGeometry(L, 0.2, 0.2), C.beam, 0, H_col, -A/2, 0.4, 0.7);
+  mk(new THREE.BoxGeometry(L, 0.2, 0.2), C.beam, 0, H_col,  A/2, 0.4, 0.7);
+  mk(new THREE.BoxGeometry(0.2, 0.2, A), C.beam, -L/2, H_col, 0, 0.4, 0.7);
+  mk(new THREE.BoxGeometry(0.2, 0.2, A), C.beam,  L/2, H_col, 0, 0.4, 0.7);
+
+  // Transformador
+  const tW = L*0.22, tD = A*0.3, tH = H_equipo;
+  mk(new THREE.BoxGeometry(tW, tH, tD), C.trafo, 0, tH/2, 0, 0.5, 0.5);
+
+  // Radiadores del trafo
+  for (let i = -2; i <= 2; i++) {
+    mk(new THREE.BoxGeometry(0.12, tH*0.7, 0.8), C.radiator, tW/2+0.06, tH*0.5, i*0.5, 0.3, 0.6);
+    mk(new THREE.BoxGeometry(0.12, tH*0.7, 0.8), C.radiator, -tW/2-0.06, tH*0.5, i*0.5, 0.3, 0.6);
+  }
+
+  // Aisladores del trafo
+  for (let i = -1; i <= 1; i++) {
+    mk(new THREE.CylinderGeometry(0.06, 0.08, 1.2, 8), C.insulator, i*0.6, tH+0.6, 0, 0.8);
+  }
+
+  // Barras colectoras
+  mk(new THREE.BoxGeometry(L*0.5, 0.06, 0.06), C.copper, 0, H_equipo+0.1, -A*0.15, 0.3, 0.9);
+  mk(new THREE.BoxGeometry(L*0.5, 0.06, 0.06), C.copper, 0, H_equipo+0.1,  A*0.15, 0.3, 0.9);
 }
 
 /* ══════════════════════════════════════════
-   MÓDULO PROTECCIÓN (punta + domo)
+   MÓDULO DE PROTECCIÓN — con esfera rodante real
 ══════════════════════════════════════════ */
-function construirModuloProteccion(x, z, H_col, H_punta, R) {
+function construirModuloProteccion(x, z, H_col, H_punta, R, showSphere, showDome, sphereOpac) {
   const g     = protectionGrp;
   const yBase = H_col;
+  const yPunta = yBase + H_punta;
 
-  /* Mástil */
+  // Mástil
   const mastMat = new THREE.MeshStandardMaterial({color:C.mast, metalness:0.9, roughness:0.1});
-  const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.08,H_punta+0.5,8), mastMat);
+  const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.09, H_punta+0.5, 8), mastMat);
   mast.position.set(x, yBase + H_punta/2 + 0.25, z);
   mast.castShadow = true;
   g.add(mast);
 
-  const punta = new THREE.Mesh(new THREE.SphereGeometry(0.18,12,12), mastMat);
-  punta.position.set(x, yBase + H_punta + 0.5, z);
+  // Punta captadora
+  const punta = new THREE.Mesh(new THREE.SphereGeometry(0.18, 12, 12), mastMat);
+  punta.position.set(x, yPunta + 0.5, z);
   g.add(punta);
 
-  const aura = new THREE.Mesh(new THREE.SphereGeometry(0.5,12,12),
-    new THREE.MeshBasicMaterial({color:C.mast, transparent:true, opacity:0.12, side:THREE.DoubleSide}));
-  aura.position.set(x, yBase + H_punta + 0.5, z);
+  // Aura de la punta
+  const aura = new THREE.Mesh(new THREE.SphereGeometry(0.5, 12, 12),
+    new THREE.MeshBasicMaterial({color:C.mast, transparent:true, opacity:0.10, side:THREE.DoubleSide}));
+  aura.position.set(x, yPunta + 0.5, z);
   g.add(aura);
 
-  /* Domo — perfil por la geometría de esfera rodante */
-  const pts = [];
-  for (let i=0; i<=32; i++) {
-    const h = (i/32) * H_punta;
-    const d = H_punta - h;
-    pts.push(new THREE.Vector2(Math.sqrt(Math.max(0, R*R - (R-d)*(R-d))), h));
+  // ══ ESFERA RODANTE IMAGINARIA (centrada sobre la punta) ══
+  // Según IEEE 998: la esfera de radio S se apoya sobre la punta captadora
+  // Su centro queda a altura yPunta + S (esfera apoyada en la punta)
+  if (showSphere) {
+    const yCentro = yPunta + 0.5 + R; // Centro de la esfera rodante
+
+    // Esfera sólida translúcida
+    const sphereGeo = new THREE.SphereGeometry(R, 48, 32);
+    const sphereMat = new THREE.MeshPhongMaterial({
+      color: C.sphere,
+      transparent: true,
+      opacity: sphereOpac,
+      side: THREE.DoubleSide,
+      shininess: 100,
+      specular: 0xc7d2fe,
+    });
+    const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+    sphere.position.set(x, yCentro, z);
+    g.add(sphere);
+
+    // Wireframe de la esfera
+    const sphereWF = new THREE.Mesh(sphereGeo,
+      new THREE.MeshBasicMaterial({
+        color: C.sphereWF, wireframe: true,
+        transparent: true, opacity: 0.06
+      })
+    );
+    sphereWF.position.set(x, yCentro, z);
+    g.add(sphereWF);
+
+    // Línea vertical del centro al punto de apoyo
+    const lineMat = new THREE.LineBasicMaterial({ color: C.sphereWF, transparent: true, opacity: 0.3 });
+    const lineGeo = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(x, yPunta + 0.5, z),
+      new THREE.Vector3(x, yCentro, z)
+    ]);
+    g.add(new THREE.Line(lineGeo, lineMat));
+
+    // Círculo ecuatorial de la esfera (referencia visual)
+    const circPts = [];
+    for (let i = 0; i <= 64; i++) {
+      const ang = (i/64)*Math.PI*2;
+      circPts.push(new THREE.Vector3(x + R*Math.cos(ang), yCentro, z + R*Math.sin(ang)));
+    }
+    const circGeo = new THREE.BufferGeometry().setFromPoints(circPts);
+    const circMat = new THREE.LineBasicMaterial({ color: C.sphere, transparent: true, opacity: 0.25 });
+    g.add(new THREE.Line(circGeo, circMat));
   }
-  const domoGeo = new THREE.LatheGeometry(pts, 48);
 
-  const domo = new THREE.Mesh(domoGeo, new THREE.MeshPhongMaterial({
-    color: C.dome, transparent:true, opacity:0.10,
-    side:THREE.DoubleSide, shininess:80, specular:0xddd6fe
-  }));
-  domo.position.set(x, yBase, z);
-  g.add(domo);
+  // ══ DOMO DE COBERTURA EN SUELO (perfil geométrico) ══
+  if (showDome) {
+    const pts = [];
+    for (let i = 0; i <= 32; i++) {
+      const h = (i/32) * H_punta;
+      const d = H_punta - h;
+      pts.push(new THREE.Vector2(Math.sqrt(Math.max(0, R*R - (R-d)*(R-d))), h));
+    }
+    const domoGeo = new THREE.LatheGeometry(pts, 48);
 
-  const domoWF = new THREE.Mesh(domoGeo, new THREE.MeshBasicMaterial({
-    color: C.domeWF, wireframe:true, transparent:true, opacity:0.07
-  }));
-  domoWF.position.set(x, yBase, z);
-  g.add(domoWF);
+    const domo = new THREE.Mesh(domoGeo, new THREE.MeshPhongMaterial({
+      color: C.dome, transparent: true, opacity: 0.08,
+      side: THREE.DoubleSide, shininess: 80, specular: 0xddd6fe
+    }));
+    domo.position.set(x, yBase, z);
+    g.add(domo);
 
-  /* Círculo en suelo */
-  const r_base = pts[0].x;
-  const ring = new THREE.Mesh(
-    new THREE.RingGeometry(r_base-0.1, r_base+0.1, 64),
-    new THREE.MeshBasicMaterial({color:C.ring, transparent:true, opacity:0.35, side:THREE.DoubleSide})
-  );
-  ring.rotation.x = -Math.PI/2;
-  ring.position.set(x, 0.05, z);
-  g.add(ring);
+    const domoWF = new THREE.Mesh(domoGeo, new THREE.MeshBasicMaterial({
+      color: C.domeWF, wireframe: true, transparent: true, opacity: 0.06
+    }));
+    domoWF.position.set(x, yBase, z);
+    g.add(domoWF);
+
+    // Círculo en suelo
+    const r_base = pts[0].x;
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(r_base-0.15, r_base+0.15, 64),
+      new THREE.MeshBasicMaterial({color: C.ring, transparent: true, opacity: 0.40, side: THREE.DoubleSide})
+    );
+    ring.rotation.x = -Math.PI/2;
+    ring.position.set(x, 0.06, z);
+    g.add(ring);
+  }
 }
 
 /* ══════════════════════════════════════════
    COBERTURA
 ══════════════════════════════════════════ */
 function estimarCobertura(L, A, puntas, r_suelo) {
-  const N = 20; let cubiertos = 0;
-  for (let i=0; i<=N; i++)
-    for (let j=0; j<=N; j++) {
+  const N = 25; let cubiertos = 0;
+  for (let i = 0; i <= N; i++)
+    for (let j = 0; j <= N; j++) {
       const px = -L/2+(i/N)*L, pz = -A/2+(j/N)*A;
       if (puntas.some(p => Math.hypot(p.x-px, p.z-pz) <= r_suelo)) cubiertos++;
     }
@@ -694,97 +1034,219 @@ function estimarCobertura(L, A, puntas, r_suelo) {
 }
 
 /* ══════════════════════════════════════════
-   UI
+   UI — RESULTADOS
 ══════════════════════════════════════════ */
-function actualizarResultados(R, r_suelo, nPuntas, hTotal, cobertura) {
-  document.getElementById('r-r_suelo').textContent  = r_suelo.toFixed(2)+' m';
+function actualizarResultados(R, r_suelo, nPuntas, hTotal, cobertura, Zs, Is, L, A) {
+  document.getElementById('r-Zs').textContent     = Zs.toFixed(1)+' Ω';
+  document.getElementById('r-Is').textContent     = Is.toFixed(3)+' kA';
+  document.getElementById('r-S').textContent      = R.toFixed(2)+' m';
+  document.getElementById('r-r_suelo').textContent = r_suelo.toFixed(2)+' m';
   document.getElementById('r-npuntas').textContent  = nPuntas;
   document.getElementById('r-htotal').textContent   = hTotal.toFixed(1)+' m';
   const c = document.getElementById('r-cobertura');
   c.textContent = cobertura+'%';
   c.className   = 'stat-val '+(cobertura>=95?'ok':cobertura>=70?'':'warn');
+
+  // Verificaciones
+  const diag = Math.hypot(L/2, A/2);
+  const chkLat = document.getElementById('r-check-lat');
+  if (r_suelo >= diag) {
+    chkLat.textContent = '✓ OK ('+r_suelo.toFixed(1)+' ≥ '+diag.toFixed(1)+' m)';
+    chkLat.className = 'stat-val ok';
+  } else {
+    chkLat.textContent = '⚠ '+r_suelo.toFixed(1)+' < '+diag.toFixed(1)+' m';
+    chkLat.className = 'stat-val warn';
+  }
+
+  const H_equipo = parseFloat(document.getElementById('n-equipo').value) || 6;
+  const chkEq = document.getElementById('r-check-eq');
+  const H_total = parseFloat(document.getElementById('n-punta').value) + 8;
+  if (H_total > H_equipo) {
+    chkEq.textContent = '✓ Punta ('+H_total.toFixed(0)+') > Equipo ('+H_equipo.toFixed(0)+'m)';
+    chkEq.className = 'stat-val ok';
+  } else {
+    chkEq.textContent = '⚠ Punta ≤ Equipo';
+    chkEq.className = 'stat-val warn';
+  }
 }
 
 function actualizarNiveles(R) {
   [{id:'np-I',Rref:20},{id:'np-II',Rref:30},{id:'np-III',Rref:45},{id:'np-IV',Rref:60}]
-  .forEach(({id,Rref}) => {
+  .forEach(({id, Rref}) => {
     const el = document.getElementById(id);
-    if (R <= Rref) { el.textContent='● ACTIVO'; el.className='stat-val ok'; }
-    else           { el.textContent='○ —';       el.className='stat-val'; el.style.color='var(--text-dim)'; }
+    if (R <= Rref) {
+      el.textContent = '● ACTIVO'; el.className = 'stat-val ok';
+    } else {
+      el.textContent = '○ —'; el.className = 'stat-val'; el.style.color = 'var(--text-dim)';
+    }
   });
 }
 
 /* ══════════════════════════════════════════
-   CANVAS 2D
+   CANVAS 2D — PLANTA Y CORTE
 ══════════════════════════════════════════ */
-function actualizarVista2D(L, A, r_suelo, puntas) {
+function actualizarVista2D(L, A, r_suelo, puntas, R, H_total) {
   const canvas = document.getElementById('canvas2D');
   const ctx    = canvas.getContext('2d');
   const W = canvas.offsetWidth, Hc = canvas.offsetHeight || W;
-  canvas.width = W; canvas.height = Hc;
+  canvas.width = W * window.devicePixelRatio;
+  canvas.height = Hc * window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
+  if (currentTab === 'planta') {
+    dibujarPlanta(ctx, W, Hc, L, A, r_suelo, puntas);
+  } else {
+    dibujarCorte(ctx, W, Hc, L, r_suelo, R, H_total);
+  }
+}
+
+function dibujarPlanta(ctx, W, Hc, L, A, r_suelo, puntas) {
   const scale = Math.min((W*0.7)/L, (Hc*0.7)/A);
   const cx = W/2, cy = Hc/2;
 
-  ctx.fillStyle = '#f5f3ff'; ctx.fillRect(0,0,W,Hc);
+  ctx.fillStyle = '#f5f3ff'; ctx.fillRect(0, 0, W, Hc);
 
-  /* Grid */
+  // Grid
   ctx.strokeStyle='#e9d5ff'; ctx.lineWidth=0.5;
-  for(let i=0;i<W;i+=20){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,Hc);ctx.stroke();}
-  for(let j=0;j<Hc;j+=20){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke();}
+  for(let i=0;i<W;i+=16){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,Hc);ctx.stroke();}
+  for(let j=0;j<Hc;j+=16){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke();}
 
-  /* Domos */
+  // Zonas de cobertura
   puntas.forEach(p => {
     const px=cx+p.x*scale, pz=cy+p.z*scale, r=r_suelo*scale;
     const grad=ctx.createRadialGradient(px,pz,0,px,pz,r);
-    grad.addColorStop(0,'rgba(124,58,237,0.18)');
+    grad.addColorStop(0,'rgba(124,58,237,0.15)');
     grad.addColorStop(1,'rgba(124,58,237,0)');
     ctx.beginPath(); ctx.arc(px,pz,r,0,Math.PI*2);
     ctx.fillStyle=grad; ctx.fill();
-    ctx.strokeStyle='rgba(124,58,237,0.5)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.strokeStyle='rgba(124,58,237,0.45)'; ctx.lineWidth=1; ctx.stroke();
   });
 
-  /* Subestación */
+  // Subestación
   ctx.strokeStyle='#6366f1'; ctx.lineWidth=2;
   ctx.strokeRect(cx-L*scale/2, cy-A*scale/2, L*scale, A*scale);
-  ctx.fillStyle='rgba(99,102,241,0.05)';
+  ctx.fillStyle='rgba(99,102,241,0.04)';
   ctx.fillRect(cx-L*scale/2, cy-A*scale/2, L*scale, A*scale);
 
-  /* Trafo */
-  const tW=L*0.25*scale, tH=A*0.35*scale;
-  ctx.fillStyle='rgba(139,92,246,0.25)';
+  // Transformador
+  const tW=L*0.22*scale, tH=A*0.3*scale;
+  ctx.fillStyle='rgba(139,92,246,0.2)';
   ctx.fillRect(cx-tW/2, cy-tH/2, tW, tH);
   ctx.strokeStyle='#8b5cf6'; ctx.lineWidth=1;
   ctx.strokeRect(cx-tW/2, cy-tH/2, tW, tH);
+  ctx.fillStyle='#8b5cf6'; ctx.font='bold 8px Share Tech Mono,monospace';
+  ctx.textAlign='center'; ctx.fillText('TRAFO', cx, cy+3);
 
-  /* Puntas */
+  // Puntas
   puntas.forEach(p => {
     const px=cx+p.x*scale, pz=cy+p.z*scale;
-    ctx.beginPath(); ctx.arc(px,pz,3,0,Math.PI*2);
+    ctx.beginPath(); ctx.arc(px,pz,4,0,Math.PI*2);
     ctx.fillStyle='#7c3aed'; ctx.fill();
-    ctx.beginPath(); ctx.arc(px,pz,6,0,Math.PI*2);
-    ctx.strokeStyle='rgba(124,58,237,0.35)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.beginPath(); ctx.arc(px,pz,7,0,Math.PI*2);
+    ctx.strokeStyle='rgba(124,58,237,0.3)'; ctx.lineWidth=1; ctx.stroke();
   });
 
-  /* Escala */
-  const em=10, ep=em*scale, ex=W-20, ey=Hc-16;
+  // Escala
+  const em=10, ep=em*scale, ex=W-18, ey=Hc-14;
   ctx.strokeStyle='#7c6aaa'; ctx.lineWidth=1.5;
   ctx.beginPath(); ctx.moveTo(ex-ep,ey); ctx.lineTo(ex,ey); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(ex-ep,ey-4); ctx.lineTo(ex-ep,ey+4); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(ex,ey-4);    ctx.lineTo(ex,ey+4);    ctx.stroke();
-  ctx.fillStyle='#7c6aaa'; ctx.font='9px "Share Tech Mono",monospace';
+  ctx.beginPath(); ctx.moveTo(ex,ey-4); ctx.lineTo(ex,ey+4); ctx.stroke();
+  ctx.fillStyle='#7c6aaa'; ctx.font='9px Share Tech Mono,monospace';
   ctx.textAlign='center'; ctx.fillText(em+'m', ex-ep/2, ey-6);
+
+  // Etiqueta
+  ctx.fillStyle='rgba(124,58,237,0.7)'; ctx.font='bold 8px Share Tech Mono,monospace';
+  ctx.textAlign='left';
+  ctx.fillText('PLANTA — r_suelo='+r_suelo.toFixed(1)+'m', 6, 12);
 }
 
-let modoCorte = false;
-function toggleCorte() {
-  modoCorte = !modoCorte;
-  document.getElementById('tab-planta').classList.toggle('active', !modoCorte);
-  document.getElementById('tab-corte').classList.toggle('active',   modoCorte);
+function dibujarCorte(ctx, W, Hc, L, r_suelo, R, H_total) {
+  // Corte longitudinal mostrando esfera rodante
+  const scaleH = Math.min((W*0.6)/L, (Hc*0.5)/R);
+  const cx = W/2, baseY = Hc*0.85;
+
+  ctx.fillStyle = '#f5f3ff'; ctx.fillRect(0, 0, W, Hc);
+
+  // Grid
+  ctx.strokeStyle='#e9d5ff'; ctx.lineWidth=0.5;
+  for(let i=0;i<W;i+=16){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,Hc);ctx.stroke();}
+  for(let j=0;j<Hc;j+=16){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke();}
+
+  // Suelo
+  ctx.strokeStyle='#6366f1'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(0, baseY); ctx.lineTo(W, baseY); ctx.stroke();
+
+  // Subestación (rectángulo)
+  const subW = L*scaleH, H_col=8;
+  const subX = cx - subW/2;
+  const subH = H_col*scaleH;
+  ctx.fillStyle='rgba(99,102,241,0.06)';
+  ctx.fillRect(subX, baseY-subH, subW, subH);
+  ctx.strokeStyle='#6366f1'; ctx.lineWidth=1.5;
+  ctx.strokeRect(subX, baseY-subH, subW, subH);
+
+  // Punta izquierda
+  const px1 = subX;
+  const py1 = baseY - H_total * scaleH;
+  ctx.strokeStyle='#a855f7'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(px1, baseY); ctx.lineTo(px1, py1); ctx.stroke();
+  ctx.beginPath(); ctx.arc(px1, py1, 4, 0, Math.PI*2);
+  ctx.fillStyle='#7c3aed'; ctx.fill();
+
+  // Punta derecha
+  const px2 = subX + subW;
+  const py2 = baseY - H_total * scaleH;
+  ctx.strokeStyle='#a855f7'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(px2, baseY); ctx.lineTo(px2, py2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(px2, py2, 4, 0, Math.PI*2);
+  ctx.fillStyle='#7c3aed'; ctx.fill();
+
+  // Esfera rodante sobre punta izq
+  const rScaled = R * scaleH;
+  const cY1 = py1 - rScaled;
+  ctx.beginPath(); ctx.arc(px1, cY1, rScaled, 0, Math.PI*2);
+  ctx.strokeStyle='rgba(79,70,229,0.6)'; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.fillStyle='rgba(79,70,229,0.07)'; ctx.fill();
+
+  // Esfera rodante sobre punta der
+  const cY2 = py2 - rScaled;
+  ctx.beginPath(); ctx.arc(px2, cY2, rScaled, 0, Math.PI*2);
+  ctx.strokeStyle='rgba(79,70,229,0.6)'; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.fillStyle='rgba(79,70,229,0.07)'; ctx.fill();
+
+  // Zona protegida (entre esferas)
+  ctx.fillStyle='rgba(5,150,105,0.08)';
+  ctx.fillRect(subX, baseY-subH, subW, subH);
+
+  // Cotas
+  ctx.strokeStyle='#7c6aaa'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+  ctx.beginPath(); ctx.moveTo(px1-30, baseY); ctx.lineTo(px1-30, py1); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#7c6aaa'; ctx.font='9px Share Tech Mono,monospace';
+  ctx.textAlign='right'; ctx.fillText('H='+H_total.toFixed(0)+'m', px1-32, (baseY+py1)/2);
+
+  // Etiqueta S
+  ctx.fillStyle='rgba(79,70,229,0.8)'; ctx.font='bold 9px Share Tech Mono,monospace';
+  ctx.textAlign='center'; ctx.fillText('S=R='+R.toFixed(1)+'m', px1, cY1+3);
+
+  ctx.fillStyle='rgba(124,58,237,0.7)'; ctx.font='bold 8px Share Tech Mono,monospace';
+  ctx.textAlign='left'; ctx.fillText('CORTE — Radio IEEE 998', 6, 12);
+}
+
+/* ── Sync ── */
+function syncVal(fromId, toId, lblId) {
+  const v = document.getElementById(fromId).value;
+  document.getElementById(toId).value = v;
+  if (lblId) document.getElementById(lblId).textContent = v;
 }
 
 /* ── ARRANQUE ── */
-window.addEventListener('load', () => { init3D(); renderizar(); });
+window.addEventListener('load', () => {
+  init3D();
+  calcIEEE();
+  renderizar();
+});
 </script>
 </body>
 </html>
