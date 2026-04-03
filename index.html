@@ -191,10 +191,7 @@
     font-weight: bold;
     letter-spacing: 1px;
   }
-  .np-I   { background: rgba(220,38,38,0.12);  color: #dc2626; border: 1px solid rgba(220,38,38,0.3); }
-  .np-II  { background: rgba(234,88,12,0.12);  color: #ea580c; border: 1px solid rgba(234,88,12,0.3); }
-  .np-III { background: rgba(202,138,4,0.12);  color: #ca8a04; border: 1px solid rgba(202,138,4,0.3); }
-  .np-IV  { background: rgba(5,150,105,0.12);  color: #059669; border: 1px solid rgba(5,150,105,0.3); }
+
 
   .btn {
     padding: 9px 14px; border: none; border-radius: 5px; cursor: pointer;
@@ -456,7 +453,7 @@
     <div style="display:flex;flex-direction:column;gap:6px">
       <div class="legend-item"><div class="legend-dot" style="background:#7c3aed;opacity:0.6;border:2px solid #7c3aed"></div> Esfera Rodante (imagin.)</div>
       <div class="legend-item"><div class="legend-dot" style="background:#7c3aed;box-shadow:0 0 6px rgba(124,58,237,0.4)"></div> Domo de Protección</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#dc2626"></div> Zona No Protegida</div>
+
       <div class="legend-item"><div class="legend-dot" style="background:#a855f7"></div> Punta Captadora</div>
       <div class="legend-item"><div class="legend-dot" style="background:#6366f1"></div> Estructura Civil</div>
       <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div> Transformador</div>
@@ -491,17 +488,12 @@
     </div>
 
     <div class="results-card">
-      <div class="card-title">NIVEL DE PROTECCIÓN (IEEE 998 Tab.1)</div>
-      <div class="stat-row"><span class="stat-label">NP I  · R = 20 m</span>  <span class="stat-val" id="np-I">●</span></div>
-      <div class="stat-row"><span class="stat-label">NP II · R = 30 m</span>  <span class="stat-val" id="np-II">●</span></div>
-      <div class="stat-row"><span class="stat-label">NP III· R = 45 m</span>  <span class="stat-val" id="np-III">●</span></div>
-      <div class="stat-row"><span class="stat-label">NP IV · R = 60 m</span>  <span class="stat-val" id="np-IV">●</span></div>
-    </div>
-
-    <div class="results-card">
-      <div class="card-title">VERIFICACIÓN PROTECCIÓN</div>
-      <div class="stat-row"><span class="stat-label">r_suelo ≥ diagonal/2</span> <span class="stat-val" id="r-check-lat">—</span></div>
-      <div class="stat-row"><span class="stat-label">Eq. protegido (altura)</span> <span class="stat-val" id="r-check-eq">—</span></div>
+      <div class="card-title">VERIFICACIÓN IEEE 998 (D &lt; K)</div>
+      <div class="stat-row"><span class="stat-label">K = H − A (sep. punta-equipo)</span> <span class="stat-val" id="r-K">—</span></div>
+      <div class="stat-row"><span class="stat-label">E = S − H (orig. esfera-punta)</span> <span class="stat-val" id="r-E">—</span></div>
+      <div class="stat-row"><span class="stat-label">F = S − E (punto esfera)</span>       <span class="stat-val" id="r-F">—</span></div>
+      <div class="stat-row"><span class="stat-label">D = K − F (holgura)</span>            <span class="stat-val" id="r-D">—</span></div>
+      <div class="stat-row"><span class="stat-label">Condición D &lt; K</span>              <span class="stat-val" id="r-DK">—</span></div>
     </div>
 
     <div class="sep"></div>
@@ -841,7 +833,6 @@ function renderizar() {
   const cobertura = estimarCobertura(L, A, puntas, r_suelo);
   actualizarResultados(R, r_suelo, puntas.length, H_col + H_punta, cobertura, Zs, Is, L, A);
   actualizarVista2D(L, A, r_suelo, puntas, R, H_col + H_punta);
-  actualizarNiveles(R);
 
   // Overlay viewport
   document.getElementById('vp-info').innerHTML =
@@ -1037,9 +1028,9 @@ function estimarCobertura(L, A, puntas, r_suelo) {
    UI — RESULTADOS
 ══════════════════════════════════════════ */
 function actualizarResultados(R, r_suelo, nPuntas, hTotal, cobertura, Zs, Is, L, A) {
-  document.getElementById('r-Zs').textContent     = Zs.toFixed(1)+' Ω';
-  document.getElementById('r-Is').textContent     = Is.toFixed(3)+' kA';
-  document.getElementById('r-S').textContent      = R.toFixed(2)+' m';
+  document.getElementById('r-Zs').textContent      = Zs.toFixed(1)+' Ω';
+  document.getElementById('r-Is').textContent      = Is.toFixed(3)+' kA';
+  document.getElementById('r-S').textContent       = R.toFixed(2)+' m';
   document.getElementById('r-r_suelo').textContent = r_suelo.toFixed(2)+' m';
   document.getElementById('r-npuntas').textContent  = nPuntas;
   document.getElementById('r-htotal').textContent   = hTotal.toFixed(1)+' m';
@@ -1047,39 +1038,39 @@ function actualizarResultados(R, r_suelo, nPuntas, hTotal, cobertura, Zs, Is, L,
   c.textContent = cobertura+'%';
   c.className   = 'stat-val '+(cobertura>=95?'ok':cobertura>=70?'':'warn');
 
-  // Verificaciones
-  const diag = Math.hypot(L/2, A/2);
-  const chkLat = document.getElementById('r-check-lat');
-  if (r_suelo >= diag) {
-    chkLat.textContent = '✓ OK ('+r_suelo.toFixed(1)+' ≥ '+diag.toFixed(1)+' m)';
-    chkLat.className = 'stat-val ok';
-  } else {
-    chkLat.textContent = '⚠ '+r_suelo.toFixed(1)+' < '+diag.toFixed(1)+' m';
-    chkLat.className = 'stat-val warn';
-  }
+  // ── Verificación IEEE 998: condición D < K (Bangladesh paper / IEEE 998 §paso3)
+  // H = altura total punta (pórtico + punta captadora)
+  // A = altura equipo a proteger
+  // S = radio de la esfera
+  const H  = hTotal;  // altura mástil total
+  const Ae = parseFloat(document.getElementById('n-equipo').value) || 6;
+  const K  = H - Ae;           // separación vertical punta–equipo
+  const E  = R - H;            // distancia vertical origen esfera–punta  (E = S - H)
+  const F  = R - E;            // punto de la esfera sobre el mástil       (F = S - E)
+  const D  = K - F;            // holgura vertical objeto–punto esfera     (D = K - F)
 
-  const H_equipo = parseFloat(document.getElementById('n-equipo').value) || 6;
-  const chkEq = document.getElementById('r-check-eq');
-  const H_total = parseFloat(document.getElementById('n-punta').value) + 8;
-  if (H_total > H_equipo) {
-    chkEq.textContent = '✓ Punta ('+H_total.toFixed(0)+') > Equipo ('+H_equipo.toFixed(0)+'m)';
-    chkEq.className = 'stat-val ok';
-  } else {
-    chkEq.textContent = '⚠ Punta ≤ Equipo';
-    chkEq.className = 'stat-val warn';
-  }
-}
+  const fmtSign = v => (v >= 0 ? '+' : '') + v.toFixed(2);
 
-function actualizarNiveles(R) {
-  [{id:'np-I',Rref:20},{id:'np-II',Rref:30},{id:'np-III',Rref:45},{id:'np-IV',Rref:60}]
-  .forEach(({id, Rref}) => {
-    const el = document.getElementById(id);
-    if (R <= Rref) {
-      el.textContent = '● ACTIVO'; el.className = 'stat-val ok';
-    } else {
-      el.textContent = '○ —'; el.className = 'stat-val'; el.style.color = 'var(--text-dim)';
-    }
-  });
+  document.getElementById('r-K').textContent = K.toFixed(2)+' m';
+  document.getElementById('r-K').className   = 'stat-val';
+
+  document.getElementById('r-E').textContent = E.toFixed(2)+' m';
+  document.getElementById('r-E').className   = (E >= 0) ? 'stat-val' : 'stat-val warn';
+
+  document.getElementById('r-F').textContent = F.toFixed(2)+' m';
+  document.getElementById('r-F').className   = 'stat-val';
+
+  document.getElementById('r-D').textContent = fmtSign(D)+' m';
+  document.getElementById('r-D').className   = (D <= K) ? 'stat-val' : 'stat-val warn';
+
+  const dkEl = document.getElementById('r-DK');
+  if (D < K) {
+    dkEl.textContent = '✓ CUMPLE  D('+D.toFixed(2)+') < K('+K.toFixed(2)+')';
+    dkEl.className   = 'stat-val ok';
+  } else {
+    dkEl.textContent = '✗ NO CUMPLE  D('+D.toFixed(2)+') ≥ K('+K.toFixed(2)+')';
+    dkEl.className   = 'stat-val warn';
+  }
 }
 
 /* ══════════════════════════════════════════
@@ -1111,26 +1102,41 @@ function dibujarPlanta(ctx, W, Hc, L, A, r_suelo, puntas) {
   for(let i=0;i<W;i+=16){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,Hc);ctx.stroke();}
   for(let j=0;j<Hc;j+=16){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke();}
 
-  // Zonas de cobertura
+  // Zona protegida (verde) y NO protegida (roja) dentro del recinto
+  const subX0 = cx - L*scale/2, subZ0 = cy - A*scale/2;
+  const subX1 = cx + L*scale/2, subZ1 = cy + A*scale/2;
+  const step = 4; // resolución en px
+  for (let px = subX0; px < subX1; px += step) {
+    for (let pz = subZ0; pz < subZ1; pz += step) {
+      // coordenada real
+      const wx = (px - cx) / scale;
+      const wz = (pz - cy) / scale;
+      const cubierto = puntas.some(p => Math.hypot(p.x - wx, p.z - wz) <= r_suelo);
+      ctx.fillStyle = cubierto
+        ? 'rgba(5,150,105,0.10)'
+        : 'rgba(220,38,38,0.18)';
+      ctx.fillRect(px, pz, step, step);
+    }
+  }
+
+  // Zonas de cobertura (círculos con gradiente encima)
   puntas.forEach(p => {
     const px=cx+p.x*scale, pz=cy+p.z*scale, r=r_suelo*scale;
     const grad=ctx.createRadialGradient(px,pz,0,px,pz,r);
-    grad.addColorStop(0,'rgba(124,58,237,0.15)');
+    grad.addColorStop(0,'rgba(124,58,237,0.12)');
     grad.addColorStop(1,'rgba(124,58,237,0)');
     ctx.beginPath(); ctx.arc(px,pz,r,0,Math.PI*2);
     ctx.fillStyle=grad; ctx.fill();
     ctx.strokeStyle='rgba(124,58,237,0.45)'; ctx.lineWidth=1; ctx.stroke();
   });
 
-  // Subestación
+  // Subestación (borde)
   ctx.strokeStyle='#6366f1'; ctx.lineWidth=2;
   ctx.strokeRect(cx-L*scale/2, cy-A*scale/2, L*scale, A*scale);
-  ctx.fillStyle='rgba(99,102,241,0.04)';
-  ctx.fillRect(cx-L*scale/2, cy-A*scale/2, L*scale, A*scale);
 
   // Transformador
   const tW=L*0.22*scale, tH=A*0.3*scale;
-  ctx.fillStyle='rgba(139,92,246,0.2)';
+  ctx.fillStyle='rgba(139,92,246,0.25)';
   ctx.fillRect(cx-tW/2, cy-tH/2, tW, tH);
   ctx.strokeStyle='#8b5cf6'; ctx.lineWidth=1;
   ctx.strokeRect(cx-tW/2, cy-tH/2, tW, tH);
@@ -1155,10 +1161,12 @@ function dibujarPlanta(ctx, W, Hc, L, A, r_suelo, puntas) {
   ctx.fillStyle='#7c6aaa'; ctx.font='9px Share Tech Mono,monospace';
   ctx.textAlign='center'; ctx.fillText(em+'m', ex-ep/2, ey-6);
 
-  // Etiqueta
+  // Leyenda mini
   ctx.fillStyle='rgba(124,58,237,0.7)'; ctx.font='bold 8px Share Tech Mono,monospace';
   ctx.textAlign='left';
-  ctx.fillText('PLANTA — r_suelo='+r_suelo.toFixed(1)+'m', 6, 12);
+  ctx.fillText('PLANTA — r='+r_suelo.toFixed(1)+'m', 6, 12);
+  ctx.fillStyle='rgba(5,150,105,0.9)';  ctx.fillRect(6,18,8,7); ctx.fillStyle='#555'; ctx.fillText(' protegido', 14, 25);
+  ctx.fillStyle='rgba(220,38,38,0.7)';  ctx.fillRect(6,28,8,7); ctx.fillStyle='#555'; ctx.fillText(' expuesto',  14, 35);
 }
 
 function dibujarCorte(ctx, W, Hc, L, r_suelo, R, H_total) {
