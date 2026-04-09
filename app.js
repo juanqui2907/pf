@@ -99,6 +99,37 @@ function showPage(pageId, navItem) {
     'page-exportar':   'EXPORTAR REPORTE'
   };
   document.getElementById('topbar-section-name').textContent = labels[pageId] || pageId;
+
+  /* ── SPAT: inicializar cuando se abre Apantallamiento ── */
+  if (pageId === 'page-apant') {
+    const appContent = document.querySelector('.app-content');
+    if (appContent) {
+      appContent.style.padding = '0';
+      appContent.style.overflow = 'hidden';
+    }
+    setTimeout(() => {
+      if (typeof spatInit3D === 'function' && !window.spatInited) {
+        spatInit3D();
+        spatCalcIEEE();
+        spatRender();
+      } else if (window.spatInited) {
+        /* ya iniciado: solo refrescar tamaño del renderer */
+        const c = document.getElementById('spat-container3D');
+        if (c && window.spatRenderer) {
+          window.spatRenderer.setSize(c.clientWidth, c.clientHeight);
+          window.spatCamera.aspect = c.clientWidth / c.clientHeight;
+          window.spatCamera.updateProjectionMatrix();
+        }
+      }
+    }, 80);
+  } else {
+    /* Restaurar padding normal en otras páginas */
+    const appContent = document.querySelector('.app-content');
+    if (appContent) {
+      appContent.style.padding = '';
+      appContent.style.overflow = '';
+    }
+  }
 }
 
 /* =============================================

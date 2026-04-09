@@ -698,17 +698,10 @@ body.dark-theme .topbar-title { color: var(--blue-light); }
 .app-content {
   flex: 1;
   overflow-y: auto;
-  overflow-x: hidden;
   padding: 28px 32px;
   background: var(--grey-bg);
   display: flex;
   flex-direction: column;
-}
-
-/* Cuando apant está activo, el contenedor no hace scroll y tiene padding reducido */
-.app-content:has(#page-apant.active) {
-  padding: 0;
-  overflow: hidden;
 }
 
 /* ========================================
@@ -717,10 +710,12 @@ body.dark-theme .topbar-title { color: var(--blue-light); }
 .section-page { display: none; }
 .section-page.active { display: block; }
 
-/* Apantallamiento: ocupa toda la altura disponible sin scroll */
+/* Apantallamiento ocupa 100% del contenedor */
+#page-apant { padding: 0; }
 #page-apant.active {
   display: flex;
   flex-direction: column;
+  flex: 1;
   height: 100%;
   overflow: hidden;
 }
