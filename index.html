@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SPAT v7.0 — IEEE 998-2012 · Esfera Rodante</title>
+<title>SPAT — IEEE 998-2012 · Esfera Rodante</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
   :root{--bg:#f5f3ff;--panel:#ffffff;--border:#d4c8f8;--accent:#7c3aed;--accent2:#a855f7;--green:#059669;--red:#dc2626;--text:#1e1333;--text-dim:#7c6aaa;--ieee:#1d4ed8;}
@@ -82,7 +82,7 @@
 </head>
 <body>
 <div class="header">
-  <div class="header-logo">SPAT <span>v7.0</span></div>
+  <div class="header-logo">SPAT </div>
   <div class="header-badge">IEEE STD 998-2012 · MÉTODO ELECTROGEOMÉTRICO</div>
   <div class="header-status"><div class="dot"></div><span>SISTEMA ACTIVO</span></div>
 </div>
@@ -247,7 +247,7 @@
 (function(){const e=THREE;class t extends e.EventDispatcher{constructor(t,i){super();this.object=t;this.domElement=i;this.enabled=true;this.target=new e.Vector3();this.minDistance=0;this.maxDistance=Infinity;this.minPolarAngle=0;this.maxPolarAngle=Math.PI;this.enableDamping=false;this.dampingFactor=0.05;this.enableZoom=true;this.zoomSpeed=1;this.enableRotate=true;this.rotateSpeed=1;this.enablePan=true;this.panSpeed=1;this.screenSpacePanning=true;const r=new e.Vector2(),s=new e.Vector2(),n=new e.Vector2();let o=0,a=0,l=1,c=new e.Vector3(),h=new e.Spherical(),d=new e.Spherical(),p=new e.Vector3(),f=new e.Vector2(),m=new e.Vector2();const V=e=>{if(this.enabled===false)return;if(e.type==='wheel'){if(this.enableZoom===false)return;e.preventDefault();if(e.deltaY<0)l/=Math.pow(0.95,this.zoomSpeed);else if(e.deltaY>0)l*=Math.pow(0.95,this.zoomSpeed);}};const E=e=>{if(this.enabled===false)return;e.preventDefault();if(e.touches.length===1){s.set(e.touches[0].pageX,e.touches[0].pageY);n.subVectors(s,r);o-=(n.x/i.clientHeight)*Math.PI*this.rotateSpeed;a-=(n.y/i.clientHeight)*Math.PI*this.rotateSpeed;}r.copy(s);this.update();};const T=e=>{if(this.enabled===false)return;if(e.touches.length===1){r.set(e.touches[0].pageX,e.touches[0].pageY);s.copy(r);}};i.addEventListener('wheel',V,{passive:false});i.addEventListener('touchstart',T,{passive:false});i.addEventListener('touchmove',E,{passive:false});let A=false,L=false;const M=e=>{if(!this.enabled)return;if(e.button===0){A=true;r.set(e.clientX,e.clientY);}if(e.button===2){L=true;f.set(e.clientX,e.clientY);}};const S=e=>{if(!this.enabled)return;if(A){s.set(e.clientX,e.clientY);n.subVectors(s,r);o-=(n.x/i.clientHeight)*Math.PI*this.rotateSpeed;a-=(n.y/i.clientHeight)*Math.PI*this.rotateSpeed;r.copy(s);}if(L){m.set(e.clientX,e.clientY);const t=new e.Vector2().subVectors(m,f);if(this.screenSpacePanning){p.setFromMatrixColumn(this.object.matrix,0);p.multiplyScalar(-t.x*(new e.Vector3().subVectors(this.object.position,this.target).length()/i.clientHeight)*this.panSpeed);c.add(p);p.setFromMatrixColumn(this.object.matrix,1);p.multiplyScalar(t.y*(new e.Vector3().subVectors(this.object.position,this.target).length()/i.clientHeight)*this.panSpeed);c.add(p);}f.copy(m);}};const P=()=>{A=false;L=false;};i.addEventListener('mousedown',M);i.addEventListener('mousemove',S);i.addEventListener('mouseup',P);this.update=()=>{const r=new e.Spherical();r.setFromVector3(new e.Vector3().subVectors(this.object.position,this.target));if(this.enableDamping){r.theta+=o*this.dampingFactor;r.phi+=a*this.dampingFactor;o*=(1-this.dampingFactor);a*=(1-this.dampingFactor);}else{r.theta+=o;r.phi+=a;o=0;a=0;}r.phi=Math.max(this.minPolarAngle,Math.min(this.maxPolarAngle,r.phi));r.makeSafe();r.radius*=l;r.radius=Math.max(this.minDistance,Math.min(this.maxDistance,r.radius));l=1;this.target.add(c);c.set(0,0,0);const s=new e.Vector3().setFromSpherical(r).add(this.target);this.object.position.copy(s);this.object.lookAt(this.target);this.object.updateMatrixWorld();return false;};this.dispose=()=>{i.removeEventListener('wheel',V);i.removeEventListener('mousedown',M);i.removeEventListener('mousemove',S);i.removeEventListener('mouseup',P);i.removeEventListener('touchstart',T);i.removeEventListener('touchmove',E);};}}THREE.OrbitControls=t;})();
 </script>
 <script>
-/* ══ SPAT v7.0 ══ */
+
 let scene,camera,renderer,controls,substationGrp,protectionGrp;
 let currentMode='auto',currentK=1.2,renderTimer=null,initialized=false,currentTab='planta';
 // Store last rendered puntas for 2D corte sync
