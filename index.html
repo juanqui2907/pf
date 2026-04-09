@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SPAT v6.1 — IEEE 998-2012 · Esfera Rodante</title>
+<title>SPAT v7.0 — IEEE 998-2012 · Esfera Rodante</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
   :root{--bg:#f5f3ff;--panel:#ffffff;--border:#d4c8f8;--accent:#7c3aed;--accent2:#a855f7;--green:#059669;--red:#dc2626;--text:#1e1333;--text-dim:#7c6aaa;--ieee:#1d4ed8;}
@@ -45,10 +45,6 @@
   .btn-primary:hover{background:#6d28d9;transform:translateY(-1px);}
   .btn-secondary{background:transparent;color:var(--text-dim);border:1px solid var(--border);}
   .btn-secondary:hover{border-color:var(--accent2);color:var(--accent2);}
-  .btn-json{background:rgba(29,78,216,0.08);color:var(--ieee);border:1px solid rgba(29,78,216,0.3);font-size:11px;padding:7px 10px;letter-spacing:1px;border-radius:5px;cursor:pointer;width:100%;font-family:'Rajdhani',sans-serif;font-weight:700;transition:all 0.2s;}
-  .btn-json:hover{background:rgba(29,78,216,0.15);}
-  .btn-dl{background:rgba(5,150,105,0.08);color:#059669;border:1px solid rgba(5,150,105,0.3);font-size:11px;padding:7px 10px;letter-spacing:1px;border-radius:5px;cursor:pointer;width:100%;font-family:'Rajdhani',sans-serif;font-weight:700;transition:all 0.2s;}
-  .btn-dl:hover{background:rgba(5,150,105,0.15);}
   .mode-selector{display:flex;gap:3px;}
   .mode-btn{flex:1;padding:6px;font-size:10px;letter-spacing:1px;background:var(--bg);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;border-radius:4px;font-family:'Share Tech Mono',monospace;transition:all 0.2s;}
   .mode-btn.active{background:rgba(124,58,237,0.12);border-color:var(--accent);color:var(--accent);font-weight:bold;}
@@ -64,9 +60,6 @@
   .viewport-overlay{position:absolute;top:10px;left:10px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dim);pointer-events:none;line-height:1.9;background:rgba(255,255,255,0.82);padding:6px 10px;border-radius:5px;border:1px solid var(--border);}
   .viewport-mode{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:2px;pointer-events:none;background:rgba(255,255,255,0.88);padding:3px 10px;border-radius:20px;border:1px solid rgba(124,58,237,0.3);white-space:nowrap;}
   .viewport-ieee{position:absolute;top:10px;right:10px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--ieee);background:rgba(29,78,216,0.08);border:1px solid rgba(29,78,216,0.2);padding:4px 8px;border-radius:4px;pointer-events:none;line-height:1.7;}
-  .json-badge{font-family:'Share Tech Mono',monospace;font-size:9px;padding:5px 8px;border-radius:4px;text-align:center;display:none;line-height:1.5;}
-  .json-badge.ok{display:block;background:rgba(29,78,216,0.08);color:var(--ieee);border:1px solid rgba(29,78,216,0.25);}
-  .json-badge.err{display:block;background:rgba(220,38,38,0.07);color:#dc2626;border:1px solid rgba(220,38,38,0.3);}
   .results-card{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px;}
   .results-card .card-title{font-size:9px;letter-spacing:2px;color:var(--text-dim);font-family:'Share Tech Mono',monospace;margin-bottom:8px;}
   .stat-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
@@ -89,7 +82,7 @@
 </head>
 <body>
 <div class="header">
-  <div class="header-logo">SPAT <span>v6.1</span></div>
+  <div class="header-logo">SPAT <span>v7.0</span></div>
   <div class="header-badge">IEEE STD 998-2012 · MÉTODO ELECTROGEOMÉTRICO</div>
   <div class="header-status"><div class="dot"></div><span>SISTEMA ACTIVO</span></div>
 </div>
@@ -98,37 +91,16 @@
 <!-- PANEL IZQUIERDO -->
 <div class="panel">
   <div class="panel-title">⚡ Geometría de Subestación</div>
-
   <div class="field-group">
-    <div class="field-label">TIPO DE PLANTA</div>
-    <div class="mode-selector">
-      <button class="mode-btn active" id="geo-rect" onclick="setGeoMode('rect')">RECTANGULAR</button>
-      <button class="mode-btn" id="geo-json" onclick="setGeoMode('json')">POLÍGONO JSON</button>
-    </div>
+    <div class="field-label">LARGO (m) <span id="lbl-L">50</span></div>
+    <input type="range" id="s-largo" min="10" max="200" value="50" oninput="syncVal('s-largo','n-largo','lbl-L');calcIEEE()">
+    <input type="number" id="n-largo" value="50" min="10" max="200" oninput="syncVal('n-largo','s-largo','lbl-L');calcIEEE()">
   </div>
-
-  <!-- SECCIÓN RECTANGULAR -->
-  <div id="sec-rect">
-    <div class="field-group">
-      <div class="field-label">LARGO (m) <span id="lbl-L">50</span></div>
-      <input type="range" id="s-largo" min="10" max="200" value="50" oninput="syncVal('s-largo','n-largo','lbl-L');calcIEEE()">
-      <input type="number" id="n-largo" value="50" min="10" max="200" oninput="syncVal('n-largo','s-largo','lbl-L');calcIEEE()">
-    </div>
-    <div class="field-group" style="margin-top:8px">
-      <div class="field-label">ANCHO (m) <span id="lbl-A">30</span></div>
-      <input type="range" id="s-ancho" min="10" max="150" value="30" oninput="syncVal('s-ancho','n-ancho','lbl-A');calcIEEE()">
-      <input type="number" id="n-ancho" value="30" min="10" max="150" oninput="syncVal('n-ancho','s-ancho','lbl-A');calcIEEE()">
-    </div>
+  <div class="field-group">
+    <div class="field-label">ANCHO (m) <span id="lbl-A">30</span></div>
+    <input type="range" id="s-ancho" min="10" max="150" value="30" oninput="syncVal('s-ancho','n-ancho','lbl-A');calcIEEE()">
+    <input type="number" id="n-ancho" value="30" min="10" max="150" oninput="syncVal('n-ancho','s-ancho','lbl-A');calcIEEE()">
   </div>
-
-  <!-- SECCIÓN JSON -->
-  <div id="sec-json" style="display:none;flex-direction:column;gap:6px">
-    <button class="btn-json" onclick="document.getElementById('file-json').click()">📂 CARGAR ARCHIVO JSON</button>
-    <input type="file" id="file-json" accept=".json" style="display:none" onchange="cargarJSON(this)">
-    <button class="btn-dl" onclick="descargarEjemplo()">⬇ DESCARGAR EJEMPLO (forma en L)</button>
-    <div class="json-badge" id="json-badge"></div>
-  </div>
-
   <div class="field-group">
     <div class="field-label">ALTURA EQUIPO CRÍTICO (m) <span id="lbl-He">6</span></div>
     <input type="range" id="s-equipo" min="1" max="30" value="6" oninput="syncVal('s-equipo','n-equipo','lbl-He');calcIEEE()">
@@ -196,16 +168,20 @@
 
   <div class="panel-title">👁 Visualización 3D</div>
   <div class="toggle-row">
-    <span>Mostrar esferas rodantes</span>
+    <span>Esferas rodantes</span>
     <label class="toggle"><input type="checkbox" id="toggle-spheres" checked onchange="autoRender()"><span class="toggle-slider"></span></label>
   </div>
   <div class="toggle-row">
-    <span>Mostrar domos de cobertura</span>
-    <label class="toggle"><input type="checkbox" id="toggle-domes" checked onchange="autoRender()"><span class="toggle-slider"></span></label>
+    <span>Manta de protección</span>
+    <label class="toggle"><input type="checkbox" id="toggle-manta" checked onchange="autoRender()"><span class="toggle-slider"></span></label>
   </div>
   <div class="toggle-row">
     <span>Opacidad esfera</span>
-    <input type="range" id="sphere-opacity" min="5" max="40" value="18" style="width:80px" oninput="autoRender()">
+    <input type="range" id="sphere-opacity" min="3" max="35" value="15" style="width:80px" oninput="autoRender()">
+  </div>
+  <div class="toggle-row">
+    <span>Opacidad manta</span>
+    <input type="range" id="manta-opacity" min="5" max="50" value="22" style="width:80px" oninput="autoRender()">
   </div>
 
   <div class="alert-box" id="alert-box">⚠ Altura total supera el radio. Verificar parámetros.</div>
@@ -215,10 +191,10 @@
   <div class="sep"></div>
   <div class="panel-title">LEYENDA</div>
   <div style="display:flex;flex-direction:column;gap:6px">
-    <div class="legend-item"><div class="legend-dot" style="background:#4f46e5;opacity:0.6;border:2px solid #4f46e5"></div> Esfera Rodante (imagin.)</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#7c3aed;box-shadow:0 0 6px rgba(124,58,237,0.4)"></div> Domo de Protección</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#818cf8;opacity:0.8;border:2px solid #818cf8"></div> Esfera Rodante (imaginaria)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#38bdf8;opacity:0.7"></div> Manta / Zona de Protección</div>
     <div class="legend-item"><div class="legend-dot" style="background:#a855f7"></div> Punta Captadora</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#6366f1"></div> Estructura / Vértices</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#6366f1"></div> Estructura Civil</div>
     <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div> Transformador</div>
   </div>
 </div>
@@ -271,94 +247,82 @@
 (function(){const e=THREE;class t extends e.EventDispatcher{constructor(t,i){super();this.object=t;this.domElement=i;this.enabled=true;this.target=new e.Vector3();this.minDistance=0;this.maxDistance=Infinity;this.minPolarAngle=0;this.maxPolarAngle=Math.PI;this.enableDamping=false;this.dampingFactor=0.05;this.enableZoom=true;this.zoomSpeed=1;this.enableRotate=true;this.rotateSpeed=1;this.enablePan=true;this.panSpeed=1;this.screenSpacePanning=true;const r=new e.Vector2(),s=new e.Vector2(),n=new e.Vector2();let o=0,a=0,l=1,c=new e.Vector3(),h=new e.Spherical(),d=new e.Spherical(),p=new e.Vector3(),f=new e.Vector2(),m=new e.Vector2();const V=e=>{if(this.enabled===false)return;if(e.type==='wheel'){if(this.enableZoom===false)return;e.preventDefault();if(e.deltaY<0)l/=Math.pow(0.95,this.zoomSpeed);else if(e.deltaY>0)l*=Math.pow(0.95,this.zoomSpeed);}};const E=e=>{if(this.enabled===false)return;e.preventDefault();if(e.touches.length===1){s.set(e.touches[0].pageX,e.touches[0].pageY);n.subVectors(s,r);o-=(n.x/i.clientHeight)*Math.PI*this.rotateSpeed;a-=(n.y/i.clientHeight)*Math.PI*this.rotateSpeed;}r.copy(s);this.update();};const T=e=>{if(this.enabled===false)return;if(e.touches.length===1){r.set(e.touches[0].pageX,e.touches[0].pageY);s.copy(r);}};i.addEventListener('wheel',V,{passive:false});i.addEventListener('touchstart',T,{passive:false});i.addEventListener('touchmove',E,{passive:false});let A=false,L=false;const M=e=>{if(!this.enabled)return;if(e.button===0){A=true;r.set(e.clientX,e.clientY);}if(e.button===2){L=true;f.set(e.clientX,e.clientY);}};const S=e=>{if(!this.enabled)return;if(A){s.set(e.clientX,e.clientY);n.subVectors(s,r);o-=(n.x/i.clientHeight)*Math.PI*this.rotateSpeed;a-=(n.y/i.clientHeight)*Math.PI*this.rotateSpeed;r.copy(s);}if(L){m.set(e.clientX,e.clientY);const t=new e.Vector2().subVectors(m,f);if(this.screenSpacePanning){p.setFromMatrixColumn(this.object.matrix,0);p.multiplyScalar(-t.x*(new e.Vector3().subVectors(this.object.position,this.target).length()/i.clientHeight)*this.panSpeed);c.add(p);p.setFromMatrixColumn(this.object.matrix,1);p.multiplyScalar(t.y*(new e.Vector3().subVectors(this.object.position,this.target).length()/i.clientHeight)*this.panSpeed);c.add(p);}f.copy(m);}};const P=()=>{A=false;L=false;};i.addEventListener('mousedown',M);i.addEventListener('mousemove',S);i.addEventListener('mouseup',P);this.update=()=>{const r=new e.Spherical();r.setFromVector3(new e.Vector3().subVectors(this.object.position,this.target));if(this.enableDamping){r.theta+=o*this.dampingFactor;r.phi+=a*this.dampingFactor;o*=(1-this.dampingFactor);a*=(1-this.dampingFactor);}else{r.theta+=o;r.phi+=a;o=0;a=0;}r.phi=Math.max(this.minPolarAngle,Math.min(this.maxPolarAngle,r.phi));r.makeSafe();r.radius*=l;r.radius=Math.max(this.minDistance,Math.min(this.maxDistance,r.radius));l=1;this.target.add(c);c.set(0,0,0);const s=new e.Vector3().setFromSpherical(r).add(this.target);this.object.position.copy(s);this.object.lookAt(this.target);this.object.updateMatrixWorld();return false;};this.dispose=()=>{i.removeEventListener('wheel',V);i.removeEventListener('mousedown',M);i.removeEventListener('mousemove',S);i.removeEventListener('mouseup',P);i.removeEventListener('touchstart',T);i.removeEventListener('touchmove',E);};}}THREE.OrbitControls=t;})();
 </script>
 <script>
-/* ══ SPAT v6.1 ══ */
+/* ══ SPAT v7.0 ══ */
 let scene,camera,renderer,controls,substationGrp,protectionGrp;
 let currentMode='auto',currentK=1.2,renderTimer=null,initialized=false,currentTab='planta';
-let geoMode='rect';
-let poligonoJSON=null;
+// Store last rendered puntas for 2D corte sync
+let lastPuntas=[], lastR=0, lastHTotal=0;
 
-const C={dome:0x7c3aed,domeWF:0x9333ea,sphere:0x4f46e5,sphereWF:0x818cf8,mast:0xa855f7,ring:0x7c3aed,steel:0x6366f1,beam:0x818cf8,concrete:0xddd6fe,trafo:0x8b5cf6,radiator:0xa78bfa,insulator:0xe9d5ff,copper:0xc4b5fd,ground:0xede9fe,sky:0xf5f3ff,grid1:0xc4b5fd,grid2:0xddd6fe,wire:0xa855f7};
+const C={
+  sphere:0x7c3aed,sphereWF:0x9333ea,
+  mast:0xa855f7,
+  steel:0x6366f1,beam:0x818cf8,concrete:0xddd6fe,
+  trafo:0x8b5cf6,radiator:0xa78bfa,insulator:0xe9d5ff,copper:0xc4b5fd,
+  ground:0xede9fe,sky:0xf5f3ff,
+  grid1:0xc4b5fd,grid2:0xddd6fe,
+  wire:0xa855f7,manta:0x7c3aed,
+};
 
-/* ── HELPERS POLÍGONO ── */
-function areaPoligono(pts){let a=0;for(let i=0,n=pts.length;i<n;i++){const j=(i+1)%n;a+=pts[i].x*pts[j].y-pts[j].x*pts[i].y;}return Math.abs(a)/2;}
-function dentroPoligono(px,py,pts){let inside=false;for(let i=0,j=pts.length-1;i<pts.length;j=i++){const xi=pts[i].x,yi=pts[i].y,xj=pts[j].x,yj=pts[j].y;if(((yi>py)!==(yj>py))&&(px<(xj-xi)*(py-yi)/(yj-yi)+xi))inside=!inside;}return inside;}
-function bboxPoligono(pts){const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y);return{minX:Math.min(...xs),maxX:Math.max(...xs),minY:Math.min(...ys),maxY:Math.max(...ys)};}
-function distPtSegmento(px,py,ax,ay,bx,by){const dx=bx-ax,dy=by-ay;if(dx===0&&dy===0)return Math.hypot(px-ax,py-ay);const t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/(dx*dx+dy*dy)));return Math.hypot(px-(ax+t*dx),py-(ay+t*dy));}
-
-/* ── GEOMETRÍA ACTIVA ── */
+/* ── GEOMETRÍA ── */
 function getGeometria(){
-  if(geoMode==='json'&&poligonoJSON){
-    const bb=bboxPoligono(poligonoJSON);
-    const cx=(bb.minX+bb.maxX)/2,cy=(bb.minY+bb.maxY)/2;
-    const pts=poligonoJSON.map(p=>({x:p.x-cx,y:p.y-cy}));
-    return{tipo:'poly',pts,L:bb.maxX-bb.minX,A:bb.maxY-bb.minY,area:areaPoligono(pts)};
-  }
   const L=parseFloat(document.getElementById('n-largo').value)||50;
   const A=parseFloat(document.getElementById('n-ancho').value)||30;
-  return{tipo:'rect',pts:[{x:-L/2,y:-A/2},{x:L/2,y:-A/2},{x:L/2,y:A/2},{x:-L/2,y:A/2}],L,A,area:L*A};
+  return{pts:[{x:-L/2,y:-A/2},{x:L/2,y:-A/2},{x:L/2,y:A/2},{x:-L/2,y:A/2}],L,A,area:L*A};
 }
 
-/* ── MODO GEOMETRÍA ── */
-function setGeoMode(m){
-  geoMode=m;
-  document.getElementById('geo-rect').classList.toggle('active',m==='rect');
-  document.getElementById('geo-json').classList.toggle('active',m==='json');
-  document.getElementById('sec-rect').style.display=m==='rect'?'':'none';
-  document.getElementById('sec-json').style.display=m==='json'?'flex':'none';
-  if(m==='rect')poligonoJSON=null;
-  autoRender();
+function dentroPoligono(px,py,pts){
+  let inside=false;
+  for(let i=0,j=pts.length-1;i<pts.length;j=i++){
+    const xi=pts[i].x,yi=pts[i].y,xj=pts[j].x,yj=pts[j].y;
+    if(((yi>py)!==(yj>py))&&(px<(xj-xi)*(py-yi)/(yj-yi)+xi))inside=!inside;
+  }
+  return inside;
 }
-
-/* ── CARGAR JSON ── */
-function cargarJSON(input){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    try{
-      const data=JSON.parse(e.target.result);
-      let verts=data.vertices||data.puntos||data;
-      if(!Array.isArray(verts))throw new Error('Formato inválido — debe tener "vertices":[]');
-      verts=verts.map(v=>({x:parseFloat(v.x??v.X??0),y:parseFloat(v.y??v.Y??v.z??0)}));
-      if(verts.length<3)throw new Error('Mínimo 3 vértices requeridos');
-      poligonoJSON=verts;
-      if(data.altura_equipo!=null){document.getElementById('n-equipo').value=data.altura_equipo;document.getElementById('lbl-He').textContent=data.altura_equipo;}
-      if(data.altura_punta!=null){document.getElementById('n-punta').value=data.altura_punta;document.getElementById('lbl-Hp').textContent=data.altura_punta;}
-      const bb=bboxPoligono(poligonoJSON);
-      const badge=document.getElementById('json-badge');
-      badge.className='json-badge ok';
-      badge.textContent='✓ '+( data.nombre||file.name)+'\n'+verts.length+' vértices · '+(bb.maxX-bb.minX).toFixed(0)+'×'+(bb.maxY-bb.minY).toFixed(0)+' m';
-      renderizar();
-    }catch(err){
-      const badge=document.getElementById('json-badge');badge.className='json-badge err';badge.textContent='✗ '+err.message;poligonoJSON=null;
-    }
-    input.value='';
-  };
-  reader.readAsText(file);
-}
-
-/* ── EJEMPLO JSON ── */
-function descargarEjemplo(){
-  const ej={
-    "nombre":"Subestación Ejemplo — Forma en L",
-    "descripcion":"Vértices en metros. Polígono convexo o cóncavo, sentido antihorario.",
-    "altura_equipo":6,"altura_punta":8,
-    "vertices":[
-      {"x":0, "y":0},{"x":60,"y":0},{"x":60,"y":20},
-      {"x":30,"y":20},{"x":30,"y":50},{"x":0,"y":50}
-    ]
-  };
-  const blob=new Blob([JSON.stringify(ej,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='subestacion_L.json';a.click();
-}
+function distPtSegmento(px,py,ax,ay,bx,by){const dx=bx-ax,dy=by-ay;if(dx===0&&dy===0)return Math.hypot(px-ax,py-ay);const t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/(dx*dx+dy*dy)));return Math.hypot(px-(ax+t*dx),py-(ay+t*dy));}
 
 /* ── IEEE 998 ── */
-function resolverRcNewton(BIL,h,E0=1500){const target=BIL/E0;let Rc=target*0.5;for(let i=0;i<50;i++){const f=Rc*Math.log(2*h/Rc)-target;const fp=Math.log(2*h/Rc)-1;const dR=f/fp;Rc-=dR;if(Math.abs(dR)<1e-9)break;if(Rc<=0)Rc=0.001;}return Math.max(0.001,Rc);}
-function calcIEEE998(){const BIL=parseFloat(document.getElementById('n-bil').value)||650;const h=parseFloat(document.getElementById('n-h').value)||8;const r=parseFloat(document.getElementById('n-r').value)||0.0148;const k=currentK;const Rc=resolverRcNewton(BIL,h);const Zs=60*Math.sqrt(Math.log(2*h/Rc)*Math.log(2*h/r));const Is=(2.2*BIL)/Zs;const S=8*k*Math.pow(Is,0.65);return{Rc,Zs,Is,S};}
-function calcIEEE(){const{Rc,Zs,Is,S}=calcIEEE998();document.getElementById('cc-Rc').textContent=Rc.toFixed(4);document.getElementById('cc-Zs').textContent=Zs.toFixed(1);document.getElementById('cc-Is').textContent=Is.toFixed(3);document.getElementById('cc-S').textContent=S.toFixed(2);document.getElementById('radio-display').textContent=S.toFixed(1);document.getElementById('np-label').textContent=S<=20?'NP I':S<=30?'NP II':S<=45?'NP III':'NP IV';if(initialized)autoRender();}
+function resolverRcNewton(BIL,h,E0=1500){
+  const target=BIL/E0;let Rc=target*0.5;
+  for(let i=0;i<50;i++){const f=Rc*Math.log(2*h/Rc)-target;const fp=Math.log(2*h/Rc)-1;const dR=f/fp;Rc-=dR;if(Math.abs(dR)<1e-9)break;if(Rc<=0)Rc=0.001;}
+  return Math.max(0.001,Rc);
+}
+function calcIEEE998(){
+  const BIL=parseFloat(document.getElementById('n-bil').value)||650;
+  const h=parseFloat(document.getElementById('n-h').value)||8;
+  const r=parseFloat(document.getElementById('n-r').value)||0.0148;
+  const k=currentK;
+  const Rc=resolverRcNewton(BIL,h);
+  const Zs=60*Math.sqrt(Math.log(2*h/Rc)*Math.log(2*h/r));
+  const Is=(2.2*BIL)/Zs;
+  const S=8*k*Math.pow(Is,0.65);
+  return{Rc,Zs,Is,S};
+}
+function calcIEEE(){
+  const{Rc,Zs,Is,S}=calcIEEE998();
+  document.getElementById('cc-Rc').textContent=Rc.toFixed(4);
+  document.getElementById('cc-Zs').textContent=Zs.toFixed(1);
+  document.getElementById('cc-Is').textContent=Is.toFixed(3);
+  document.getElementById('cc-S').textContent=S.toFixed(2);
+  document.getElementById('radio-display').textContent=S.toFixed(1);
+  document.getElementById('np-label').textContent=S<=20?'NP I':S<=30?'NP II':S<=45?'NP III':'NP IV';
+  if(initialized)autoRender();
+}
 function setK(v){currentK=v;document.getElementById('k-cable').classList.toggle('active',v===1.0);document.getElementById('k-mastil').classList.toggle('active',v===1.2);calcIEEE();}
 function syncVal(a,b,c){const v=document.getElementById(a).value;document.getElementById(b).value=v;if(c)document.getElementById(c).textContent=v;}
 function setMode(m){currentMode=m;['auto','perim','grid'].forEach(x=>document.getElementById('mode-'+x).classList.toggle('active',x===m));autoRender();}
-function setTab(t){currentTab=t;document.getElementById('tab-planta').classList.toggle('active',t==='planta');document.getElementById('tab-corte').classList.toggle('active',t==='corte');const{S}=calcIEEE998();const geo=getGeometria();const H_punta=parseFloat(document.getElementById('n-punta').value)||8;const H_total=8+H_punta;const r_suelo=H_total<S?Math.sqrt(S*S-(S-H_total)*(S-H_total)):S;const{puntas}=calcularPosicionesPuntas(geo,H_punta,S,currentMode);actualizarVista2D(geo,r_suelo,puntas,S,H_total);}
+
+function setTab(t){
+  currentTab=t;
+  document.getElementById('tab-planta').classList.toggle('active',t==='planta');
+  document.getElementById('tab-corte').classList.toggle('active',t==='corte');
+  const{S}=calcIEEE998();
+  const geo=getGeometria();
+  const H_punta=parseFloat(document.getElementById('n-punta').value)||8;
+  const H_total=8+H_punta;
+  const r_suelo=H_total<S?Math.sqrt(S*S-(S-H_total)*(S-H_total)):S;
+  actualizarVista2D(geo,r_suelo,lastPuntas,S,H_total);
+}
+
 function autoRender(){if(!initialized)return;clearTimeout(renderTimer);renderTimer=setTimeout(renderizar,200);}
 
 /* ── POSICIONES DE PUNTAS ── */
@@ -367,56 +331,65 @@ function calcularPosicionesPuntas(geo,H_punta,R,modo){
   const r_suelo=H_total<R?Math.sqrt(R*R-(R-H_total)*(R-H_total)):R;
   const{L,A,pts}=geo;
   const puntas=[];
-  const enPoligono=(px,pz)=>dentroPoligono(px,pz,pts)||pts.some((a,i)=>{const b=pts[(i+1)%pts.length];return distPtSegmento(px,pz,a.x,a.y,b.x,b.y)<0.8;});
+  const enPoli=(px,pz)=>dentroPoligono(px,pz,pts)||pts.some((a,i)=>{const b=pts[(i+1)%pts.length];return distPtSegmento(px,pz,a.x,a.y,b.x,b.y)<0.8;});
 
   if(modo==='grid'){
     const paso=r_suelo*1.5;
     const nX=Math.max(2,Math.ceil(L/paso)+1),nZ=Math.max(2,Math.ceil(A/paso)+1);
-    for(let i=0;i<nX;i++)for(let j=0;j<nZ;j++){const px=-L/2+(i/(nX-1))*L,pz=-A/2+(j/(nZ-1))*A;if(enPoligono(px,pz))puntas.push({x:px,z:pz});}
+    for(let i=0;i<nX;i++)for(let j=0;j<nZ;j++){const px=-L/2+(i/(nX-1))*L,pz=-A/2+(j/(nZ-1))*A;if(enPoli(px,pz))puntas.push({x:px,z:pz});}
   } else {
-    // Siempre esquinas / vértices del polígono
     pts.forEach(p=>puntas.push({x:p.x,z:p.y}));
     if(modo==='auto'){
       const dMax=2*r_suelo*0.85;
-      // Puntos intermedios en aristas
       for(let i=0;i<pts.length;i++){
         const a=pts[i],b=pts[(i+1)%pts.length];
         const dist=Math.hypot(b.x-a.x,b.y-a.y);
         const n=Math.ceil(dist/dMax)-1;
         for(let k=1;k<n;k++){const t=k/n;puntas.push({x:a.x+(b.x-a.x)*t,z:a.y+(b.y-a.y)*t});}
       }
-      // Puntos interiores
       const paso=dMax*0.9;
       const nX=Math.ceil(L/paso),nZ=Math.ceil(A/paso);
       for(let ci=1;ci<nX;ci++)for(let cj=1;cj<nZ;cj++){
         const ix=-L/2+(ci/nX)*L,iz=-A/2+(cj/nZ)*A;
-        if(enPoligono(ix,iz)&&puntas.every(p=>Math.hypot(p.x-ix,p.z-iz)>r_suelo*0.9))
-          puntas.push({x:ix,z:iz});
+        if(enPoli(ix,iz)&&puntas.every(p=>Math.hypot(p.x-ix,p.z-iz)>r_suelo*0.9))puntas.push({x:ix,z:iz});
       }
     }
   }
-  return{puntas:puntas.filter(p=>enPoligono(p.x,p.z)),r_suelo};
+  return{puntas:puntas.filter(p=>enPoli(p.x,p.z)),r_suelo};
 }
 
 /* ── INIT THREE.JS ── */
 function init3D(){
   const container=document.getElementById('container3D');
-  scene=new THREE.Scene();scene.background=new THREE.Color(C.sky);scene.fog=new THREE.FogExp2(C.sky,0.005);
-  camera=new THREE.PerspectiveCamera(50,container.clientWidth/container.clientHeight,0.1,2000);camera.position.set(90,75,90);
-  renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(container.clientWidth,container.clientHeight);renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;container.appendChild(renderer.domElement);
-  controls=new THREE.OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=0.08;controls.minDistance=10;controls.maxDistance=600;controls.target.set(0,10,0);
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0xf5f3ff);
+  scene.fog=new THREE.FogExp2(0xf5f3ff,0.005);
+  camera=new THREE.PerspectiveCamera(50,container.clientWidth/container.clientHeight,0.1,2000);
+  camera.position.set(90,60,90);
+  renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(container.clientWidth,container.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.shadowMap.enabled=true;
+  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  container.appendChild(renderer.domElement);
+  controls=new THREE.OrbitControls(camera,renderer.domElement);
+  controls.enableDamping=true;controls.dampingFactor=0.08;
+  controls.minDistance=10;controls.maxDistance=600;
+  controls.target.set(0,10,0);
   renderer.domElement.addEventListener('dblclick',resetCamara);
   scene.add(new THREE.AmbientLight(0xffffff,0.9));
   const sun=new THREE.DirectionalLight(0xffffff,1.2);sun.position.set(60,120,40);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{near:0.1,far:600,left:-150,right:150,top:150,bottom:-150});scene.add(sun);
-  scene.add(new THREE.DirectionalLight(0xd8b4fe,0.4).position.set(-60,40,-60)&&new THREE.DirectionalLight(0xd8b4fe,0.4));
-  scene.add(new THREE.GridHelper(500,50,C.grid1,C.grid2));
-  const ground=new THREE.Mesh(new THREE.PlaneGeometry(500,500),new THREE.MeshStandardMaterial({color:C.ground,roughness:1}));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
-  substationGrp=new THREE.Group();protectionGrp=new THREE.Group();scene.add(substationGrp);scene.add(protectionGrp);
+  const fill=new THREE.DirectionalLight(0xd8b4fe,0.4);fill.position.set(-60,40,-60);scene.add(fill);
+  scene.add(new THREE.GridHelper(500,50,0xc4b5fd,0xddd6fe));
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(500,500),new THREE.MeshStandardMaterial({color:0xede9fe,roughness:1}));
+  ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
+  substationGrp=new THREE.Group();protectionGrp=new THREE.Group();
+  scene.add(substationGrp);scene.add(protectionGrp);
   (function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera);})();
   window.addEventListener('resize',()=>{camera.aspect=container.clientWidth/container.clientHeight;camera.updateProjectionMatrix();renderer.setSize(container.clientWidth,container.clientHeight);});
   initialized=true;
 }
-function resetCamara(){camera.position.set(90,75,90);controls.target.set(0,10,0);}
+function resetCamara(){camera.position.set(90,60,90);controls.target.set(0,10,0);}
 
 /* ── RENDERIZAR ── */
 function renderizar(){
@@ -424,16 +397,45 @@ function renderizar(){
   const H_col=8,H_equipo=parseFloat(document.getElementById('n-equipo').value)||6;
   const{Zs,Is,S:R}=calcIEEE998();
   const geo=getGeometria();
+
   document.getElementById('alert-box').classList.toggle('show',H_punta+H_col>=R*1.8);
   while(substationGrp.children.length)substationGrp.remove(substationGrp.children[0]);
   while(protectionGrp.children.length)protectionGrp.remove(protectionGrp.children[0]);
+
   const{puntas,r_suelo}=calcularPosicionesPuntas(geo,H_punta,R,currentMode);
+
+  // Save for 2D corte redraw
+  lastPuntas=puntas;lastR=R;lastHTotal=H_col+H_punta;
+
   construirSubestacion3D(geo,H_col,H_equipo);
+
   const showSpheres=document.getElementById('toggle-spheres').checked;
-  const showDomes=document.getElementById('toggle-domes').checked;
+  const showManta=document.getElementById('toggle-manta').checked;
   const sphereOpac=parseInt(document.getElementById('sphere-opacity').value)/100;
-  puntas.forEach(p=>construirModuloProteccion(p.x,p.z,H_col,H_punta,R,showSpheres,showDomes,sphereOpac));
-  puntas.forEach(p=>{const mat=new THREE.LineBasicMaterial({color:C.wire,transparent:true,opacity:0.4});const g2=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(p.x,0,p.z),new THREE.Vector3(p.x,H_col+H_punta,p.z)]);protectionGrp.add(new THREE.Line(g2,mat));});
+  const mantaOpac=parseInt(document.getElementById('manta-opacity').value)/100;
+
+  puntas.forEach(p=>construirMastil(p.x,p.z,H_col,H_punta));
+
+  if(showSpheres){
+    puntas.forEach(p=>{
+      const yPunta=H_col+H_punta+0.5;
+      const yCentro=yPunta+R;
+      const sGeo=new THREE.SphereGeometry(R,48,32);
+      const sphere=new THREE.Mesh(sGeo,new THREE.MeshPhongMaterial({color:C.sphere,transparent:true,opacity:sphereOpac,side:THREE.DoubleSide,shininess:80,specular:0xc7d2fe,depthWrite:false}));
+      sphere.position.set(p.x,yCentro,p.z);protectionGrp.add(sphere);
+      const wf=new THREE.Mesh(sGeo,new THREE.MeshBasicMaterial({color:C.sphereWF,wireframe:true,transparent:true,opacity:0.08}));
+      wf.position.set(p.x,yCentro,p.z);protectionGrp.add(wf);
+    });
+  }
+
+  if(showManta)construirManta3D(puntas,H_col,H_punta,R,geo,mantaOpac);
+
+  puntas.forEach(p=>{
+    const mat=new THREE.LineBasicMaterial({color:C.wire,transparent:true,opacity:0.3});
+    const g2=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(p.x,0,p.z),new THREE.Vector3(p.x,H_col+H_punta,p.z)]);
+    protectionGrp.add(new THREE.Line(g2,mat));
+  });
+
   const cobertura=estimarCobertura(geo,puntas,r_suelo);
   actualizarResultados(R,r_suelo,puntas.length,H_col+H_punta,cobertura,Zs,Is,geo);
   actualizarVista2D(geo,r_suelo,puntas,R,H_col+H_punta);
@@ -441,38 +443,60 @@ function renderizar(){
   document.getElementById('vp-ieee').innerHTML=`IEEE 998-2012<br>Zs = ${Zs.toFixed(0)} Ω<br>Is = ${Is.toFixed(3)} kA<br>S = ${R.toFixed(2)} m`;
 }
 
-/* ── SUBESTACIÓN 3D CON POLÍGONO ── */
+/* ── MÁSTIL Y PUNTA ── */
+function construirMastil(x,z,H_col,H_punta){
+  const g=protectionGrp;
+  const yBase=H_col,yPunta=yBase+H_punta;
+  const mastMat=new THREE.MeshStandardMaterial({color:C.mast,metalness:0.9,roughness:0.1,emissive:0x4c0090,emissiveIntensity:0.2});
+  const mast=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.09,H_punta+0.5,8),mastMat);
+  mast.position.set(x,yBase+H_punta/2+0.25,z);mast.castShadow=true;g.add(mast);
+  const punta=new THREE.Mesh(new THREE.SphereGeometry(0.22,12,12),mastMat);
+  punta.position.set(x,yPunta+0.5,z);g.add(punta);
+  const aura=new THREE.Mesh(new THREE.SphereGeometry(0.8,12,12),new THREE.MeshBasicMaterial({color:C.mast,transparent:true,opacity:0.15,side:THREE.DoubleSide}));
+  aura.position.set(x,yPunta+0.5,z);g.add(aura);
+}
+
+/* ── MANTA 3D ── */
+function construirManta3D(puntas,H_col,H_punta,R,geo,opac){
+  const g=protectionGrp;
+  const{L,A}=geo;
+  const yPunta=H_col+H_punta+0.5;
+  const yCentro=yPunta+R;
+  const resX=70,resZ=70;
+  const marginX=R,marginZ=R;
+  const x0=-L/2-marginX,x1=L/2+marginX;
+  const z0=-A/2-marginZ,z1=A/2+marginZ;
+  const dx=(x1-x0)/resX,dz=(z1-z0)/resZ;
+  const H=[];
+  for(let i=0;i<=resX;i++){H.push([]);for(let j=0;j<=resZ;j++){const wx=x0+i*dx,wz=z0+j*dz;let minH=null;puntas.forEach(p=>{const d2=(wx-p.x)*(wx-p.x)+(wz-p.z)*(wz-p.z);if(d2<R*R){const h=yCentro-Math.sqrt(R*R-d2);if(minH===null||h<minH)minH=h;}});H[i].push(minH);}}
+  const positions=[],normals=[],uvs=[];
+  const addTri=(ax,ay,az,bx,by,bz,cx2,cy,cz)=>{const ux=bx-ax,uy=by-ay,uz=bz-az;const vx=cx2-ax,vy=cy-ay,vz=cz-az;const nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;const nl=Math.sqrt(nx*nx+ny*ny+nz*nz)||1;[ax,ay,az,bx,by,bz,cx2,cy,cz].forEach((v)=>positions.push(v));for(let t=0;t<3;t++)normals.push(nx/nl,ny/nl,nz/nl);uvs.push(0,0,1,0,0,1);};
+  for(let i=0;i<resX;i++){for(let j=0;j<resZ;j++){const h00=H[i][j],h10=H[i+1][j],h01=H[i][j+1],h11=H[i+1][j+1];if(h00===null&&h10===null&&h01===null&&h11===null)continue;const x00=x0+i*dx,z00=z0+j*dz;const x10=x0+(i+1)*dx,z10=z0+j*dz;const x01=x0+i*dx,z01=z0+(j+1)*dz;const x11=x0+(i+1)*dx,z11=z0+(j+1)*dz;const y00=h00!==null?h00:0,y10=h10!==null?h10:0,y01=h01!==null?h01:0,y11=h11!==null?h11:0;const count=[h00,h10,h01,h11].filter(v=>v!==null).length;if(count<3)continue;addTri(x00,y00,z00,x10,y10,z10,x01,y01,z01);addTri(x10,y10,z10,x11,y11,z11,x01,y01,z01);}}
+  if(positions.length===0)return;
+  const geo2=new THREE.BufferGeometry();
+  geo2.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+  geo2.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));
+  geo2.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
+  geo2.computeVertexNormals();
+  const mantaMat=new THREE.MeshPhongMaterial({color:0x7c3aed,transparent:true,opacity:opac,side:THREE.DoubleSide,shininess:60,specular:0xc4b5fd,depthWrite:false});
+  protectionGrp.add(new THREE.Mesh(geo2,mantaMat));
+  const wfMat=new THREE.MeshBasicMaterial({color:0x9333ea,wireframe:true,transparent:true,opacity:0.10});
+  protectionGrp.add(new THREE.Mesh(geo2,wfMat));
+  puntas.forEach(p=>{const rSuelo=Math.sqrt(Math.max(0,R*R-yCentro*yCentro));if(rSuelo<=0)return;const circPts=[];for(let i=0;i<=72;i++){const a=(i/72)*Math.PI*2;circPts.push(new THREE.Vector3(p.x+rSuelo*Math.cos(a),0.05,p.z+rSuelo*Math.sin(a)));}g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(circPts),new THREE.LineBasicMaterial({color:0x7c3aed,transparent:true,opacity:0.5})));});
+}
+
+/* ── SUBESTACIÓN 3D ── */
 function construirSubestacion3D(geo,H_col,H_equipo){
   const g=substationGrp;
-  const mk=(geo2,color,x,y,z,rg=0.7,mt=0)=>{const m=new THREE.Mesh(geo2,new THREE.MeshStandardMaterial({color,roughness:rg,metalness:mt}));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;g.add(m);return m;};
+  const mk=(geo2,color,x,y,z,rg=0.7,mt=0,em=0,emC=0x000000)=>{const m=new THREE.Mesh(geo2,new THREE.MeshStandardMaterial({color,roughness:rg,metalness:mt,emissive:emC,emissiveIntensity:em}));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;g.add(m);return m;};
   const{pts,L,A}=geo;
-
-  // Piso extruido del polígono
   const shape=new THREE.Shape();shape.moveTo(pts[0].x,pts[0].y);for(let i=1;i<pts.length;i++)shape.lineTo(pts[i].x,pts[i].y);shape.closePath();
   const pisoGeo=new THREE.ExtrudeGeometry(shape,{depth:0.2,bevelEnabled:false});
   const piso=new THREE.Mesh(pisoGeo,new THREE.MeshStandardMaterial({color:C.concrete,roughness:0.9}));
   piso.rotation.x=-Math.PI/2;piso.position.y=0;piso.receiveShadow=true;g.add(piso);
-
-  // Muros perimetrales
-  for(let i=0;i<pts.length;i++){
-    const a=pts[i],b=pts[(i+1)%pts.length];
-    const len=Math.hypot(b.x-a.x,b.y-a.y);
-    const wall=new THREE.Mesh(new THREE.BoxGeometry(len,0.6,0.25),new THREE.MeshStandardMaterial({color:C.concrete,roughness:0.9}));
-    wall.position.set((a.x+b.x)/2,0.3,(a.y+b.y)/2);wall.rotation.y=-Math.atan2(b.y-a.y,b.x-a.x);g.add(wall);
-  }
-
-  // Columnas en vértices
+  for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];const len=Math.hypot(b.x-a.x,b.y-a.y);const wall=new THREE.Mesh(new THREE.BoxGeometry(len,0.6,0.25),new THREE.MeshStandardMaterial({color:C.concrete,roughness:0.9}));wall.position.set((a.x+b.x)/2,0.3,(a.y+b.y)/2);wall.rotation.y=-Math.atan2(b.y-a.y,b.x-a.x);g.add(wall);}
   pts.forEach(p=>mk(new THREE.BoxGeometry(0.3,H_col,0.3),C.steel,p.x,H_col/2,p.y,0.5,0.8));
-
-  // Vigas en aristas superiores
-  for(let i=0;i<pts.length;i++){
-    const a=pts[i],b=pts[(i+1)%pts.length];
-    const len=Math.hypot(b.x-a.x,b.y-a.y);
-    const viga=new THREE.Mesh(new THREE.BoxGeometry(len,0.2,0.2),new THREE.MeshStandardMaterial({color:C.beam,roughness:0.4,metalness:0.7}));
-    viga.position.set((a.x+b.x)/2,H_col,(a.y+b.y)/2);viga.rotation.y=-Math.atan2(b.y-a.y,b.x-a.x);g.add(viga);
-  }
-
-  // Transformador centrado
+  for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];const len=Math.hypot(b.x-a.x,b.y-a.y);const viga=new THREE.Mesh(new THREE.BoxGeometry(len,0.2,0.2),new THREE.MeshStandardMaterial({color:C.beam,roughness:0.4,metalness:0.7}));viga.position.set((a.x+b.x)/2,H_col,(a.y+b.y)/2);viga.rotation.y=-Math.atan2(b.y-a.y,b.x-a.x);g.add(viga);}
   const tW=Math.min(L*0.22,8),tD=Math.min(A*0.3,8),tH=H_equipo;
   mk(new THREE.BoxGeometry(tW,tH,tD),C.trafo,0,tH/2,0,0.5,0.5);
   for(let i=-2;i<=2;i++){mk(new THREE.BoxGeometry(0.12,tH*0.7,0.8),C.radiator,tW/2+0.06,tH*0.5,i*0.5,0.3,0.6);mk(new THREE.BoxGeometry(0.12,tH*0.7,0.8),C.radiator,-tW/2-0.06,tH*0.5,i*0.5,0.3,0.6);}
@@ -481,40 +505,10 @@ function construirSubestacion3D(geo,H_col,H_equipo){
   mk(new THREE.BoxGeometry(Math.min(L*0.4,12),0.06,0.06),C.copper,0,H_equipo+0.1,Math.min(A*0.12,4),0.3,0.9);
 }
 
-/* ── MÓDULO PROTECCIÓN ── */
-function construirModuloProteccion(x,z,H_col,H_punta,R,showSphere,showDome,sphereOpac){
-  const g=protectionGrp,yBase=H_col,yPunta=yBase+H_punta;
-  const mastMat=new THREE.MeshStandardMaterial({color:C.mast,metalness:0.9,roughness:0.1});
-  const mast=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.09,H_punta+0.5,8),mastMat);mast.position.set(x,yBase+H_punta/2+0.25,z);mast.castShadow=true;g.add(mast);
-  const punta=new THREE.Mesh(new THREE.SphereGeometry(0.18,12,12),mastMat);punta.position.set(x,yPunta+0.5,z);g.add(punta);
-  const aura=new THREE.Mesh(new THREE.SphereGeometry(0.5,12,12),new THREE.MeshBasicMaterial({color:C.mast,transparent:true,opacity:0.10,side:THREE.DoubleSide}));aura.position.set(x,yPunta+0.5,z);g.add(aura);
-
-  if(showSphere){
-    const yCentro=yPunta+0.5+R;
-    const sGeo=new THREE.SphereGeometry(R,48,32);
-    const sphere=new THREE.Mesh(sGeo,new THREE.MeshPhongMaterial({color:C.sphere,transparent:true,opacity:sphereOpac,side:THREE.DoubleSide,shininess:100,specular:0xc7d2fe}));sphere.position.set(x,yCentro,z);g.add(sphere);
-    const sWF=new THREE.Mesh(sGeo,new THREE.MeshBasicMaterial({color:C.sphereWF,wireframe:true,transparent:true,opacity:0.06}));sWF.position.set(x,yCentro,z);g.add(sWF);
-    const lG=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x,yPunta+0.5,z),new THREE.Vector3(x,yCentro,z)]);g.add(new THREE.Line(lG,new THREE.LineBasicMaterial({color:C.sphereWF,transparent:true,opacity:0.3})));
-  }
-  if(showDome){
-    const yCentro=yPunta+0.5+R;
-    const capts=[];for(let i=0;i<=48;i++){const yy=(i/48)*(yPunta+0.5);const dy=yCentro-yy;capts.push(new THREE.Vector2(Math.sqrt(Math.max(0,R*R-dy*dy)),yy));}capts.push(new THREE.Vector2(0,yPunta+0.5));
-    const capGeo=new THREE.LatheGeometry(capts,64);
-    const cap=new THREE.Mesh(capGeo,new THREE.MeshPhongMaterial({color:0x6d28d9,transparent:true,opacity:0.09,side:THREE.DoubleSide,shininess:120,specular:0xc4b5fd}));cap.position.set(x,0,z);g.add(cap);
-    const capWF=new THREE.Mesh(capGeo,new THREE.MeshBasicMaterial({color:0x7c3aed,wireframe:true,transparent:true,opacity:0.07}));capWF.position.set(x,0,z);g.add(capWF);
-    const rSuelo=Math.sqrt(Math.max(0,R*R-yCentro*yCentro));
-    const ring=new THREE.Mesh(new THREE.RingGeometry(Math.max(0.1,rSuelo-0.2),rSuelo+0.2,64),new THREE.MeshBasicMaterial({color:C.ring,transparent:true,opacity:0.45,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.set(x,0.06,z);g.add(ring);
-  }
-}
-
 /* ── COBERTURA ── */
 function estimarCobertura(geo,puntas,r_suelo){
   const{pts,L,A}=geo;const N=25;let total=0,cubiertos=0;
-  for(let i=0;i<=N;i++)for(let j=0;j<=N;j++){
-    const px=-L/2+(i/N)*L,pz=-A/2+(j/N)*A;
-    if(!dentroPoligono(px,pz,pts))continue;
-    total++;if(puntas.some(p=>Math.hypot(p.x-px,p.z-pz)<=r_suelo))cubiertos++;
-  }
+  for(let i=0;i<=N;i++)for(let j=0;j<=N;j++){const px=-L/2+(i/N)*L,pz=-A/2+(j/N)*A;if(!dentroPoligono(px,pz,pts))continue;total++;if(puntas.some(p=>Math.hypot(p.x-px,p.z-pz)<=r_suelo))cubiertos++;}
   return total===0?0:Math.round(cubiertos/total*100);
 }
 
@@ -536,8 +530,8 @@ function actualizarResultados(R,r_suelo,nPuntas,hTotal,cobertura,Zs,Is,geo){
   document.getElementById('r-F').textContent=F.toFixed(2)+' m';document.getElementById('r-F').className='stat-val';
   document.getElementById('r-D').textContent=fmt(D)+' m';document.getElementById('r-D').className=D<=K?'stat-val':'stat-val warn';
   const dkEl=document.getElementById('r-DK');
-  if(D<K){dkEl.textContent='✓ CUMPLE  D('+D.toFixed(2)+') < K('+K.toFixed(2)+')';dkEl.className='stat-val ok';}
-  else{dkEl.textContent='✗ NO CUMPLE  D('+D.toFixed(2)+') ≥ K('+K.toFixed(2)+')';dkEl.className='stat-val warn';}
+  if(D<K){dkEl.textContent='✓ CUMPLE D('+D.toFixed(2)+') < K('+K.toFixed(2)+')';dkEl.className='stat-val ok';}
+  else{dkEl.textContent='✗ NO CUMPLE D('+D.toFixed(2)+') ≥ K('+K.toFixed(2)+')';dkEl.className='stat-val warn';}
 }
 
 /* ── CANVAS 2D ── */
@@ -547,7 +541,7 @@ function actualizarVista2D(geo,r_suelo,puntas,R,H_total){
   canvas.width=W*window.devicePixelRatio;canvas.height=Hc*window.devicePixelRatio;
   ctx.scale(window.devicePixelRatio,window.devicePixelRatio);
   if(currentTab==='planta')dibujarPlanta(ctx,W,Hc,geo,r_suelo,puntas);
-  else dibujarCorte(ctx,W,Hc,geo.L,r_suelo,R,H_total);
+  else dibujarCorte(ctx,W,Hc,geo,r_suelo,R,H_total,puntas);
 }
 
 function dibujarPlanta(ctx,W,Hc,geo,r_suelo,puntas){
@@ -558,75 +552,277 @@ function dibujarPlanta(ctx,W,Hc,geo,r_suelo,puntas){
   ctx.strokeStyle='#e9d5ff';ctx.lineWidth=0.5;
   for(let i=0;i<W;i+=16){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,Hc);ctx.stroke();}
   for(let j=0;j<Hc;j+=16){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke();}
-
-  // Zona prot/expuesta píxel a píxel dentro del polígono
+  const bb={minX:Math.min(...pts.map(p=>p.x)),maxX:Math.max(...pts.map(p=>p.x)),minY:Math.min(...pts.map(p=>p.y)),maxY:Math.max(...pts.map(p=>p.y))};
   const step=3;
-  const bb=bboxPoligono(pts);
-  for(let wx=bb.minX;wx<bb.maxX;wx+=step/scale)
-    for(let wy=bb.minY;wy<bb.maxY;wy+=step/scale){
-      if(!dentroPoligono(wx,wy,pts))continue;
-      const cubierto=puntas.some(p=>Math.hypot(p.x-wx,p.z-wy)<=r_suelo);
-      ctx.fillStyle=cubierto?'rgba(5,150,105,0.15)':'rgba(220,38,38,0.20)';
-      ctx.fillRect(cx+wx*scale,cy+wy*scale,step+1,step+1);
-    }
-
-  // Círculos de cobertura
+  for(let wx=bb.minX;wx<bb.maxX;wx+=step/scale)for(let wy=bb.minY;wy<bb.maxY;wy+=step/scale){
+    if(!dentroPoligono(wx,wy,pts))continue;
+    const cubierto=puntas.some(p=>Math.hypot(p.x-wx,p.z-wy)<=r_suelo);
+    ctx.fillStyle=cubierto?'rgba(5,150,105,0.15)':'rgba(220,38,38,0.20)';
+    ctx.fillRect(cx+wx*scale,cy+wy*scale,step+1,step+1);
+  }
   puntas.forEach(p=>{
     const px=cx+p.x*scale,pz=cy+p.z*scale,r=r_suelo*scale;
     const grad=ctx.createRadialGradient(px,pz,0,px,pz,r);grad.addColorStop(0,'rgba(124,58,237,0.10)');grad.addColorStop(1,'rgba(124,58,237,0)');
     ctx.beginPath();ctx.arc(px,pz,r,0,Math.PI*2);ctx.fillStyle=grad;ctx.fill();
     ctx.strokeStyle='rgba(124,58,237,0.35)';ctx.lineWidth=1;ctx.stroke();
   });
-
-  // Contorno polígono
   ctx.beginPath();ctx.moveTo(cx+pts[0].x*scale,cy+pts[0].y*scale);
   for(let i=1;i<pts.length;i++)ctx.lineTo(cx+pts[i].x*scale,cy+pts[i].y*scale);
   ctx.closePath();ctx.strokeStyle='#6366f1';ctx.lineWidth=2;ctx.stroke();
-
-  // Vértices numerados
-  pts.forEach((p,i)=>{
-    const px=cx+p.x*scale,py=cy+p.y*scale;
-    ctx.beginPath();ctx.arc(px,py,3,0,Math.PI*2);ctx.fillStyle='#6366f1';ctx.fill();
-    ctx.fillStyle='#6366f1';ctx.font='bold 8px Share Tech Mono,monospace';ctx.textAlign='center';ctx.fillText('V'+(i+1),px,py-5);
-  });
-
-  // Puntas
-  puntas.forEach(p=>{
-    const px=cx+p.x*scale,pz=cy+p.z*scale;
-    ctx.beginPath();ctx.arc(px,pz,4,0,Math.PI*2);ctx.fillStyle='#7c3aed';ctx.fill();
-    ctx.beginPath();ctx.arc(px,pz,7,0,Math.PI*2);ctx.strokeStyle='rgba(124,58,237,0.3)';ctx.lineWidth=1;ctx.stroke();
-  });
-
-  // Escala
+  puntas.forEach(p=>{const px=cx+p.x*scale,pz=cy+p.z*scale;ctx.beginPath();ctx.arc(px,pz,4,0,Math.PI*2);ctx.fillStyle='#7c3aed';ctx.fill();});
   const em=10,ep=em*scale,ex=W-18,ey=Hc-14;
-  ctx.strokeStyle='#7c6aaa';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.moveTo(ex-ep,ey);ctx.lineTo(ex,ey);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(ex-ep,ey-4);ctx.lineTo(ex-ep,ey+4);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(ex,ey-4);ctx.lineTo(ex,ey+4);ctx.stroke();
+  ctx.strokeStyle='#7c6aaa';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(ex-ep,ey);ctx.lineTo(ex,ey);ctx.stroke();ctx.beginPath();ctx.moveTo(ex-ep,ey-4);ctx.lineTo(ex-ep,ey+4);ctx.stroke();ctx.beginPath();ctx.moveTo(ex,ey-4);ctx.lineTo(ex,ey+4);ctx.stroke();
   ctx.fillStyle='#7c6aaa';ctx.font='9px Share Tech Mono,monospace';ctx.textAlign='center';ctx.fillText(em+'m',ex-ep/2,ey-6);
   ctx.textAlign='left';ctx.fillStyle='rgba(124,58,237,0.7)';ctx.font='bold 8px Share Tech Mono,monospace';ctx.fillText('PLANTA — r='+r_suelo.toFixed(1)+'m',6,12);
   ctx.fillStyle='rgba(5,150,105,0.9)';ctx.fillRect(6,18,8,7);ctx.fillStyle='#555';ctx.font='8px Share Tech Mono,monospace';ctx.fillText(' protegido',14,25);
   ctx.fillStyle='rgba(220,38,38,0.7)';ctx.fillRect(6,28,8,7);ctx.fillStyle='#555';ctx.fillText(' expuesto',14,35);
 }
 
-function dibujarCorte(ctx,W,Hc,L,r_suelo,R,H_total){
-  const scaleH=Math.min((W*0.6)/L,(Hc*0.5)/R),cx=W/2,baseY=Hc*0.85;
+/* ══════════════════════════════════════════
+   CORTE 2D — Envolvente de esferas rodantes
+   Muestra TODAS las puntas proyectadas al eje X
+   Zona naranja = área protegida (como imagen de referencia)
+══════════════════════════════════════════ */
+function dibujarCorte(ctx,W,Hc,geo,r_suelo,R,H_total,puntas){
+  const{L}=geo;
+  const H_col=8;
+  const Ae=parseFloat(document.getElementById('n-equipo').value)||6;
+
+  /* ── Escala: ajustar para que todo el contenido entre ── */
+  // Necesitamos mostrar: L largo + margen R a cada lado, altura hasta H_total+R
+  const scX=(W*0.78)/(L+2*R);
+  const scY=(Hc*0.78)/(H_total+R+2);
+  const sc=Math.min(scX,scY);
+
+  const cx=W/2;
+  const baseY=Hc*0.88; // línea de suelo en canvas
+
+  /* ── Fondo ── */
   ctx.fillStyle='#f5f3ff';ctx.fillRect(0,0,W,Hc);
-  ctx.strokeStyle='#e9d5ff';ctx.lineWidth=0.5;for(let i=0;i<W;i+=16){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,Hc);ctx.stroke();}for(let j=0;j<Hc;j+=16){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke();}
-  ctx.strokeStyle='#6366f1';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,baseY);ctx.lineTo(W,baseY);ctx.stroke();
-  const subW=L*scaleH,H_col=8,subX=cx-subW/2,subH=H_col*scaleH;
-  ctx.fillStyle='rgba(99,102,241,0.06)';ctx.fillRect(subX,baseY-subH,subW,subH);ctx.strokeStyle='#6366f1';ctx.lineWidth=1.5;ctx.strokeRect(subX,baseY-subH,subW,subH);
-  [[subX,baseY-H_total*scaleH],[subX+subW,baseY-H_total*scaleH]].forEach(([px,py])=>{
-    ctx.strokeStyle='#a855f7';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(px,baseY);ctx.lineTo(px,py);ctx.stroke();
-    ctx.beginPath();ctx.arc(px,py,4,0,Math.PI*2);ctx.fillStyle='#7c3aed';ctx.fill();
-    const rS=R*scaleH,cY=py-rS;
-    ctx.beginPath();ctx.arc(px,cY,rS,0,Math.PI*2);ctx.strokeStyle='rgba(79,70,229,0.6)';ctx.lineWidth=1.5;ctx.stroke();ctx.fillStyle='rgba(79,70,229,0.07)';ctx.fill();
-    ctx.fillStyle='rgba(79,70,229,0.8)';ctx.font='bold 9px Share Tech Mono,monospace';ctx.textAlign='center';ctx.fillText('S='+R.toFixed(1)+'m',px,cY);
+  ctx.strokeStyle='#e9d5ff';ctx.lineWidth=0.5;
+  for(let i=0;i<W;i+=16){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,Hc);ctx.stroke();}
+  for(let j=0;j<Hc;j+=16){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke();}
+
+  /* ── Suelo ── */
+  ctx.strokeStyle='#4a4060';ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(0,baseY);ctx.lineTo(W,baseY);ctx.stroke();
+  // Tramado de suelo
+  ctx.strokeStyle='rgba(74,64,96,0.3)';ctx.lineWidth=1;
+  for(let i=0;i<W;i+=12){ctx.beginPath();ctx.moveTo(i,baseY);ctx.lineTo(i-8,baseY+10);ctx.stroke();}
+
+  /* ── Proyectar puntas al eje X: usar todas las X únicas ── */
+  // Para la vista de corte, proyectamos todas las puntas sobre el eje X
+  // y agrupamos las que están muy cerca (mismo X aprox)
+  let puntaXs=[];
+  if(puntas&&puntas.length>0){
+    // Ordenar por x
+    const sortedX=[...puntas].sort((a,b)=>a.x-b.x);
+    // Reducir duplicados muy cercanos (tolerancia 0.5m)
+    puntaXs=[sortedX[0].x];
+    for(let i=1;i<sortedX.length;i++){
+      if(Math.abs(sortedX[i].x-puntaXs[puntaXs.length-1])>0.5)
+        puntaXs.push(sortedX[i].x);
+    }
+  } else {
+    // Fallback: esquinas
+    puntaXs=[-L/2,L/2];
+  }
+
+  /* Conversión coord real → canvas */
+  const toCanvX=x=>cx+x*sc;
+  const toCanvY=y=>baseY-y*sc; // y real 0=suelo, positivo=arriba
+
+  /* ── Estructura de la subestación (edificio) ── */
+  const subL=L*sc;
+  const subH=H_col*sc;
+  const subX=cx-subL/2;
+
+  // Relleno edificio
+  ctx.fillStyle='rgba(99,102,241,0.08)';
+  ctx.fillRect(subX,toCanvY(H_col),subL,subH);
+
+  // Columnas de pórtico en cada punta X
+  puntaXs.forEach(px=>{
+    const canvX=toCanvX(px);
+    // Columna
+    ctx.fillStyle='rgba(99,102,241,0.5)';
+    ctx.fillRect(canvX-2,toCanvY(H_col),4,subH);
   });
-  ctx.fillStyle='rgba(5,150,105,0.08)';ctx.fillRect(subX,baseY-subH,subW,subH);
-  ctx.strokeStyle='#7c6aaa';ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(subX-30,baseY);ctx.lineTo(subX-30,baseY-H_total*scaleH);ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle='#7c6aaa';ctx.font='9px Share Tech Mono,monospace';ctx.textAlign='right';ctx.fillText('H='+H_total.toFixed(0)+'m',subX-32,(baseY+baseY-H_total*scaleH)/2);
-  ctx.fillStyle='rgba(124,58,237,0.7)';ctx.font='bold 8px Share Tech Mono,monospace';ctx.textAlign='left';ctx.fillText('CORTE — Radio IEEE 998',6,12);
+
+  // Borde edificio
+  ctx.strokeStyle='#6366f1';ctx.lineWidth=1.5;
+  ctx.strokeRect(subX,toCanvY(H_col),subL,subH);
+
+  // Equipo crítico (transformador)
+  const eqW=Math.min(subL*0.22,40);
+  const eqH=Ae*sc;
+  ctx.fillStyle='rgba(139,92,246,0.2)';
+  ctx.fillRect(cx-eqW/2,toCanvY(Ae),eqW,eqH);
+  ctx.strokeStyle='#8b5cf6';ctx.lineWidth=1;
+  ctx.strokeRect(cx-eqW/2,toCanvY(Ae),eqW,eqH);
+  ctx.fillStyle='rgba(139,92,246,0.6)';ctx.font='bold 7px Share Tech Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('TRAFO',cx,toCanvY(Ae/2)+3);
+
+  /* ── Calcular envolvente inferior de esferas ── */
+  // Centro de cada esfera (en coordenadas reales): yCentro = H_total + R
+  // (la esfera se apoya en la punta: punta a H_total, centro a H_total+R)
+  const yCentroReal=H_total+R;
+
+  const nSamples=300;
+  const xMinReal=-L/2-R*1.1, xMaxReal=L/2+R*1.1;
+  const envelopePts=[];
+  for(let si=0;si<=nSamples;si++){
+    const wx=xMinReal+(si/nSamples)*(xMaxReal-xMinReal);
+    let minY=null;
+    puntaXs.forEach(px=>{
+      const dx=wx-px;
+      if(Math.abs(dx)<R){
+        const yProt=yCentroReal-Math.sqrt(R*R-dx*dx);
+        if(minY===null||yProt<minY)minY=yProt;
+      }
+    });
+    envelopePts.push({wx,minY});
+  }
+
+  /* ── Zona protegida (naranja) = área bajo la envolvente ── */
+  ctx.beginPath();
+  let started=false;
+  // Recorrer de izquierda a derecha
+  for(let i=0;i<=nSamples;i++){
+    const{wx,minY}=envelopePts[i];
+    if(minY!==null){
+      const cx2=toCanvX(wx),cy2=toCanvY(minY);
+      if(!started){ctx.moveTo(cx2,cy2);started=true;}
+      else ctx.lineTo(cx2,cy2);
+    }
+  }
+  // Cerrar por el suelo
+  // ir de derecha a izquierda por el suelo
+  for(let i=nSamples;i>=0;i--){
+    const{wx,minY}=envelopePts[i];
+    if(minY!==null){ctx.lineTo(toCanvX(wx),baseY);}
+  }
+  ctx.closePath();
+  // Gradiente naranja-salmón como la imagen de referencia
+  const grad=ctx.createLinearGradient(0,toCanvY(H_total),0,baseY);
+  grad.addColorStop(0,'rgba(251,146,60,0.55)');
+  grad.addColorStop(1,'rgba(251,146,60,0.20)');
+  ctx.fillStyle=grad;
+  ctx.fill();
+
+  /* ── Dibujar cada esfera (círculo) ── */
+  puntaXs.forEach((px,idx)=>{
+    const canvX=toCanvX(px);
+    const canvYcentro=toCanvY(yCentroReal);
+    const rPx=R*sc;
+
+    // Relleno esfera — gradiente cálido beige/naranja como imagen
+    const sGrad=ctx.createRadialGradient(canvX-rPx*0.25,canvYcentro-rPx*0.25,rPx*0.05,canvX,canvYcentro,rPx);
+    sGrad.addColorStop(0,'rgba(255,220,160,0.55)');
+    sGrad.addColorStop(0.6,'rgba(255,180,90,0.30)');
+    sGrad.addColorStop(1,'rgba(255,150,60,0.05)');
+    ctx.beginPath();ctx.arc(canvX,canvYcentro,rPx,0,Math.PI*2);
+    ctx.fillStyle=sGrad;ctx.fill();
+
+    // Contorno esfera
+    ctx.beginPath();ctx.arc(canvX,canvYcentro,rPx,0,Math.PI*2);
+    ctx.strokeStyle='rgba(180,120,60,0.45)';ctx.lineWidth=1.2;
+    ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);
+
+    // Línea de radio R (solo en el último)
+    if(idx===puntaXs.length-1){
+      const ang=-Math.PI*0.35;
+      ctx.strokeStyle='rgba(139,92,246,0.8)';ctx.lineWidth=1.5;
+      ctx.beginPath();
+      ctx.moveTo(canvX,canvYcentro);
+      ctx.lineTo(canvX+Math.cos(ang)*rPx,canvYcentro+Math.sin(ang)*rPx);
+      ctx.stroke();
+      ctx.fillStyle='rgba(124,58,237,0.9)';ctx.font='bold 9px Share Tech Mono,monospace';ctx.textAlign='left';
+      const lx=canvX+Math.cos(ang)*rPx*0.55+3,ly=canvYcentro+Math.sin(ang)*rPx*0.55;
+      ctx.fillText('R='+R.toFixed(1)+'m',lx,ly);
+    }
+  });
+
+  /* ── Envolvente (línea azul como en la imagen) ── */
+  ctx.beginPath();started=false;
+  for(let i=0;i<=nSamples;i++){
+    const{wx,minY}=envelopePts[i];
+    if(minY!==null){
+      const cx2=toCanvX(wx),cy2=toCanvY(minY);
+      if(!started){ctx.moveTo(cx2,cy2);started=true;}
+      else ctx.lineTo(cx2,cy2);
+    } else {
+      started=false;
+    }
+  }
+  ctx.strokeStyle='rgba(56,189,248,0.85)';ctx.lineWidth=2;
+  ctx.setLineDash([7,3]);ctx.stroke();ctx.setLineDash([]);
+
+  /* ── Mástiles y puntas captadoras ── */
+  puntaXs.forEach(px=>{
+    const canvX=toCanvX(px);
+    const yTopMastil=toCanvY(H_col);
+    const yTip=toCanvY(H_total);
+
+    // Mástil (desde el pórtico hasta la punta)
+    ctx.strokeStyle='#7c3aed';ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(canvX,yTopMastil);ctx.lineTo(canvX,yTip);ctx.stroke();
+
+    // Punta captadora
+    ctx.beginPath();ctx.arc(canvX,yTip,4.5,0,Math.PI*2);
+    ctx.fillStyle='#7c3aed';ctx.fill();
+    ctx.strokeStyle='#c4b5fd';ctx.lineWidth=1;ctx.stroke();
+
+    // Aura
+    ctx.beginPath();ctx.arc(canvX,yTip,10,0,Math.PI*2);
+    ctx.fillStyle='rgba(124,58,237,0.12)';ctx.fill();
+  });
+
+  /* ── Cotas de altura ── */
+  const cotaX=toCanvX(puntaXs[0])-28;
+  ctx.strokeStyle='#7c6aaa';ctx.lineWidth=1;
+  // H_total
+  ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(cotaX,baseY);ctx.lineTo(cotaX,toCanvY(H_total));ctx.stroke();
+  ctx.setLineDash([]);
+  // flechas
+  const drawArrow=(x,y1,y2,label)=>{
+    ctx.strokeStyle='#7c6aaa';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,y1);ctx.lineTo(x,y2);ctx.stroke();
+    // punta
+    ctx.beginPath();ctx.moveTo(x-3,y2+6);ctx.lineTo(x,y2);ctx.lineTo(x+3,y2+6);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x-3,y1-6);ctx.lineTo(x,y1);ctx.lineTo(x+3,y1-6);ctx.stroke();
+    ctx.fillStyle='#7c6aaa';ctx.font='bold 9px Share Tech Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(label,x-5,(y1+y2)/2+3);
+  };
+  drawArrow(cotaX, baseY, toCanvY(H_total), 'H='+H_total.toFixed(0)+'m');
+  // Altura equipo
+  ctx.setLineDash([2,3]);
+  ctx.strokeStyle='rgba(139,92,246,0.5)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx+eqW/2+2,toCanvY(Ae));ctx.lineTo(cx+eqW/2+24,toCanvY(Ae));ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+eqW/2+2,baseY);ctx.lineTo(cx+eqW/2+24,baseY);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(139,92,246,0.8)';ctx.font='8px Share Tech Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('He='+Ae+'m',cx+eqW/2+27,toCanvY(Ae/2)+3);
+
+  /* ── Título y leyenda ── */
+  ctx.fillStyle='rgba(124,58,237,0.85)';ctx.font='bold 9px Share Tech Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('CORTE — IEEE 998-2012 · '+puntaXs.length+' punt. captadoras',6,12);
+
+  // Leyenda
+  const leyenda=[
+    {color:'rgba(251,146,60,0.6)',label:'Zona protegida'},
+    {color:'rgba(56,189,248,0.85)',label:'Envolvente manta',dash:true},
+    {color:'rgba(180,120,60,0.5)',label:'Esferas rodantes (R='+R.toFixed(1)+'m)',dash:true},
+    {color:'#7c3aed',label:'Puntas captadoras'},
+  ];
+  leyenda.forEach((l,i)=>{
+    const ly=22+i*11;
+    if(l.dash){ctx.strokeStyle=l.color;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);ctx.beginPath();ctx.moveTo(6,ly);ctx.lineTo(18,ly);ctx.stroke();ctx.setLineDash([]);}
+    else{ctx.fillStyle=l.color;ctx.fillRect(6,ly-5,12,7);}
+    ctx.fillStyle='#555';ctx.font='8px Share Tech Mono,monospace';ctx.textAlign='left';
+    ctx.fillText(l.label,21,ly+1);
+  });
 }
 
 window.addEventListener('load',()=>{init3D();calcIEEE();renderizar();});
