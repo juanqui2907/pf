@@ -13,62 +13,46 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 /* =====================================================
-   SPAT v7.0 — INTEGRADO EN TERRASHIELD
-   Paleta adaptada: morado/blanco → azul TerraShield
+   SPAT v7 — CSS integrado en TerraShield
    ===================================================== */
 .spat-wrap {
   display: grid;
   grid-template-columns: 280px 1fr 260px;
-  height: calc(100vh - 200px);
-  min-height: 540px;
-  gap: 0;
-  border: 1px solid var(--grey-line);
-  border-radius: var(--radius-md);
+  flex: 1;            /* llena el flex-container de #page-apant */
+  min-height: 0;      /* permite que flex-item se encoja */
   overflow: hidden;
-  background: var(--grey-bg);
-  margin-top: 12px;
+  border-top: 1px solid var(--grey-line);
 }
 .spat-panel {
   background: var(--white);
   border-right: 1px solid var(--grey-line);
   padding: 12px 13px;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
+  display: flex; flex-direction: column; gap: 9px;
 }
 .spat-panel:last-child { border-right: none; border-left: 1px solid var(--grey-line); }
 .spat-panel-title {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 3px;
-  color: var(--blue-main);
+  font-family: var(--font-mono); font-size: 9px;
+  letter-spacing: 3px; color: var(--blue-main);
   border-bottom: 1px solid var(--grey-line);
-  padding-bottom: 6px;
-  text-transform: uppercase;
+  padding-bottom: 6px; text-transform: uppercase;
 }
 .spat-ieee-section {
-  background: linear-gradient(135deg, rgba(10,61,145,0.04), rgba(47,111,204,0.04));
+  background: linear-gradient(135deg,rgba(10,61,145,0.04),rgba(47,111,204,0.04));
   border: 1px solid rgba(10,61,145,0.18);
-  border-radius: var(--radius-sm);
-  padding: 10px;
+  border-radius: var(--radius-sm); padding: 10px;
   display: flex; flex-direction: column; gap: 8px;
 }
 .spat-ieee-title {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  color: var(--blue-main);
-  letter-spacing: 2px;
+  font-family: var(--font-mono); font-size: 9px;
+  color: var(--blue-main); letter-spacing: 2px;
   display: flex; align-items: center; gap: 6px;
 }
 .spat-ieee-title::before { content:''; width:3px; height:3px; background:var(--blue-main); border-radius:50%; }
 .spat-calc-chain {
   display: flex; flex-direction: column; gap: 4px;
-  background: rgba(255,255,255,0.8);
-  border-radius: var(--radius-sm);
-  padding: 8px;
-  font-family: var(--font-mono);
-  font-size: 11px;
+  background: rgba(255,255,255,0.8); border-radius: var(--radius-sm);
+  padding: 8px; font-family: var(--font-mono); font-size: 11px;
 }
 .spat-calc-row {
   display: flex; justify-content: space-between; align-items: center;
@@ -80,162 +64,132 @@
 .spat-calc-formula { color: rgba(47,111,204,0.5); font-size: 9px; }
 .spat-field-group { display: flex; flex-direction: column; gap: 5px; }
 .spat-field-label {
-  font-size: 10px; letter-spacing: 1px;
-  color: var(--text-light);
-  font-family: var(--font-mono);
-  display: flex; justify-content: space-between;
+  font-size: 10px; letter-spacing: 1px; color: var(--text-light);
+  font-family: var(--font-mono); display: flex; justify-content: space-between;
 }
 .spat-field-label span { color: var(--blue-main); font-weight: bold; }
 .spat-wrap input[type="range"] {
-  width: 100%; -webkit-appearance: none;
-  height: 3px; background: var(--grey-line);
-  border-radius: 2px; cursor: pointer;
+  width: 100%; -webkit-appearance: none; height: 3px;
+  background: var(--grey-line); border-radius: 2px; cursor: pointer;
 }
 .spat-wrap input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 13px; height: 13px;
-  border-radius: 50%; background: var(--blue-main);
-  box-shadow: 0 0 8px rgba(10,61,145,0.4); cursor: pointer;
+  -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%;
+  background: var(--blue-main); box-shadow: 0 0 8px rgba(10,61,145,0.4); cursor: pointer;
 }
 .spat-wrap input[type="number"] {
   background: var(--grey-bg); border: 1px solid var(--grey-line);
-  color: var(--text-dark); padding: 5px 8px;
-  border-radius: var(--radius-sm); width: 100%;
-  font-family: var(--font-mono); font-size: 12px; transition: border 0.2s;
+  color: var(--text-dark); padding: 5px 8px; border-radius: var(--radius-sm);
+  width: 100%; font-family: var(--font-mono); font-size: 12px; transition: border .2s;
 }
 .spat-wrap input[type="number"]:focus {
   outline: none; border-color: var(--blue-main);
   box-shadow: 0 0 0 3px rgba(10,61,145,0.1);
 }
 .spat-radio-computed {
-  background: rgba(10,61,145,0.06);
-  border: 1.5px solid rgba(10,61,145,0.25);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
+  background: rgba(10,61,145,0.06); border: 1.5px solid rgba(10,61,145,0.25);
+  border-radius: var(--radius-sm); padding: 8px 10px;
   display: flex; justify-content: space-between; align-items: center;
   font-family: var(--font-mono);
 }
-.spat-radio-computed .label { font-size: 10px; color: var(--text-light); }
-.spat-radio-computed .value { font-size: 18px; color: var(--blue-main); font-weight: bold; }
-.spat-radio-computed .unit { font-size: 11px; color: var(--text-light); }
+.spat-radio-computed .rc-label { font-size: 10px; color: var(--text-light); }
+.spat-radio-computed .rc-value { font-size: 18px; color: var(--blue-main); font-weight: bold; }
+.spat-radio-computed .rc-unit  { font-size: 11px; color: var(--text-light); }
 .spat-btn {
-  padding: 8px 14px; border: none; border-radius: var(--radius-sm);
-  cursor: pointer; font-family: var(--font-title);
-  font-weight: 700; font-size: 12px; letter-spacing: 1.5px;
-  transition: all 0.2s; width: 100%;
+  padding: 8px 14px; border: none; border-radius: var(--radius-sm); cursor: pointer;
+  font-family: var(--font-title); font-weight: 700; font-size: 12px;
+  letter-spacing: 1.5px; transition: all .2s; width: 100%;
 }
-.spat-btn-primary {
-  background: var(--blue-main); color: #fff;
-  box-shadow: 0 4px 16px rgba(10,61,145,0.25);
-}
+.spat-btn-primary { background: var(--blue-main); color: #fff; box-shadow: 0 4px 16px rgba(10,61,145,0.25); }
 .spat-btn-primary:hover { background: var(--blue-deep); transform: translateY(-1px); }
-.spat-btn-secondary {
-  background: transparent; color: var(--text-mid);
-  border: 1px solid var(--grey-line);
-}
+.spat-btn-secondary { background: transparent; color: var(--text-mid); border: 1px solid var(--grey-line); }
 .spat-btn-secondary:hover { border-color: var(--blue-mid); color: var(--blue-mid); }
-.spat-mode-selector { display: flex; gap: 3px; }
+.spat-mode-sel { display: flex; gap: 3px; }
 .spat-mode-btn {
   flex: 1; padding: 6px; font-size: 10px; letter-spacing: 1px;
   background: var(--grey-bg); border: 1px solid var(--grey-line);
   color: var(--text-mid); cursor: pointer; border-radius: var(--radius-sm);
-  font-family: var(--font-mono); transition: all 0.2s;
+  font-family: var(--font-mono); transition: all .2s;
 }
-.spat-mode-btn.active {
-  background: rgba(10,61,145,0.1); border-color: var(--blue-main);
-  color: var(--blue-main); font-weight: bold;
-}
-.spat-toggle-row {
+.spat-mode-btn.active { background: rgba(10,61,145,0.1); border-color: var(--blue-main); color: var(--blue-main); font-weight: bold; }
+.spat-tog-row {
   display: flex; justify-content: space-between; align-items: center;
   font-family: var(--font-mono); font-size: 10px; color: var(--text-mid);
 }
-.spat-toggle { position: relative; width: 36px; height: 18px; }
-.spat-toggle input { opacity: 0; width: 0; height: 0; }
-.spat-toggle-slider {
+.spat-tog { position: relative; width: 36px; height: 18px; }
+.spat-tog input { opacity: 0; width: 0; height: 0; }
+.spat-tog-sl {
   position: absolute; cursor: pointer; inset: 0;
-  background: var(--grey-mid); border-radius: 18px; transition: 0.3s;
+  background: var(--grey-mid); border-radius: 18px; transition: .3s;
 }
-.spat-toggle-slider::before {
+.spat-tog-sl::before {
   position: absolute; content: ''; width: 12px; height: 12px;
-  left: 3px; top: 3px; background: white; border-radius: 50%; transition: 0.3s;
+  left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: .3s;
 }
-.spat-toggle input:checked + .spat-toggle-slider { background: var(--blue-main); }
-.spat-toggle input:checked + .spat-toggle-slider::before { transform: translateX(18px); }
+.spat-tog input:checked + .spat-tog-sl { background: var(--blue-main); }
+.spat-tog input:checked + .spat-tog-sl::before { transform: translateX(18px); }
+/* ── Viewport 3D ── */
 #spat-viewport {
   position: relative;
+  overflow: hidden;
   background: var(--blue-pale);
 }
-#spat-container3D { width: 100%; height: 100%; }
+#spat-container3D {
+  position: absolute;   /* llena 100% del viewport con medidas reales */
+  inset: 0;
+}
 .spat-vp-overlay {
-  position: absolute; top: 10px; left: 10px;
+  position: absolute; top: 10px; left: 10px; z-index: 2;
   font-family: var(--font-mono); font-size: 9px;
   color: var(--text-mid); pointer-events: none; line-height: 1.9;
   background: rgba(255,255,255,0.85); padding: 6px 10px;
   border-radius: var(--radius-sm); border: 1px solid var(--grey-line);
 }
 .spat-vp-mode {
-  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-  font-family: var(--font-mono); font-size: 10px;
-  color: var(--blue-main); letter-spacing: 2px; pointer-events: none;
+  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 2;
+  font-family: var(--font-mono); font-size: 10px; color: var(--blue-main);
+  letter-spacing: 2px; pointer-events: none;
   background: rgba(255,255,255,0.9); padding: 3px 10px;
   border-radius: 20px; border: 1px solid rgba(10,61,145,0.25); white-space: nowrap;
 }
 .spat-vp-ieee {
-  position: absolute; top: 10px; right: 10px;
-  font-family: var(--font-mono); font-size: 9px;
-  color: var(--blue-main); background: rgba(10,61,145,0.07);
-  border: 1px solid rgba(10,61,145,0.18); padding: 4px 8px;
-  border-radius: var(--radius-sm); pointer-events: none; line-height: 1.7;
+  position: absolute; top: 10px; right: 10px; z-index: 2;
+  font-family: var(--font-mono); font-size: 9px; color: var(--blue-main);
+  background: rgba(10,61,145,0.07); border: 1px solid rgba(10,61,145,0.18);
+  padding: 4px 8px; border-radius: var(--radius-sm);
+  pointer-events: none; line-height: 1.7;
 }
-.spat-results-card {
-  background: var(--grey-bg); border: 1px solid var(--grey-line);
-  border-radius: var(--radius-sm); padding: 10px;
-}
-.spat-results-card .card-t {
-  font-size: 9px; letter-spacing: 2px; color: var(--text-light);
-  font-family: var(--font-mono); margin-bottom: 8px;
-}
-.spat-stat-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 5px 0; border-bottom: 1px solid var(--grey-line); font-size: 12px;
-}
-.spat-stat-row:last-child { border-bottom: none; }
-.spat-stat-label { color: var(--text-mid); font-size: 11px; }
+/* ── Panel derecho ── */
+.spat-res-card { background: var(--grey-bg); border: 1px solid var(--grey-line); border-radius: var(--radius-sm); padding: 10px; }
+.spat-res-card .spat-ct { font-size: 9px; letter-spacing: 2px; color: var(--text-light); font-family: var(--font-mono); margin-bottom: 8px; }
+.spat-stat { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--grey-line); font-size: 12px; }
+.spat-stat:last-child { border-bottom: none; }
+.spat-stat-lbl { color: var(--text-mid); font-size: 11px; }
 .spat-stat-val { color: var(--blue-main); font-family: var(--font-mono); font-weight: bold; }
 .spat-stat-val.warn { color: var(--error); }
-.spat-stat-val.ok { color: var(--success); }
-.spat-legend-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-mid); }
-.spat-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.spat-tab-bar { display: flex; gap: 2px; margin-bottom: 4px; }
+.spat-stat-val.ok   { color: var(--success); }
+.spat-leg-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-mid); }
+.spat-leg-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.spat-tab-bar  { display: flex; gap: 2px; margin-bottom: 4px; }
 .spat-tab {
   flex: 1; padding: 5px; font-size: 10px; text-align: center; cursor: pointer;
   background: var(--grey-bg); border: 1px solid var(--grey-line);
-  border-radius: 3px; color: var(--text-mid); font-family: var(--font-mono); transition: all 0.2s;
+  border-radius: 3px; color: var(--text-mid); font-family: var(--font-mono); transition: all .2s;
 }
-.spat-tab.active {
-  background: rgba(10,61,145,0.08); border-color: var(--blue-main); color: var(--blue-main);
-}
-#spat-canvas2D {
-  width: 100%; aspect-ratio: 1;
-  background: var(--grey-bg); border-radius: var(--radius-sm);
-  border: 1px solid var(--grey-line);
-}
+.spat-tab.active { background: rgba(10,61,145,0.08); border-color: var(--blue-main); color: var(--blue-main); }
+#spat-canvas2D { width: 100%; aspect-ratio: 1; background: var(--grey-bg); border-radius: var(--radius-sm); border: 1px solid var(--grey-line); }
 .spat-sep { height: 1px; background: linear-gradient(90deg,transparent,var(--grey-line),transparent); flex-shrink: 0; }
-.spat-alert-box {
-  background: rgba(194,59,34,0.07); border: 1px solid rgba(194,59,34,0.3);
-  border-radius: var(--radius-sm); padding: 8px 10px; font-size: 11px;
-  color: var(--error); display: none;
-}
-.spat-alert-box.show { display: block; }
-.spat-badge-ieee {
-  font-family: var(--font-mono); font-size: 10px;
-  color: var(--blue-main); background: rgba(10,61,145,0.07);
-  border: 1px solid rgba(10,61,145,0.2); padding: 3px 8px;
-  border-radius: var(--radius-sm); letter-spacing: 1px;
-}
-.spat-header-row {
+.spat-alert { background: rgba(194,59,34,0.07); border: 1px solid rgba(194,59,34,0.3); border-radius: var(--radius-sm); padding: 8px 10px; font-size: 11px; color: var(--error); display: none; }
+.spat-alert.show { display: block; }
+/* Header del módulo */
+.spat-header {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 8px;
+  padding: 10px 16px 8px; flex-shrink: 0;
+  border-bottom: 1px solid var(--grey-line);
+  background: var(--white);
 }
+.spat-header h2 { font-family: var(--font-title); font-size: 1.1rem; letter-spacing: .06em; color: var(--blue-deep); font-weight: 700; margin: 0; }
+.spat-header p  { font-size: 0.72rem; color: var(--text-light); margin: 2px 0 0; }
+.spat-badge { font-family: var(--font-mono); font-size: 10px; color: var(--blue-main); background: rgba(10,61,145,0.07); border: 1px solid rgba(10,61,145,0.2); padding: 3px 8px; border-radius: var(--radius-sm); letter-spacing: 1px; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -535,42 +489,43 @@
       </div>
 
       <!-- PAGE: APANTALLAMIENTO — SPAT v7.0 integrado -->
-      <div id="page-apant" class="section-page" style="padding:0;overflow:hidden;display:flex;flex-direction:column;">
-        <div class="page-header" style="padding:16px 20px 10px;flex-shrink:0;">
-          <div class="spat-header-row">
-            <div>
-              <h1>Apantallamiento</h1>
-              <p>SPAT v7.0 — IEEE Std 998-2012 · Método Electrogeométrico · Esfera Rodante</p>
-            </div>
-            <span class="spat-badge-ieee">IEEE STD 998-2012 · EGM</span>
+      <div id="page-apant" class="section-page">
+
+        <!-- Cabecera del módulo -->
+        <div class="spat-header">
+          <div>
+            <h2>⚡ APANTALLAMIENTO</h2>
+            <p>SPAT v7.0 — IEEE Std 998-2012 · Método Electrogeométrico · Esfera Rodante</p>
           </div>
+          <span class="spat-badge">IEEE STD 998-2012 · EGM</span>
         </div>
 
-        <!-- SPAT INTERFACE -->
-        <div class="spat-wrap" style="flex:1;margin:0 12px 12px;">
+        <!-- Cuerpo: 3 columnas -->
+        <div class="spat-wrap">
 
-          <!-- PANEL IZQUIERDO -->
+          <!-- ── PANEL IZQUIERDO ── -->
           <div class="spat-panel">
             <div class="spat-panel-title">⚡ Geometría de Subestación</div>
+
             <div class="spat-field-group">
               <div class="spat-field-label">LARGO (m) <span id="lbl-L">50</span></div>
-              <input type="range" id="s-largo" min="10" max="200" value="50" oninput="spatSyncVal('s-largo','n-largo','lbl-L');spatCalcIEEE()">
-              <input type="number" id="n-largo" value="50" min="10" max="200" oninput="spatSyncVal('n-largo','s-largo','lbl-L');spatCalcIEEE()">
+              <input type="range" id="s-largo" min="10" max="200" value="50" oninput="spatSync('s-largo','n-largo','lbl-L');spatCalc()">
+              <input type="number" id="n-largo" value="50" min="10" max="200" oninput="spatSync('n-largo','s-largo','lbl-L');spatCalc()">
             </div>
             <div class="spat-field-group">
               <div class="spat-field-label">ANCHO (m) <span id="lbl-A">30</span></div>
-              <input type="range" id="s-ancho" min="10" max="150" value="30" oninput="spatSyncVal('s-ancho','n-ancho','lbl-A');spatCalcIEEE()">
-              <input type="number" id="n-ancho" value="30" min="10" max="150" oninput="spatSyncVal('n-ancho','s-ancho','lbl-A');spatCalcIEEE()">
+              <input type="range" id="s-ancho" min="10" max="150" value="30" oninput="spatSync('s-ancho','n-ancho','lbl-A');spatCalc()">
+              <input type="number" id="n-ancho" value="30" min="10" max="150" oninput="spatSync('n-ancho','s-ancho','lbl-A');spatCalc()">
             </div>
             <div class="spat-field-group">
               <div class="spat-field-label">ALTURA EQUIPO CRÍTICO (m) <span id="lbl-He">6</span></div>
-              <input type="range" id="s-equipo" min="1" max="30" value="6" oninput="spatSyncVal('s-equipo','n-equipo','lbl-He');spatCalcIEEE()">
-              <input type="number" id="n-equipo" value="6" min="1" max="30" oninput="spatSyncVal('n-equipo','s-equipo','lbl-He');spatCalcIEEE()">
+              <input type="range" id="s-equipo" min="1" max="30" value="6" oninput="spatSync('s-equipo','n-equipo','lbl-He');spatCalc()">
+              <input type="number" id="n-equipo" value="6" min="1" max="30" oninput="spatSync('n-equipo','s-equipo','lbl-He');spatCalc()">
             </div>
             <div class="spat-field-group">
               <div class="spat-field-label">ALTURA PUNTA CAPTADORA (m) <span id="lbl-Hp">8</span></div>
-              <input type="range" id="s-punta" min="1" max="25" value="8" oninput="spatSyncVal('s-punta','n-punta','lbl-Hp');spatCalcIEEE()">
-              <input type="number" id="n-punta" value="8" min="1" max="25" oninput="spatSyncVal('n-punta','s-punta','lbl-Hp');spatCalcIEEE()">
+              <input type="range" id="s-punta" min="1" max="25" value="8" oninput="spatSync('s-punta','n-punta','lbl-Hp');spatCalc()">
+              <input type="number" id="n-punta" value="8" min="1" max="25" oninput="spatSync('n-punta','s-punta','lbl-Hp');spatCalc()">
             </div>
 
             <div class="spat-sep"></div>
@@ -579,21 +534,21 @@
               <div class="spat-ieee-title">DATOS DE ENTRADA NORMA</div>
               <div class="spat-field-group">
                 <div class="spat-field-label">BIL (kV) <span id="lbl-BIL">650</span></div>
-                <input type="range" id="s-bil" min="95" max="1800" value="650" step="5" oninput="spatSyncVal('s-bil','n-bil','lbl-BIL');spatCalcIEEE()">
-                <input type="number" id="n-bil" value="650" min="95" max="1800" oninput="spatSyncVal('n-bil','s-bil','lbl-BIL');spatCalcIEEE()">
+                <input type="range" id="s-bil" min="95" max="1800" value="650" step="5" oninput="spatSync('s-bil','n-bil','lbl-BIL');spatCalc()">
+                <input type="number" id="n-bil" value="650" min="95" max="1800" oninput="spatSync('n-bil','s-bil','lbl-BIL');spatCalc()">
               </div>
               <div class="spat-field-group">
                 <div class="spat-field-label">h — Altura conductor (m) <span id="lbl-h">8</span></div>
-                <input type="range" id="s-h" min="1" max="30" value="8" oninput="spatSyncVal('s-h','n-h','lbl-h');spatCalcIEEE()">
-                <input type="number" id="n-h" value="8" min="1" max="30" oninput="spatSyncVal('n-h','s-h','lbl-h');spatCalcIEEE()">
+                <input type="range" id="s-h" min="1" max="30" value="8" oninput="spatSync('s-h','n-h','lbl-h');spatCalc()">
+                <input type="number" id="n-h" value="8" min="1" max="30" oninput="spatSync('n-h','s-h','lbl-h');spatCalc()">
               </div>
               <div class="spat-field-group">
                 <div class="spat-field-label">r — Radio conductor (m) <span id="lbl-r">0.0148</span></div>
-                <input type="number" id="n-r" value="0.0148" min="0.001" max="0.1" step="0.001" oninput="document.getElementById('lbl-r').textContent=this.value;spatCalcIEEE()">
+                <input type="number" id="n-r" value="0.0148" min="0.001" max="0.1" step="0.001" oninput="document.getElementById('lbl-r').textContent=this.value;spatCalc()">
               </div>
               <div class="spat-field-group">
                 <div class="spat-field-label">k — Factor tipo</div>
-                <div class="spat-mode-selector">
+                <div class="spat-mode-sel">
                   <button class="spat-mode-btn" id="k-cable" onclick="spatSetK(1.0)">CABLE k=1.0</button>
                   <button class="spat-mode-btn active" id="k-mastil" onclick="spatSetK(1.2)">MÁSTIL k=1.2</button>
                 </div>
@@ -610,100 +565,102 @@
 
             <div class="spat-radio-computed">
               <div>
-                <div class="label">RADIO DE ESFERA (IEEE 998)</div>
+                <div class="rc-label">RADIO DE ESFERA (IEEE 998)</div>
                 <div style="font-size:9px;color:rgba(10,61,145,0.6);font-family:var(--font-mono);margin-top:2px" id="np-label">NP —</div>
               </div>
               <div style="display:flex;align-items:baseline;gap:4px">
-                <div class="value" id="radio-display">—</div>
-                <div class="unit">m</div>
+                <div class="rc-value" id="radio-display">—</div>
+                <div class="rc-unit">m</div>
               </div>
             </div>
 
             <div class="spat-sep"></div>
             <div class="spat-panel-title">📐 Modo de Posición Punta</div>
-            <div class="spat-mode-selector">
-              <button class="spat-mode-btn active" id="mode-auto" onclick="spatSetMode('auto')">AUTO</button>
-              <button class="spat-mode-btn" id="mode-perim" onclick="spatSetMode('perim')">PERÍMETRO</button>
-              <button class="spat-mode-btn" id="mode-grid" onclick="spatSetMode('grid')">GRILLA</button>
+            <div class="spat-mode-sel">
+              <button class="spat-mode-btn active" id="mode-auto"  onclick="spatSetMode('auto')">AUTO</button>
+              <button class="spat-mode-btn"        id="mode-perim" onclick="spatSetMode('perim')">PERÍMETRO</button>
+              <button class="spat-mode-btn"        id="mode-grid"  onclick="spatSetMode('grid')">GRILLA</button>
             </div>
 
             <div class="spat-panel-title">👁 Visualización 3D</div>
-            <div class="spat-toggle-row">
+            <div class="spat-tog-row">
               <span>Esferas rodantes</span>
-              <label class="spat-toggle"><input type="checkbox" id="toggle-spheres" checked onchange="spatAutoRender()"><span class="spat-toggle-slider"></span></label>
+              <label class="spat-tog"><input type="checkbox" id="toggle-spheres" checked onchange="spatAutoRender()"><span class="spat-tog-sl"></span></label>
             </div>
-            <div class="spat-toggle-row">
+            <div class="spat-tog-row">
               <span>Manta de protección</span>
-              <label class="spat-toggle"><input type="checkbox" id="toggle-manta" checked onchange="spatAutoRender()"><span class="spat-toggle-slider"></span></label>
+              <label class="spat-tog"><input type="checkbox" id="toggle-manta" checked onchange="spatAutoRender()"><span class="spat-tog-sl"></span></label>
             </div>
-            <div class="spat-toggle-row">
+            <div class="spat-tog-row">
               <span>Opacidad esfera</span>
               <input type="range" id="sphere-opacity" min="3" max="35" value="15" style="width:80px" oninput="spatAutoRender()">
             </div>
-            <div class="spat-toggle-row">
+            <div class="spat-tog-row">
               <span>Opacidad manta</span>
               <input type="range" id="manta-opacity" min="5" max="50" value="22" style="width:80px" oninput="spatAutoRender()">
             </div>
 
-            <div class="spat-alert-box" id="alert-box">⚠ Altura total supera el radio. Verificar parámetros.</div>
-            <button class="spat-btn spat-btn-primary" onclick="spatRenderizar()">▶ CALCULAR Y RENDERIZAR</button>
-            <button class="spat-btn spat-btn-secondary" onclick="spatResetCamara()">↺ RESETEAR CÁMARA</button>
+            <div class="spat-alert" id="spat-alert">⚠ Altura total supera el radio. Verificar parámetros.</div>
+            <button class="spat-btn spat-btn-primary"   onclick="spatRender()">▶ CALCULAR Y RENDERIZAR</button>
+            <button class="spat-btn spat-btn-secondary" onclick="spatResetCam()">↺ RESETEAR CÁMARA</button>
 
             <div class="spat-sep"></div>
             <div class="spat-panel-title">LEYENDA</div>
             <div style="display:flex;flex-direction:column;gap:6px">
-              <div class="spat-legend-item"><div class="spat-legend-dot" style="background:#8FB3E8;opacity:0.9;border:2px solid #8FB3E8"></div> Esfera Rodante (imaginaria)</div>
-              <div class="spat-legend-item"><div class="spat-legend-dot" style="background:#38bdf8;opacity:0.7"></div> Manta / Zona de Protección</div>
-              <div class="spat-legend-item"><div class="spat-legend-dot" style="background:#2F6FCC"></div> Punta Captadora</div>
-              <div class="spat-legend-item"><div class="spat-legend-dot" style="background:#0A3D91"></div> Estructura Civil</div>
-              <div class="spat-legend-item"><div class="spat-legend-dot" style="background:#F5C400"></div> Transformador</div>
+              <div class="spat-leg-item"><div class="spat-leg-dot" style="background:#8FB3E8;border:2px solid #8FB3E8"></div>Esfera Rodante (imaginaria)</div>
+              <div class="spat-leg-item"><div class="spat-leg-dot" style="background:#38bdf8;opacity:.7"></div>Manta / Zona de Protección</div>
+              <div class="spat-leg-item"><div class="spat-leg-dot" style="background:#2F6FCC"></div>Punta Captadora</div>
+              <div class="spat-leg-item"><div class="spat-leg-dot" style="background:#0A3D91"></div>Estructura Civil</div>
+              <div class="spat-leg-item"><div class="spat-leg-dot" style="background:#F5C400"></div>Transformador</div>
             </div>
           </div>
 
-          <!-- VIEWPORT 3D -->
+          <!-- ── VIEWPORT 3D ── -->
           <div id="spat-viewport">
             <div id="spat-container3D"></div>
-            <div class="spat-vp-overlay" id="vp-info">MODO: —<br>PUNTAS: —<br>COB: —<br>R: —</div>
+            <div class="spat-vp-overlay" id="spat-info">MODO: —<br>PUNTAS: —<br>COB: —<br>R: —</div>
             <div class="spat-vp-mode">ÓRBITA · SCROLL ZOOM · DOBLE-CLIC RESET</div>
-            <div class="spat-vp-ieee" id="vp-ieee">—</div>
+            <div class="spat-vp-ieee" id="spat-ieee-info">—</div>
           </div>
 
-          <!-- PANEL DERECHO -->
+          <!-- ── PANEL DERECHO ── -->
           <div class="spat-panel">
             <div class="spat-panel-title">📊 Resultados</div>
-            <div class="spat-results-card">
-              <div class="card-t">PARÁMETROS IEEE 998</div>
-              <div class="spat-stat-row"><span class="spat-stat-label">Zs (impedancia corona)</span><span class="spat-stat-val" id="r-Zs">—</span></div>
-              <div class="spat-stat-row"><span class="spat-stat-label">Is (corriente permis.)</span><span class="spat-stat-val" id="r-Is">—</span></div>
-              <div class="spat-stat-row"><span class="spat-stat-label">S = Radio esfera</span><span class="spat-stat-val" id="r-S">—</span></div>
+
+            <div class="spat-res-card">
+              <div class="spat-ct">PARÁMETROS IEEE 998</div>
+              <div class="spat-stat"><span class="spat-stat-lbl">Zs (impedancia corona)</span><span class="spat-stat-val" id="r-Zs">—</span></div>
+              <div class="spat-stat"><span class="spat-stat-lbl">Is (corriente permis.)</span><span class="spat-stat-val" id="r-Is">—</span></div>
+              <div class="spat-stat"><span class="spat-stat-lbl">S = Radio esfera</span><span class="spat-stat-val" id="r-S">—</span></div>
             </div>
-            <div class="spat-results-card">
-              <div class="card-t">GEOMETRÍA DE PROTECCIÓN</div>
-              <div class="spat-stat-row"><span class="spat-stat-label">Radio eficaz en suelo</span><span class="spat-stat-val" id="r-r_suelo">—</span></div>
-              <div class="spat-stat-row"><span class="spat-stat-label">Puntas captadoras</span><span class="spat-stat-val" id="r-npuntas">—</span></div>
-              <div class="spat-stat-row"><span class="spat-stat-label">Altura total (pórtico+punta)</span><span class="spat-stat-val" id="r-htotal">—</span></div>
-              <div class="spat-stat-row"><span class="spat-stat-label">Cobertura estimada</span><span class="spat-stat-val ok" id="r-cobertura">—</span></div>
-              <div class="spat-stat-row"><span class="spat-stat-label">Área subestación</span><span class="spat-stat-val" id="r-area">—</span></div>
+            <div class="spat-res-card">
+              <div class="spat-ct">GEOMETRÍA DE PROTECCIÓN</div>
+              <div class="spat-stat"><span class="spat-stat-lbl">Radio eficaz en suelo</span><span class="spat-stat-val" id="r-rsuelo">—</span></div>
+              <div class="spat-stat"><span class="spat-stat-lbl">Puntas captadoras</span><span class="spat-stat-val" id="r-npuntas">—</span></div>
+              <div class="spat-stat"><span class="spat-stat-lbl">Altura total</span><span class="spat-stat-val" id="r-htotal">—</span></div>
+              <div class="spat-stat"><span class="spat-stat-lbl">Cobertura estimada</span><span class="spat-stat-val ok" id="r-cob">—</span></div>
+              <div class="spat-stat"><span class="spat-stat-lbl">Área subestación</span><span class="spat-stat-val" id="r-area">—</span></div>
             </div>
-            <div class="spat-results-card">
-              <div class="card-t">VERIFICACIÓN IEEE 998 (D &lt; K)</div>
-              <div class="spat-stat-row"><span class="spat-stat-label">K = H − A (sep. punta-equipo)</span><span class="spat-stat-val" id="r-K">—</span></div>
-              <div class="spat-stat-row"><span class="spat-stat-label">E = S − H</span><span class="spat-stat-val" id="r-E">—</span></div>
-              <div class="spat-stat-row"><span class="spat-stat-label">F = S − E</span><span class="spat-stat-val" id="r-F">—</span></div>
-              <div class="spat-stat-row"><span class="spat-stat-label">D = K − F (holgura)</span><span class="spat-stat-val" id="r-D">—</span></div>
-              <div class="spat-stat-row"><span class="spat-stat-label">Condición D &lt; K</span><span class="spat-stat-val" id="r-DK">—</span></div>
+            <div class="spat-res-card">
+              <div class="spat-ct">VERIFICACIÓN IEEE 998 (D &lt; K)</div>
+              <div class="spat-stat"><span class="spat-stat-lbl">K = H − A</span><span class="spat-stat-val" id="r-K">—</span></div>
+              <div class="spat-stat"><span class="spat-stat-lbl">E = S − H</span><span class="spat-stat-val" id="r-E">—</span></div>
+              <div class="spat-stat"><span class="spat-stat-lbl">F = S − E</span><span class="spat-stat-val" id="r-F">—</span></div>
+              <div class="spat-stat"><span class="spat-stat-lbl">D = K − F</span><span class="spat-stat-val" id="r-D">—</span></div>
+              <div class="spat-stat"><span class="spat-stat-lbl">Condición D &lt; K</span><span class="spat-stat-val" id="r-DK">—</span></div>
             </div>
+
             <div class="spat-sep"></div>
             <div class="spat-panel-title">🗺 PLANTA / CORTE 2D</div>
             <div class="spat-tab-bar">
               <div class="spat-tab active" id="tab-planta" onclick="spatSetTab('planta')">PLANTA</div>
-              <div class="spat-tab" id="tab-corte" onclick="spatSetTab('corte')">CORTE</div>
+              <div class="spat-tab"        id="tab-corte"  onclick="spatSetTab('corte')">CORTE</div>
             </div>
             <canvas id="spat-canvas2D"></canvas>
           </div>
 
         </div><!-- /spat-wrap -->
-      </div>
+      </div><!-- /page-apant -->
 
       <!-- PAGE: MALLA A TIERRA -->
       <div id="page-malla" class="section-page">
@@ -3317,38 +3274,46 @@ function mallaRenderPlots(payload, data) {
   mallaRender2D(payload, s3);
   mallaRender3D(payload, s3);
 }
+</script>
 
 <!-- ============================================================
-     SPAT v7.0 — JavaScript (integrado en TerraShield)
-     Todos los colores morado/blanco → paleta azul TerraShield
+     SPAT v7.0 — Motor Three.js + OrbitControls (inline)
+     Paleta azul TerraShield
      ============================================================ -->
 <script>
-(function(){const e=THREE;class t extends e.EventDispatcher{constructor(t,i){super();this.object=t;this.domElement=i;this.enabled=true;this.target=new e.Vector3();this.minDistance=0;this.maxDistance=Infinity;this.minPolarAngle=0;this.maxPolarAngle=Math.PI;this.enableDamping=false;this.dampingFactor=0.05;this.enableZoom=true;this.zoomSpeed=1;this.enableRotate=true;this.rotateSpeed=1;this.enablePan=true;this.panSpeed=1;this.screenSpacePanning=true;const r=new e.Vector2(),s=new e.Vector2(),n=new e.Vector2();let o=0,a=0,l=1,c=new e.Vector3(),h=new e.Spherical(),d=new e.Spherical(),p=new e.Vector3(),f=new e.Vector2(),m=new e.Vector2();const V=e=>{if(this.enabled===false)return;if(e.type==='wheel'){if(this.enableZoom===false)return;e.preventDefault();if(e.deltaY<0)l/=Math.pow(0.95,this.zoomSpeed);else if(e.deltaY>0)l*=Math.pow(0.95,this.zoomSpeed);}};const E=e=>{if(this.enabled===false)return;e.preventDefault();if(e.touches.length===1){s.set(e.touches[0].pageX,e.touches[0].pageY);n.subVectors(s,r);o-=(n.x/i.clientHeight)*Math.PI*this.rotateSpeed;a-=(n.y/i.clientHeight)*Math.PI*this.rotateSpeed;}r.copy(s);this.update();};const T=e=>{if(this.enabled===false)return;if(e.touches.length===1){r.set(e.touches[0].pageX,e.touches[0].pageY);s.copy(r);}};i.addEventListener('wheel',V,{passive:false});i.addEventListener('touchstart',T,{passive:false});i.addEventListener('touchmove',E,{passive:false});let A=false,L=false;const M=e=>{if(!this.enabled)return;if(e.button===0){A=true;r.set(e.clientX,e.clientY);}if(e.button===2){L=true;f.set(e.clientX,e.clientY);}};const S=e=>{if(!this.enabled)return;if(A){s.set(e.clientX,e.clientY);n.subVectors(s,r);o-=(n.x/i.clientHeight)*Math.PI*this.rotateSpeed;a-=(n.y/i.clientHeight)*Math.PI*this.rotateSpeed;r.copy(s);}if(L){m.set(e.clientX,e.clientY);const t=new e.Vector2().subVectors(m,f);if(this.screenSpacePanning){p.setFromMatrixColumn(this.object.matrix,0);p.multiplyScalar(-t.x*(new e.Vector3().subVectors(this.object.position,this.target).length()/i.clientHeight)*this.panSpeed);c.add(p);p.setFromMatrixColumn(this.object.matrix,1);p.multiplyScalar(t.y*(new e.Vector3().subVectors(this.object.position,this.target).length()/i.clientHeight)*this.panSpeed);c.add(p);}f.copy(m);}};const P=()=>{A=false;L=false;};i.addEventListener('mousedown',M);i.addEventListener('mousemove',S);i.addEventListener('mouseup',P);this.update=()=>{const r=new e.Spherical();r.setFromVector3(new e.Vector3().subVectors(this.object.position,this.target));if(this.enableDamping){r.theta+=o*this.dampingFactor;r.phi+=a*this.dampingFactor;o*=(1-this.dampingFactor);a*=(1-this.dampingFactor);}else{r.theta+=o;r.phi+=a;o=0;a=0;}r.phi=Math.max(this.minPolarAngle,Math.min(this.maxPolarAngle,r.phi));r.makeSafe();r.radius*=l;r.radius=Math.max(this.minDistance,Math.min(this.maxDistance,r.radius));l=1;this.target.add(c);c.set(0,0,0);const s=new e.Vector3().setFromSpherical(r).add(this.target);this.object.position.copy(s);this.object.lookAt(this.target);this.object.updateMatrixWorld();return false;};this.dispose=()=>{i.removeEventListener('wheel',V);i.removeEventListener('mousedown',M);i.removeEventListener('mousemove',S);i.removeEventListener('mouseup',P);i.removeEventListener('touchstart',T);i.removeEventListener('touchmove',E);};}}THREE.OrbitControls=t;})();
+/* ── OrbitControls inline ── */
+(function(){const e=THREE;class t extends e.EventDispatcher{constructor(t,i){super();this.object=t;this.domElement=i;this.enabled=true;this.target=new e.Vector3();this.minDistance=0;this.maxDistance=Infinity;this.minPolarAngle=0;this.maxPolarAngle=Math.PI;this.enableDamping=false;this.dampingFactor=0.05;this.enableZoom=true;this.zoomSpeed=1;this.enableRotate=true;this.rotateSpeed=1;this.enablePan=true;this.panSpeed=1;this.screenSpacePanning=true;const r=new e.Vector2(),s=new e.Vector2(),n=new e.Vector2();let o=0,a=0,l=1,c=new e.Vector3(),h=new e.Spherical(),d=new e.Spherical(),p=new e.Vector3(),f=new e.Vector2(),m=new e.Vector2();const V=e=>{if(!this.enabled)return;if(e.type==='wheel'){if(!this.enableZoom)return;e.preventDefault();if(e.deltaY<0)l/=Math.pow(0.95,this.zoomSpeed);else if(e.deltaY>0)l*=Math.pow(0.95,this.zoomSpeed);}};const E=e=>{if(!this.enabled)return;e.preventDefault();if(e.touches.length===1){s.set(e.touches[0].pageX,e.touches[0].pageY);n.subVectors(s,r);o-=(n.x/i.clientHeight)*Math.PI*this.rotateSpeed;a-=(n.y/i.clientHeight)*Math.PI*this.rotateSpeed;}r.copy(s);this.update();};const T=e=>{if(!this.enabled)return;if(e.touches.length===1){r.set(e.touches[0].pageX,e.touches[0].pageY);s.copy(r);}};i.addEventListener('wheel',V,{passive:false});i.addEventListener('touchstart',T,{passive:false});i.addEventListener('touchmove',E,{passive:false});let A=false,L=false;const M=e=>{if(!this.enabled)return;if(e.button===0){A=true;r.set(e.clientX,e.clientY);}if(e.button===2){L=true;f.set(e.clientX,e.clientY);}};const S=e=>{if(!this.enabled)return;if(A){s.set(e.clientX,e.clientY);n.subVectors(s,r);o-=(n.x/i.clientHeight)*Math.PI*this.rotateSpeed;a-=(n.y/i.clientHeight)*Math.PI*this.rotateSpeed;r.copy(s);}if(L){m.set(e.clientX,e.clientY);const t=new e.Vector2().subVectors(m,f);if(this.screenSpacePanning){p.setFromMatrixColumn(this.object.matrix,0);p.multiplyScalar(-t.x*(new e.Vector3().subVectors(this.object.position,this.target).length()/i.clientHeight)*this.panSpeed);c.add(p);p.setFromMatrixColumn(this.object.matrix,1);p.multiplyScalar(t.y*(new e.Vector3().subVectors(this.object.position,this.target).length()/i.clientHeight)*this.panSpeed);c.add(p);}f.copy(m);}};const P=()=>{A=false;L=false;};i.addEventListener('mousedown',M);i.addEventListener('mousemove',S);i.addEventListener('mouseup',P);this.update=()=>{const r=new e.Spherical();r.setFromVector3(new e.Vector3().subVectors(this.object.position,this.target));if(this.enableDamping){r.theta+=o*this.dampingFactor;r.phi+=a*this.dampingFactor;o*=(1-this.dampingFactor);a*=(1-this.dampingFactor);}else{r.theta+=o;r.phi+=a;o=0;a=0;}r.phi=Math.max(this.minPolarAngle,Math.min(this.maxPolarAngle,r.phi));r.makeSafe();r.radius*=l;r.radius=Math.max(this.minDistance,Math.min(this.maxDistance,r.radius));l=1;this.target.add(c);c.set(0,0,0);const s=new e.Vector3().setFromSpherical(r).add(this.target);this.object.position.copy(s);this.object.lookAt(this.target);this.object.updateMatrixWorld();return false;};this.dispose=()=>{i.removeEventListener('wheel',V);i.removeEventListener('mousedown',M);i.removeEventListener('mousemove',S);i.removeEventListener('mouseup',P);i.removeEventListener('touchstart',T);i.removeEventListener('touchmove',E);};}}THREE.OrbitControls=t;})();
 </script>
 <script>
-/* ══ SPAT v7.0 — Integrado en TerraShield ══
-   Paleta: morado/blanco → azul TerraShield */
-let spatScene,spatCamera,spatRenderer,spatControls,spatSubGrp,spatProtGrp;
-let spatMode='auto',spatK=1.2,spatRenderTimer=null,spatInited=false,spatTab='planta';
-let spatLastPuntas=[],spatLastR=0,spatLastHTotal=0;
+/* ══════════════════════════════════════════════
+   SPAT v7.0 — integrado en TerraShield
+   Paleta azul TerraShield (sin morado)
+   ══════════════════════════════════════════════ */
 
-/* Paleta azul TerraShield */
-const SC={
-  sphere:0x2F6FCC,  sphereWF:0x8FB3E8,
+/* ── Estado global (prefijo "spat" para no colisionar) ── */
+window.spatInited = false;
+let _sc, _cam, _ren, _ctrl, _subGrp, _protGrp;
+let _mode = 'auto', _kFactor = 1.2, _rTimer = null, _tab = 'planta';
+let _lastPuntas = [], _lastR = 0, _lastHTotal = 0;
+
+/* Paleta de colores 3D — azul TerraShield */
+const SP = {
+  sphere:0x2F6FCC, sphereWF:0x8FB3E8,
   mast:0x2F6FCC,
-  steel:0x0A3D91,  beam:0x8FB3E8,  concrete:0xD6E4F7,
-  trafo:0xF5C400,  radiator:0xC49A00,  insulator:0xD6E4F7,  copper:0x8FB3E8,
+  steel:0x0A3D91, beam:0x8FB3E8, concrete:0xD6E4F7,
+  trafo:0xF5C400, radiator:0xC49A00, insulator:0xD6E4F7, copper:0x8FB3E8,
   ground:0xE9EEF5, sky:0xD6E4F7,
-  grid1:0x8FB3E8,  grid2:0xD6E4F7,
-  wire:0x2F6FCC,   manta:0x0A3D91,
+  grid1:0x8FB3E8, grid2:0xD0DAE8,
+  wire:0x2F6FCC, manta:0x0A3D91,
 };
 
-function spatGetGeo(){
-  const L=parseFloat(document.getElementById('n-largo').value)||50;
-  const A=parseFloat(document.getElementById('n-ancho').value)||30;
-  return{pts:[{x:-L/2,y:-A/2},{x:L/2,y:-A/2},{x:L/2,y:A/2},{x:-L/2,y:A/2}],L,A,area:L*A};
+/* ── Helpers geométricos ── */
+function _getGeo() {
+  const L = +document.getElementById('n-largo').value  || 50;
+  const A = +document.getElementById('n-ancho').value  || 30;
+  return { pts:[{x:-L/2,y:-A/2},{x:L/2,y:-A/2},{x:L/2,y:A/2},{x:-L/2,y:A/2}], L, A, area:L*A };
 }
-function spatDentroPoligono(px,py,pts){
+function _inPoly(px,py,pts){
   let inside=false;
   for(let i=0,j=pts.length-1;i<pts.length;j=i++){
     const xi=pts[i].x,yi=pts[i].y,xj=pts[j].x,yj=pts[j].y;
@@ -3356,408 +3321,537 @@ function spatDentroPoligono(px,py,pts){
   }
   return inside;
 }
-function spatDistSeg(px,py,ax,ay,bx,by){const dx=bx-ax,dy=by-ay;if(dx===0&&dy===0)return Math.hypot(px-ax,py-ay);const t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/(dx*dx+dy*dy)));return Math.hypot(px-(ax+t*dx),py-(ay+t*dy));}
+function _distSeg(px,py,ax,ay,bx,by){
+  const dx=bx-ax,dy=by-ay;
+  if(!dx&&!dy)return Math.hypot(px-ax,py-ay);
+  const t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/(dx*dx+dy*dy)));
+  return Math.hypot(px-(ax+t*dx),py-(ay+t*dy));
+}
 
-function spatResolverRc(BIL,h,E0=1500){
-  const target=BIL/E0;let Rc=target*0.5;
-  for(let i=0;i<50;i++){const f=Rc*Math.log(2*h/Rc)-target;const fp=Math.log(2*h/Rc)-1;const dR=f/fp;Rc-=dR;if(Math.abs(dR)<1e-9)break;if(Rc<=0)Rc=0.001;}
+/* ── IEEE 998-2012 ── */
+function _solveRc(BIL,h,E0=1500){
+  const tgt=BIL/E0; let Rc=tgt*0.5;
+  for(let i=0;i<50;i++){
+    const f=Rc*Math.log(2*h/Rc)-tgt;
+    const fp=Math.log(2*h/Rc)-1;
+    const dR=f/fp; Rc-=dR;
+    if(Math.abs(dR)<1e-9)break;
+    if(Rc<=0)Rc=0.001;
+  }
   return Math.max(0.001,Rc);
 }
-function spatCalcIEEE998(){
-  const BIL=parseFloat(document.getElementById('n-bil').value)||650;
-  const h=parseFloat(document.getElementById('n-h').value)||8;
-  const r=parseFloat(document.getElementById('n-r').value)||0.0148;
-  const k=spatK;
-  const Rc=spatResolverRc(BIL,h);
-  const Zs=60*Math.sqrt(Math.log(2*h/Rc)*Math.log(2*h/r));
-  const Is=(2.2*BIL)/Zs;
-  const S=8*k*Math.pow(Is,0.65);
-  return{Rc,Zs,Is,S};
+function _ieee998(){
+  const BIL = +document.getElementById('n-bil').value || 650;
+  const h   = +document.getElementById('n-h').value   || 8;
+  const r   = +document.getElementById('n-r').value   || 0.0148;
+  const Rc  = _solveRc(BIL,h);
+  const Zs  = 60*Math.sqrt(Math.log(2*h/Rc)*Math.log(2*h/r));
+  const Is  = (2.2*BIL)/Zs;
+  const S   = 8*_kFactor*Math.pow(Is,0.65);
+  return {Rc,Zs,Is,S};
 }
-function spatCalcIEEE(){
-  const{Rc,Zs,Is,S}=spatCalcIEEE998();
+
+/* ── Controles UI ── */
+function spatSync(a,b,c){
+  const v=document.getElementById(a).value;
+  document.getElementById(b).value=v;
+  if(c)document.getElementById(c).textContent=v;
+}
+function spatCalc(){
+  const{Rc,Zs,Is,S}=_ieee998();
   document.getElementById('cc-Rc').textContent=Rc.toFixed(4);
   document.getElementById('cc-Zs').textContent=Zs.toFixed(1);
   document.getElementById('cc-Is').textContent=Is.toFixed(3);
   document.getElementById('cc-S').textContent=S.toFixed(2);
   document.getElementById('radio-display').textContent=S.toFixed(1);
   document.getElementById('np-label').textContent=S<=20?'NP I':S<=30?'NP II':S<=45?'NP III':'NP IV';
-  if(spatInited)spatAutoRender();
+  if(window.spatInited)spatAutoRender();
 }
-function spatSetK(v){spatK=v;document.getElementById('k-cable').classList.toggle('active',v===1.0);document.getElementById('k-mastil').classList.toggle('active',v===1.2);spatCalcIEEE();}
-function spatSyncVal(a,b,c){const v=document.getElementById(a).value;document.getElementById(b).value=v;if(c)document.getElementById(c).textContent=v;}
-function spatSetMode(m){spatMode=m;['auto','perim','grid'].forEach(x=>document.getElementById('mode-'+x).classList.toggle('active',x===m));spatAutoRender();}
+function spatSetK(v){
+  _kFactor=v;
+  document.getElementById('k-cable').classList.toggle('active',v===1.0);
+  document.getElementById('k-mastil').classList.toggle('active',v===1.2);
+  spatCalc();
+}
+function spatSetMode(m){
+  _mode=m;
+  ['auto','perim','grid'].forEach(x=>document.getElementById('mode-'+x).classList.toggle('active',x===m));
+  spatAutoRender();
+}
 function spatSetTab(t){
-  spatTab=t;
+  _tab=t;
   document.getElementById('tab-planta').classList.toggle('active',t==='planta');
   document.getElementById('tab-corte').classList.toggle('active',t==='corte');
-  const{S}=spatCalcIEEE998();
-  const geo=spatGetGeo();
-  const H_punta=parseFloat(document.getElementById('n-punta').value)||8;
-  const H_total=8+H_punta;
-  const r_suelo=H_total<S?Math.sqrt(S*S-(S-H_total)*(S-H_total)):S;
-  spatVista2D(geo,r_suelo,spatLastPuntas,S,H_total);
+  const{S}=_ieee998();
+  const geo=_getGeo();
+  const Hp=+document.getElementById('n-punta').value||8;
+  const Ht=8+Hp;
+  const rs=Ht<S?Math.sqrt(S*S-(S-Ht)*(S-Ht)):S;
+  _draw2D(geo,rs,_lastPuntas,S,Ht);
 }
-function spatAutoRender(){if(!spatInited)return;clearTimeout(spatRenderTimer);spatRenderTimer=setTimeout(spatRenderizar,200);}
+function spatAutoRender(){
+  if(!window.spatInited)return;
+  clearTimeout(_rTimer);
+  _rTimer=setTimeout(spatRender,200);
+}
 
-function spatCalcPuntas(geo,H_punta,R,modo){
-  const H_col=8,H_total=H_col+H_punta;
-  const r_suelo=H_total<R?Math.sqrt(R*R-(R-H_total)*(R-H_total)):R;
+/* ── Posición de puntas ── */
+function _calcPuntas(geo,Hp,R,modo){
+  const Hcol=8, Ht=Hcol+Hp;
+  const rs=Ht<R?Math.sqrt(R*R-(R-Ht)*(R-Ht)):R;
   const{L,A,pts}=geo;
   const puntas=[];
-  const enPoli=(px,pz)=>spatDentroPoligono(px,pz,pts)||pts.some((a,i)=>{const b=pts[(i+1)%pts.length];return spatDistSeg(px,pz,a.x,a.y,b.x,b.y)<0.8;});
+  const ok=(px,pz)=>_inPoly(px,pz,pts)||pts.some((a,i)=>{const b=pts[(i+1)%pts.length];return _distSeg(px,pz,a.x,a.y,b.x,b.y)<0.8;});
   if(modo==='grid'){
-    const paso=r_suelo*1.5;
+    const paso=rs*1.5;
     const nX=Math.max(2,Math.ceil(L/paso)+1),nZ=Math.max(2,Math.ceil(A/paso)+1);
-    for(let i=0;i<nX;i++)for(let j=0;j<nZ;j++){const px=-L/2+(i/(nX-1))*L,pz=-A/2+(j/(nZ-1))*A;if(enPoli(px,pz))puntas.push({x:px,z:pz});}
+    for(let i=0;i<nX;i++)for(let j=0;j<nZ;j++){
+      const px=-L/2+(i/(nX-1))*L, pz=-A/2+(j/(nZ-1))*A;
+      if(ok(px,pz))puntas.push({x:px,z:pz});
+    }
   } else {
     pts.forEach(p=>puntas.push({x:p.x,z:p.y}));
     if(modo==='auto'){
-      const dMax=2*r_suelo*0.85;
+      const dMax=2*rs*0.85;
       for(let i=0;i<pts.length;i++){
         const a=pts[i],b=pts[(i+1)%pts.length];
         const dist=Math.hypot(b.x-a.x,b.y-a.y);
         const n=Math.ceil(dist/dMax)-1;
-        for(let k=1;k<n;k++){const t2=k/n;puntas.push({x:a.x+(b.x-a.x)*t2,z:a.y+(b.y-a.y)*t2});}
+        for(let k=1;k<n;k++){const t=k/n;puntas.push({x:a.x+(b.x-a.x)*t,z:a.y+(b.y-a.y)*t});}
       }
-      const paso=dMax*0.9;
-      const nX=Math.ceil(L/paso),nZ=Math.ceil(A/paso);
+      const paso=dMax*0.9, nX=Math.ceil(L/paso), nZ=Math.ceil(A/paso);
       for(let ci=1;ci<nX;ci++)for(let cj=1;cj<nZ;cj++){
-        const ix=-L/2+(ci/nX)*L,iz=-A/2+(cj/nZ)*A;
-        if(enPoli(ix,iz)&&puntas.every(p=>Math.hypot(p.x-ix,p.z-iz)>r_suelo*0.9))puntas.push({x:ix,z:iz});
+        const ix=-L/2+(ci/nX)*L, iz=-A/2+(cj/nZ)*A;
+        if(ok(ix,iz)&&puntas.every(p=>Math.hypot(p.x-ix,p.z-iz)>rs*0.9))puntas.push({x:ix,z:iz});
       }
     }
   }
-  return{puntas:puntas.filter(p=>enPoli(p.x,p.z)),r_suelo};
+  return {puntas:puntas.filter(p=>ok(p.x,p.z)),rs};
 }
 
+/* ── Init Three.js ── */
 function spatInit3D(){
-  const container=document.getElementById('spat-container3D');
-  spatScene=new THREE.Scene();
-  spatScene.background=new THREE.Color(0xD6E4F7);
-  spatScene.fog=new THREE.FogExp2(0xD6E4F7,0.004);
-  spatCamera=new THREE.PerspectiveCamera(50,container.clientWidth/container.clientHeight,0.1,2000);
-  spatCamera.position.set(90,60,90);
-  spatRenderer=new THREE.WebGLRenderer({antialias:true});
-  spatRenderer.setSize(container.clientWidth,container.clientHeight);
-  spatRenderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-  spatRenderer.shadowMap.enabled=true;
-  spatRenderer.shadowMap.type=THREE.PCFSoftShadowMap;
-  container.appendChild(spatRenderer.domElement);
-  spatControls=new THREE.OrbitControls(spatCamera,spatRenderer.domElement);
-  spatControls.enableDamping=true;spatControls.dampingFactor=0.08;
-  spatControls.minDistance=10;spatControls.maxDistance=600;
-  spatControls.target.set(0,10,0);
-  spatRenderer.domElement.addEventListener('dblclick',spatResetCamara);
-  spatScene.add(new THREE.AmbientLight(0xffffff,0.9));
-  const sun=new THREE.DirectionalLight(0xffffff,1.2);sun.position.set(60,120,40);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{near:0.1,far:600,left:-150,right:150,top:150,bottom:-150});spatScene.add(sun);
-  const fill=new THREE.DirectionalLight(0x8FB3E8,0.35);fill.position.set(-60,40,-60);spatScene.add(fill);
-  spatScene.add(new THREE.GridHelper(500,50,0x8FB3E8,0xD6E4F7));
-  const ground=new THREE.Mesh(new THREE.PlaneGeometry(500,500),new THREE.MeshStandardMaterial({color:0xE9EEF5,roughness:1}));
-  ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;spatScene.add(ground);
-  spatSubGrp=new THREE.Group();spatProtGrp=new THREE.Group();
-  spatScene.add(spatSubGrp);spatScene.add(spatProtGrp);
-  (function loop(){requestAnimationFrame(loop);spatControls.update();spatRenderer.render(spatScene,spatCamera);})();
-  window.addEventListener('resize',()=>{spatCamera.aspect=container.clientWidth/container.clientHeight;spatCamera.updateProjectionMatrix();spatRenderer.setSize(container.clientWidth,container.clientHeight);});
-  spatInited=true;
+  const cont = document.getElementById('spat-container3D');
+  if(!cont)return;
+  const W = cont.clientWidth  || cont.offsetWidth  || 600;
+  const H = cont.clientHeight || cont.offsetHeight || 400;
+  _sc  = new THREE.Scene();
+  _sc.background = new THREE.Color(0xD6E4F7);
+  _sc.fog = new THREE.FogExp2(0xD6E4F7,0.004);
+  _cam = new THREE.PerspectiveCamera(50, W/H, 0.1, 2000);
+  _cam.position.set(90,60,90);
+  _ren = new THREE.WebGLRenderer({antialias:true});
+  _ren.setSize(W,H);
+  _ren.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  _ren.shadowMap.enabled=true;
+  _ren.shadowMap.type=THREE.PCFSoftShadowMap;
+  cont.appendChild(_ren.domElement);
+  /* Exponer en window para que app.js pueda refrescar tamaño */
+  window.spatRenderer = _ren;
+  window.spatCamera   = _cam;
+  _ctrl = new THREE.OrbitControls(_cam, _ren.domElement);
+  _ctrl.enableDamping=true; _ctrl.dampingFactor=0.08;
+  _ctrl.minDistance=10; _ctrl.maxDistance=600;
+  _ctrl.target.set(0,10,0);
+  _ren.domElement.addEventListener('dblclick', spatResetCam);
+  _sc.add(new THREE.AmbientLight(0xffffff,0.9));
+  const sun=new THREE.DirectionalLight(0xffffff,1.2);
+  sun.position.set(60,120,40); sun.castShadow=true;
+  sun.shadow.mapSize.set(2048,2048);
+  Object.assign(sun.shadow.camera,{near:.1,far:600,left:-150,right:150,top:150,bottom:-150});
+  _sc.add(sun);
+  const fill=new THREE.DirectionalLight(0x8FB3E8,.35);
+  fill.position.set(-60,40,-60); _sc.add(fill);
+  _sc.add(new THREE.GridHelper(500,50,0x8FB3E8,0xD0DAE8));
+  const gnd=new THREE.Mesh(
+    new THREE.PlaneGeometry(500,500),
+    new THREE.MeshStandardMaterial({color:0xE9EEF5,roughness:1}));
+  gnd.rotation.x=-Math.PI/2; gnd.receiveShadow=true; _sc.add(gnd);
+  _subGrp=new THREE.Group(); _protGrp=new THREE.Group();
+  _sc.add(_subGrp); _sc.add(_protGrp);
+  (function loop(){requestAnimationFrame(loop);_ctrl.update();_ren.render(_sc,_cam);})();
+  window.addEventListener('resize',()=>{
+    const W2=cont.clientWidth,H2=cont.clientHeight;
+    if(!W2||!H2)return;
+    _cam.aspect=W2/H2; _cam.updateProjectionMatrix();
+    _ren.setSize(W2,H2);
+  });
+  window.spatInited=true;
 }
-function spatResetCamara(){spatCamera.position.set(90,60,90);spatControls.target.set(0,10,0);}
+function spatResetCam(){ _cam.position.set(90,60,90); _ctrl.target.set(0,10,0); }
 
-function spatRenderizar(){
-  const H_punta=parseFloat(document.getElementById('n-punta').value)||8;
-  const H_col=8,H_equipo=parseFloat(document.getElementById('n-equipo').value)||6;
-  const{Zs,Is,S:R}=spatCalcIEEE998();
-  const geo=spatGetGeo();
-  document.getElementById('alert-box').classList.toggle('show',H_punta+H_col>=R*1.8);
-  while(spatSubGrp.children.length)spatSubGrp.remove(spatSubGrp.children[0]);
-  while(spatProtGrp.children.length)spatProtGrp.remove(spatProtGrp.children[0]);
-  const{puntas,r_suelo}=spatCalcPuntas(geo,H_punta,R,spatMode);
-  spatLastPuntas=puntas;spatLastR=R;spatLastHTotal=H_col+H_punta;
-  spatBuildSubestacion(geo,H_col,H_equipo);
-  const showSpheres=document.getElementById('toggle-spheres').checked;
-  const showManta=document.getElementById('toggle-manta').checked;
-  const sphereOpac=parseInt(document.getElementById('sphere-opacity').value)/100;
-  const mantaOpac=parseInt(document.getElementById('manta-opacity').value)/100;
-  puntas.forEach(p=>spatBuildMastil(p.x,p.z,H_col,H_punta));
-  if(showSpheres){
+/* ── Render principal ── */
+function spatRender(){
+  const Hp  = +document.getElementById('n-punta').value  || 8;
+  const Hcol= 8;
+  const He  = +document.getElementById('n-equipo').value || 6;
+  const {Zs,Is,S:R} = _ieee998();
+  const geo = _getGeo();
+
+  document.getElementById('spat-alert').classList.toggle('show', Hp+Hcol >= R*1.8);
+
+  [_subGrp,_protGrp].forEach(g=>{while(g.children.length)g.remove(g.children[0]);});
+
+  const {puntas,rs} = _calcPuntas(geo,Hp,R,_mode);
+  _lastPuntas=puntas; _lastR=R; _lastHTotal=Hcol+Hp;
+
+  _buildSubest(geo,Hcol,He);
+
+  const showSph  = document.getElementById('toggle-spheres').checked;
+  const showMant = document.getElementById('toggle-manta').checked;
+  const sphOpac  = parseInt(document.getElementById('sphere-opacity').value)/100;
+  const mantOpac = parseInt(document.getElementById('manta-opacity').value)/100;
+
+  puntas.forEach(p=>_buildMastil(p.x,p.z,Hcol,Hp));
+
+  if(showSph){
     puntas.forEach(p=>{
-      const yPunta=H_col+H_punta+0.5,yCentro=yPunta+R;
-      const sGeo=new THREE.SphereGeometry(R,48,32);
-      const sphere=new THREE.Mesh(sGeo,new THREE.MeshPhongMaterial({color:SC.sphere,transparent:true,opacity:sphereOpac,side:THREE.DoubleSide,shininess:80,specular:0x8FB3E8,depthWrite:false}));
-      sphere.position.set(p.x,yCentro,p.z);spatProtGrp.add(sphere);
-      const wf=new THREE.Mesh(sGeo,new THREE.MeshBasicMaterial({color:SC.sphereWF,wireframe:true,transparent:true,opacity:0.08}));
-      wf.position.set(p.x,yCentro,p.z);spatProtGrp.add(wf);
+      const yPt=Hcol+Hp+0.5, yC=yPt+R;
+      const sg=new THREE.SphereGeometry(R,48,32);
+      const sp=new THREE.Mesh(sg,new THREE.MeshPhongMaterial({color:SP.sphere,transparent:true,opacity:sphOpac,side:THREE.DoubleSide,shininess:80,specular:0x8FB3E8,depthWrite:false}));
+      sp.position.set(p.x,yC,p.z); _protGrp.add(sp);
+      const wf=new THREE.Mesh(sg,new THREE.MeshBasicMaterial({color:SP.sphereWF,wireframe:true,transparent:true,opacity:.08}));
+      wf.position.set(p.x,yC,p.z); _protGrp.add(wf);
     });
   }
-  if(showManta)spatBuildManta(puntas,H_col,H_punta,R,geo,mantaOpac);
+  if(showMant)_buildManta(puntas,Hcol,Hp,R,geo,mantOpac);
+
   puntas.forEach(p=>{
-    const mat=new THREE.LineBasicMaterial({color:SC.wire,transparent:true,opacity:0.3});
-    const g2=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(p.x,0,p.z),new THREE.Vector3(p.x,H_col+H_punta,p.z)]);
-    spatProtGrp.add(new THREE.Line(g2,mat));
+    const mat=new THREE.LineBasicMaterial({color:SP.wire,transparent:true,opacity:.3});
+    const g2=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(p.x,0,p.z),new THREE.Vector3(p.x,Hcol+Hp,p.z)]);
+    _protGrp.add(new THREE.Line(g2,mat));
   });
-  const cobertura=spatCobertura(geo,puntas,r_suelo);
-  spatActualizarResultados(R,r_suelo,puntas.length,H_col+H_punta,cobertura,Zs,Is,geo);
-  spatVista2D(geo,r_suelo,puntas,R,H_col+H_punta);
-  document.getElementById('vp-info').innerHTML=`MODO: ${spatMode.toUpperCase()}<br>PUNTAS: ${puntas.length}<br>COB: ${cobertura}%<br>R: ${R.toFixed(1)} m`;
-  document.getElementById('vp-ieee').innerHTML=`IEEE 998-2012<br>Zs = ${Zs.toFixed(0)} Ω<br>Is = ${Is.toFixed(3)} kA<br>S = ${R.toFixed(2)} m`;
+
+  const cob=_cobertura(geo,puntas,rs);
+  _updateResults(R,rs,puntas.length,Hcol+Hp,cob,Zs,Is,geo);
+  _draw2D(geo,rs,puntas,R,Hcol+Hp);
+  document.getElementById('spat-info').innerHTML=`MODO: ${_mode.toUpperCase()}<br>PUNTAS: ${puntas.length}<br>COB: ${cob}%<br>R: ${R.toFixed(1)} m`;
+  document.getElementById('spat-ieee-info').innerHTML=`IEEE 998-2012<br>Zs = ${Zs.toFixed(0)} Ω<br>Is = ${Is.toFixed(3)} kA<br>S = ${R.toFixed(2)} m`;
 }
 
-function spatBuildMastil(x,z,H_col,H_punta){
-  const g=spatProtGrp;
-  const yBase=H_col,yPunta=yBase+H_punta;
-  const mastMat=new THREE.MeshStandardMaterial({color:SC.mast,metalness:0.9,roughness:0.1,emissive:0x0B1F4D,emissiveIntensity:0.15});
-  const mast=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.09,H_punta+0.5,8),mastMat);
-  mast.position.set(x,yBase+H_punta/2+0.25,z);mast.castShadow=true;g.add(mast);
-  const punta=new THREE.Mesh(new THREE.SphereGeometry(0.22,12,12),mastMat);
-  punta.position.set(x,yPunta+0.5,z);g.add(punta);
-  const aura=new THREE.Mesh(new THREE.SphereGeometry(0.8,12,12),new THREE.MeshBasicMaterial({color:SC.mast,transparent:true,opacity:0.15,side:THREE.DoubleSide}));
-  aura.position.set(x,yPunta+0.5,z);g.add(aura);
+/* ── Mástil ── */
+function _buildMastil(x,z,Hc,Hp){
+  const mat=new THREE.MeshStandardMaterial({color:SP.mast,metalness:.9,roughness:.1,emissive:0x0B1F4D,emissiveIntensity:.15});
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(.04,.09,Hp+.5,8),mat);
+  m.position.set(x,Hc+Hp/2+.25,z); m.castShadow=true; _protGrp.add(m);
+  const pt=new THREE.Mesh(new THREE.SphereGeometry(.22,12,12),mat);
+  pt.position.set(x,Hc+Hp+.5,z); _protGrp.add(pt);
+  const au=new THREE.Mesh(new THREE.SphereGeometry(.8,12,12),new THREE.MeshBasicMaterial({color:SP.mast,transparent:true,opacity:.15,side:THREE.DoubleSide}));
+  au.position.set(x,Hc+Hp+.5,z); _protGrp.add(au);
 }
 
-function spatBuildManta(puntas,H_col,H_punta,R,geo,opac){
-  const g=spatProtGrp;
-  const{L,A}=geo;
-  const yPunta=H_col+H_punta+0.5,yCentro=yPunta+R;
-  const resX=70,resZ=70;
-  const x0=-L/2-R,x1=L/2+R,z0=-A/2-R,z1=A/2+R;
-  const dx=(x1-x0)/resX,dz=(z1-z0)/resZ;
+/* ── Manta 3D ── */
+function _buildManta(puntas,Hc,Hp,R,geo,opac){
+  const {L,A}=geo;
+  const yPt=Hc+Hp+.5, yC=yPt+R;
+  const res=70;
+  const x0=-L/2-R, x1=L/2+R, z0=-A/2-R, z1=A/2+R;
+  const dx=(x1-x0)/res, dz=(z1-z0)/res;
   const H=[];
-  for(let i=0;i<=resX;i++){H.push([]);for(let j=0;j<=resZ;j++){const wx=x0+i*dx,wz=z0+j*dz;let minH=null;puntas.forEach(p=>{const d2=(wx-p.x)*(wx-p.x)+(wz-p.z)*(wz-p.z);if(d2<R*R){const h=yCentro-Math.sqrt(R*R-d2);if(minH===null||h<minH)minH=h;}});H[i].push(minH);}}
-  const positions=[],normals=[],uvs=[];
-  const addTri=(ax,ay,az,bx,by,bz,cx2,cy,cz)=>{const ux=bx-ax,uy=by-ay,uz=bz-az;const vx=cx2-ax,vy=cy-ay,vz=cz-az;const nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;const nl=Math.sqrt(nx*nx+ny*ny+nz*nz)||1;[ax,ay,az,bx,by,bz,cx2,cy,cz].forEach(v=>positions.push(v));for(let t=0;t<3;t++)normals.push(nx/nl,ny/nl,nz/nl);uvs.push(0,0,1,0,0,1);};
-  for(let i=0;i<resX;i++){for(let j=0;j<resZ;j++){const h00=H[i][j],h10=H[i+1][j],h01=H[i][j+1],h11=H[i+1][j+1];if(h00===null&&h10===null&&h01===null&&h11===null)continue;const x00=x0+i*dx,z00=z0+j*dz,x10=x0+(i+1)*dx,x01=x0+i*dx,z01=z0+(j+1)*dz,x11=x0+(i+1)*dx,z11=z0+(j+1)*dz;const y00=h00!==null?h00:0,y10=h10!==null?h10:0,y01=h01!==null?h01:0,y11=h11!==null?h11:0;if([h00,h10,h01,h11].filter(v=>v!==null).length<3)continue;addTri(x00,y00,z00,x10,y10,z00,x01,y01,z01);addTri(x10,y10,z00,x11,y11,z11,x01,y01,z01);}}
-  if(positions.length===0)return;
-  const geo2=new THREE.BufferGeometry();
-  geo2.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
-  geo2.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));
-  geo2.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
-  geo2.computeVertexNormals();
-  spatProtGrp.add(new THREE.Mesh(geo2,new THREE.MeshPhongMaterial({color:0x0A3D91,transparent:true,opacity:opac,side:THREE.DoubleSide,shininess:60,specular:0x8FB3E8,depthWrite:false})));
-  spatProtGrp.add(new THREE.Mesh(geo2,new THREE.MeshBasicMaterial({color:0x2F6FCC,wireframe:true,transparent:true,opacity:0.10})));
-  puntas.forEach(p=>{const rSuelo=Math.sqrt(Math.max(0,R*R-yCentro*yCentro));if(rSuelo<=0)return;const circPts=[];for(let i=0;i<=72;i++){const a=(i/72)*Math.PI*2;circPts.push(new THREE.Vector3(p.x+rSuelo*Math.cos(a),0.05,p.z+rSuelo*Math.sin(a)));}g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(circPts),new THREE.LineBasicMaterial({color:0x0A3D91,transparent:true,opacity:0.5})));});
-}
-
-function spatBuildSubestacion(geo,H_col,H_equipo){
-  const g=spatSubGrp;
-  const mk=(geo2,color,x,y,z,rg=0.7,mt=0)=>{const m=new THREE.Mesh(geo2,new THREE.MeshStandardMaterial({color,roughness:rg,metalness:mt}));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;g.add(m);return m;};
-  const{pts,L,A}=geo;
-  const shape=new THREE.Shape();shape.moveTo(pts[0].x,pts[0].y);for(let i=1;i<pts.length;i++)shape.lineTo(pts[i].x,pts[i].y);shape.closePath();
-  const pisoGeo=new THREE.ExtrudeGeometry(shape,{depth:0.2,bevelEnabled:false});
-  const piso=new THREE.Mesh(pisoGeo,new THREE.MeshStandardMaterial({color:SC.concrete,roughness:0.9}));
-  piso.rotation.x=-Math.PI/2;piso.position.y=0;piso.receiveShadow=true;g.add(piso);
-  for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];const len=Math.hypot(b.x-a.x,b.y-a.y);const wall=new THREE.Mesh(new THREE.BoxGeometry(len,0.6,0.25),new THREE.MeshStandardMaterial({color:SC.concrete,roughness:0.9}));wall.position.set((a.x+b.x)/2,0.3,(a.y+b.y)/2);wall.rotation.y=-Math.atan2(b.y-a.y,b.x-a.x);g.add(wall);}
-  pts.forEach(p=>mk(new THREE.BoxGeometry(0.3,H_col,0.3),SC.steel,p.x,H_col/2,p.y,0.5,0.8));
-  for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length];const len=Math.hypot(b.x-a.x,b.y-a.y);const viga=new THREE.Mesh(new THREE.BoxGeometry(len,0.2,0.2),new THREE.MeshStandardMaterial({color:SC.beam,roughness:0.4,metalness:0.7}));viga.position.set((a.x+b.x)/2,H_col,(a.y+b.y)/2);viga.rotation.y=-Math.atan2(b.y-a.y,b.x-a.x);g.add(viga);}
-  const tW=Math.min(L*0.22,8),tD=Math.min(A*0.3,8),tH=H_equipo;
-  mk(new THREE.BoxGeometry(tW,tH,tD),SC.trafo,0,tH/2,0,0.5,0.2);
-  for(let i=-2;i<=2;i++){mk(new THREE.BoxGeometry(0.12,tH*0.7,0.8),SC.radiator,tW/2+0.06,tH*0.5,i*0.5,0.3,0.4);mk(new THREE.BoxGeometry(0.12,tH*0.7,0.8),SC.radiator,-tW/2-0.06,tH*0.5,i*0.5,0.3,0.4);}
-  for(let i=-1;i<=1;i++)mk(new THREE.CylinderGeometry(0.06,0.08,1.2,8),SC.insulator,i*0.6,tH+0.6,0,0.8);
-  mk(new THREE.BoxGeometry(Math.min(L*0.4,12),0.06,0.06),SC.copper,0,H_equipo+0.1,-Math.min(A*0.12,4),0.3,0.9);
-  mk(new THREE.BoxGeometry(Math.min(L*0.4,12),0.06,0.06),SC.copper,0,H_equipo+0.1,Math.min(A*0.12,4),0.3,0.9);
-}
-
-function spatCobertura(geo,puntas,r_suelo){
-  const{pts,L,A}=geo;const N=25;let total=0,cubiertos=0;
-  for(let i=0;i<=N;i++)for(let j=0;j<=N;j++){const px=-L/2+(i/N)*L,pz=-A/2+(j/N)*A;if(!spatDentroPoligono(px,pz,pts))continue;total++;if(puntas.some(p=>Math.hypot(p.x-px,p.z-pz)<=r_suelo))cubiertos++;}
-  return total===0?0:Math.round(cubiertos/total*100);
-}
-
-function spatActualizarResultados(R,r_suelo,nPuntas,hTotal,cobertura,Zs,Is,geo){
-  document.getElementById('r-Zs').textContent=Zs.toFixed(1)+' Ω';
-  document.getElementById('r-Is').textContent=Is.toFixed(3)+' kA';
-  document.getElementById('r-S').textContent=R.toFixed(2)+' m';
-  document.getElementById('r-r_suelo').textContent=r_suelo.toFixed(2)+' m';
-  document.getElementById('r-npuntas').textContent=nPuntas;
-  document.getElementById('r-htotal').textContent=hTotal.toFixed(1)+' m';
-  document.getElementById('r-area').textContent=geo.area.toFixed(1)+' m²';
-  const c=document.getElementById('r-cobertura');c.textContent=cobertura+'%';c.className='spat-stat-val '+(cobertura>=95?'ok':cobertura>=70?'':'warn');
-  const H=hTotal,Ae=parseFloat(document.getElementById('n-equipo').value)||6;
-  const K=H-Ae,E=R-H,F=R-E,D=K-F;
-  const fmt=v=>(v>=0?'+':'')+v.toFixed(2);
-  document.getElementById('r-K').textContent=K.toFixed(2)+' m';document.getElementById('r-K').className='spat-stat-val';
-  document.getElementById('r-E').textContent=E.toFixed(2)+' m';document.getElementById('r-E').className=E>=0?'spat-stat-val':'spat-stat-val warn';
-  document.getElementById('r-F').textContent=F.toFixed(2)+' m';document.getElementById('r-F').className='spat-stat-val';
-  document.getElementById('r-D').textContent=fmt(D)+' m';document.getElementById('r-D').className=D<=K?'spat-stat-val':'spat-stat-val warn';
-  const dkEl=document.getElementById('r-DK');
-  if(D<K){dkEl.textContent='✓ CUMPLE D('+D.toFixed(2)+') < K('+K.toFixed(2)+')';dkEl.className='spat-stat-val ok';}
-  else{dkEl.textContent='✗ NO CUMPLE D('+D.toFixed(2)+') ≥ K('+K.toFixed(2)+')';dkEl.className='spat-stat-val warn';}
-}
-
-function spatVista2D(geo,r_suelo,puntas,R,H_total){
-  const canvas=document.getElementById('spat-canvas2D');
-  const ctx=canvas.getContext('2d');
-  const W=canvas.offsetWidth,Hc=canvas.offsetHeight||W;
-  canvas.width=W*window.devicePixelRatio;canvas.height=Hc*window.devicePixelRatio;
-  ctx.scale(window.devicePixelRatio,window.devicePixelRatio);
-  if(spatTab==='planta')spatDibujarPlanta(ctx,W,Hc,geo,r_suelo,puntas);
-  else spatDibujarCorte(ctx,W,Hc,geo,r_suelo,R,H_total,puntas);
-}
-
-function spatDibujarPlanta(ctx,W,Hc,geo,r_suelo,puntas){
-  const{pts,L,A}=geo;
-  const scale=Math.min((W*0.75)/L,(Hc*0.75)/A);
-  const cx=W/2,cy=Hc/2;
-  /* Fondo azul pálido */
-  ctx.fillStyle='#E9EEF5';ctx.fillRect(0,0,W,Hc);
-  ctx.strokeStyle='#D0DAE8';ctx.lineWidth=0.5;
-  for(let i=0;i<W;i+=16){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,Hc);ctx.stroke();}
-  for(let j=0;j<Hc;j+=16){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke();}
-  const bb={minX:Math.min(...pts.map(p=>p.x)),maxX:Math.max(...pts.map(p=>p.x)),minY:Math.min(...pts.map(p=>p.y)),maxY:Math.max(...pts.map(p=>p.y))};
-  const step=3;
-  for(let wx=bb.minX;wx<bb.maxX;wx+=step/scale)for(let wy=bb.minY;wy<bb.maxY;wy+=step/scale){
-    if(!spatDentroPoligono(wx,wy,pts))continue;
-    const cubierto=puntas.some(p=>Math.hypot(p.x-wx,p.z-wy)<=r_suelo);
-    ctx.fillStyle=cubierto?'rgba(26,140,91,0.15)':'rgba(194,59,34,0.20)';
-    ctx.fillRect(cx+wx*scale,cy+wy*scale,step+1,step+1);
+  for(let i=0;i<=res;i++){
+    H.push([]);
+    for(let j=0;j<=res;j++){
+      const wx=x0+i*dx, wz=z0+j*dz;
+      let minH=null;
+      puntas.forEach(p=>{
+        const d2=(wx-p.x)**2+(wz-p.z)**2;
+        if(d2<R*R){const h=yC-Math.sqrt(R*R-d2);if(minH===null||h<minH)minH=h;}
+      });
+      H[i].push(minH);
+    }
   }
+  const pos=[],nor=[],uvs=[];
+  const tri=(ax,ay,az,bx,by,bz,cx,cy,cz)=>{
+    const ux=bx-ax,uy=by-ay,uz=bz-az,vx=cx-ax,vy=cy-ay,vz=cz-az;
+    const nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;
+    const nl=Math.sqrt(nx*nx+ny*ny+nz*nz)||1;
+    pos.push(ax,ay,az,bx,by,bz,cx,cy,cz);
+    for(let t=0;t<3;t++)nor.push(nx/nl,ny/nl,nz/nl);
+    uvs.push(0,0,1,0,0,1);
+  };
+  for(let i=0;i<res;i++){
+    for(let j=0;j<res;j++){
+      const h00=H[i][j],h10=H[i+1][j],h01=H[i][j+1],h11=H[i+1][j+1];
+      if([h00,h10,h01,h11].filter(v=>v!==null).length<3)continue;
+      const x00=x0+i*dx,     z00=z0+j*dz;
+      const x10=x0+(i+1)*dx, z10=z0+j*dz;      /* ← z10 correcto */
+      const x01=x0+i*dx,     z01=z0+(j+1)*dz;
+      const x11=x0+(i+1)*dx, z11=z0+(j+1)*dz;
+      const y00=h00??0, y10=h10??0, y01=h01??0, y11=h11??0;
+      tri(x00,y00,z00, x10,y10,z10, x01,y01,z01);
+      tri(x10,y10,z10, x11,y11,z11, x01,y01,z01);
+    }
+  }
+  if(!pos.length)return;
+  const bg=new THREE.BufferGeometry();
+  bg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+  bg.setAttribute('normal',  new THREE.Float32BufferAttribute(nor,3));
+  bg.setAttribute('uv',      new THREE.Float32BufferAttribute(uvs,2));
+  bg.computeVertexNormals();
+  _protGrp.add(new THREE.Mesh(bg,new THREE.MeshPhongMaterial({color:0x0A3D91,transparent:true,opacity:opac,side:THREE.DoubleSide,shininess:60,specular:0x8FB3E8,depthWrite:false})));
+  _protGrp.add(new THREE.Mesh(bg,new THREE.MeshBasicMaterial({color:0x2F6FCC,wireframe:true,transparent:true,opacity:.10})));
   puntas.forEach(p=>{
-    const px=cx+p.x*scale,pz=cy+p.z*scale,r=r_suelo*scale;
-    const grad=ctx.createRadialGradient(px,pz,0,px,pz,r);grad.addColorStop(0,'rgba(10,61,145,0.10)');grad.addColorStop(1,'rgba(10,61,145,0)');
-    ctx.beginPath();ctx.arc(px,pz,r,0,Math.PI*2);ctx.fillStyle=grad;ctx.fill();
-    ctx.strokeStyle='rgba(10,61,145,0.35)';ctx.lineWidth=1;ctx.stroke();
+    const rS=Math.sqrt(Math.max(0,R*R-yC*yC));
+    if(rS<=0)return;
+    const pts2=[];
+    for(let i=0;i<=72;i++){const a=(i/72)*Math.PI*2;pts2.push(new THREE.Vector3(p.x+rS*Math.cos(a),.05,p.z+rS*Math.sin(a)));}
+    _protGrp.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts2),new THREE.LineBasicMaterial({color:0x0A3D91,transparent:true,opacity:.5})));
   });
-  ctx.beginPath();ctx.moveTo(cx+pts[0].x*scale,cy+pts[0].y*scale);
-  for(let i=1;i<pts.length;i++)ctx.lineTo(cx+pts[i].x*scale,cy+pts[i].y*scale);
-  ctx.closePath();ctx.strokeStyle='#0A3D91';ctx.lineWidth=2;ctx.stroke();
-  puntas.forEach(p=>{const px=cx+p.x*scale,pz=cy+p.z*scale;ctx.beginPath();ctx.arc(px,pz,4,0,Math.PI*2);ctx.fillStyle='#2F6FCC';ctx.fill();});
-  const em=10,ep=em*scale,ex=W-18,ey=Hc-14;
-  ctx.strokeStyle='#4A5E7A';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(ex-ep,ey);ctx.lineTo(ex,ey);ctx.stroke();ctx.beginPath();ctx.moveTo(ex-ep,ey-4);ctx.lineTo(ex-ep,ey+4);ctx.stroke();ctx.beginPath();ctx.moveTo(ex,ey-4);ctx.lineTo(ex,ey+4);ctx.stroke();
-  ctx.fillStyle='#4A5E7A';ctx.font='9px Space Mono,monospace';ctx.textAlign='center';ctx.fillText(em+'m',ex-ep/2,ey-6);
-  ctx.textAlign='left';ctx.fillStyle='rgba(10,61,145,0.7)';ctx.font='bold 8px Space Mono,monospace';ctx.fillText('PLANTA — r='+r_suelo.toFixed(1)+'m',6,12);
-  ctx.fillStyle='rgba(26,140,91,0.9)';ctx.fillRect(6,18,8,7);ctx.fillStyle='#4A5E7A';ctx.font='8px Space Mono,monospace';ctx.fillText(' protegido',14,25);
-  ctx.fillStyle='rgba(194,59,34,0.7)';ctx.fillRect(6,28,8,7);ctx.fillStyle='#4A5E7A';ctx.fillText(' expuesto',14,35);
 }
 
-function spatDibujarCorte(ctx,W,Hc,geo,r_suelo,R,H_total,puntas){
-  const{L}=geo;
-  const H_col=8;
-  const Ae=parseFloat(document.getElementById('n-equipo').value)||6;
-  const scX=(W*0.78)/(L+2*R),scY=(Hc*0.78)/(H_total+R+2);
-  const sc=Math.min(scX,scY);
-  const cx=W/2,baseY=Hc*0.88;
-  /* Fondo */
-  ctx.fillStyle='#E9EEF5';ctx.fillRect(0,0,W,Hc);
-  ctx.strokeStyle='#D0DAE8';ctx.lineWidth=0.5;
+/* ── Subestación 3D ── */
+function _buildSubest(geo,Hc,He){
+  const mk=(g2,col,x,y,z,rg=.7,mt=0)=>{
+    const m=new THREE.Mesh(g2,new THREE.MeshStandardMaterial({color:col,roughness:rg,metalness:mt}));
+    m.position.set(x,y,z); m.castShadow=m.receiveShadow=true; _subGrp.add(m); return m;
+  };
+  const{pts,L,A}=geo;
+  const sh=new THREE.Shape();
+  sh.moveTo(pts[0].x,pts[0].y);
+  for(let i=1;i<pts.length;i++)sh.lineTo(pts[i].x,pts[i].y);
+  sh.closePath();
+  const piso=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:.2,bevelEnabled:false}),new THREE.MeshStandardMaterial({color:SP.concrete,roughness:.9}));
+  piso.rotation.x=-Math.PI/2; piso.position.y=0; piso.receiveShadow=true; _subGrp.add(piso);
+  for(let i=0;i<pts.length;i++){
+    const a=pts[i],b=pts[(i+1)%pts.length];
+    const len=Math.hypot(b.x-a.x,b.y-a.y);
+    const w=new THREE.Mesh(new THREE.BoxGeometry(len,.6,.25),new THREE.MeshStandardMaterial({color:SP.concrete,roughness:.9}));
+    w.position.set((a.x+b.x)/2,.3,(a.y+b.y)/2);
+    w.rotation.y=-Math.atan2(b.y-a.y,b.x-a.x); _subGrp.add(w);
+  }
+  pts.forEach(p=>mk(new THREE.BoxGeometry(.3,Hc,.3),SP.steel,p.x,Hc/2,p.y,.5,.8));
+  for(let i=0;i<pts.length;i++){
+    const a=pts[i],b=pts[(i+1)%pts.length];
+    const len=Math.hypot(b.x-a.x,b.y-a.y);
+    const viga=new THREE.Mesh(new THREE.BoxGeometry(len,.2,.2),new THREE.MeshStandardMaterial({color:SP.beam,roughness:.4,metalness:.7}));
+    viga.position.set((a.x+b.x)/2,Hc,(a.y+b.y)/2);
+    viga.rotation.y=-Math.atan2(b.y-a.y,b.x-a.x); _subGrp.add(viga);
+  }
+  const tW=Math.min(L*.22,8),tD=Math.min(A*.3,8),tH=He;
+  mk(new THREE.BoxGeometry(tW,tH,tD),SP.trafo,0,tH/2,0,.5,.2);
+  for(let i=-2;i<=2;i++){
+    mk(new THREE.BoxGeometry(.12,tH*.7,.8),SP.radiator, tW/2+.06,tH*.5,i*.5,.3,.4);
+    mk(new THREE.BoxGeometry(.12,tH*.7,.8),SP.radiator,-tW/2-.06,tH*.5,i*.5,.3,.4);
+  }
+  for(let i=-1;i<=1;i++)mk(new THREE.CylinderGeometry(.06,.08,1.2,8),SP.insulator,i*.6,tH+.6,0,.8);
+  mk(new THREE.BoxGeometry(Math.min(L*.4,12),.06,.06),SP.copper,0,He+.1,-Math.min(A*.12,4),.3,.9);
+  mk(new THREE.BoxGeometry(Math.min(L*.4,12),.06,.06),SP.copper,0,He+.1, Math.min(A*.12,4),.3,.9);
+}
+
+/* ── Cobertura ── */
+function _cobertura(geo,puntas,rs){
+  const{pts,L,A}=geo; const N=25; let tot=0,cub=0;
+  for(let i=0;i<=N;i++)for(let j=0;j<=N;j++){
+    const px=-L/2+(i/N)*L, pz=-A/2+(j/N)*A;
+    if(!_inPoly(px,pz,pts))continue; tot++;
+    if(puntas.some(p=>Math.hypot(p.x-px,p.z-pz)<=rs))cub++;
+  }
+  return tot?Math.round(cub/tot*100):0;
+}
+
+/* ── Resultados ── */
+function _updateResults(R,rs,nPt,hTot,cob,Zs,Is,geo){
+  const $=id=>document.getElementById(id);
+  $('r-Zs').textContent=Zs.toFixed(1)+' Ω';
+  $('r-Is').textContent=Is.toFixed(3)+' kA';
+  $('r-S').textContent=R.toFixed(2)+' m';
+  $('r-rsuelo').textContent=rs.toFixed(2)+' m';
+  $('r-npuntas').textContent=nPt;
+  $('r-htotal').textContent=hTot.toFixed(1)+' m';
+  $('r-area').textContent=geo.area.toFixed(1)+' m²';
+  const ce=$('r-cob'); ce.textContent=cob+'%';
+  ce.className='spat-stat-val '+(cob>=95?'ok':cob>=70?'':'warn');
+  const Ae=+document.getElementById('n-equipo').value||6;
+  const K=hTot-Ae, E=R-hTot, F=R-E, D=K-F;
+  const fmt=v=>(v>=0?'+':'')+v.toFixed(2);
+  $('r-K').textContent=K.toFixed(2)+' m'; $('r-K').className='spat-stat-val';
+  $('r-E').textContent=E.toFixed(2)+' m'; $('r-E').className=E>=0?'spat-stat-val':'spat-stat-val warn';
+  $('r-F').textContent=F.toFixed(2)+' m'; $('r-F').className='spat-stat-val';
+  $('r-D').textContent=fmt(D)+' m';       $('r-D').className=D<=K?'spat-stat-val':'spat-stat-val warn';
+  const dk=$('r-DK');
+  if(D<K){dk.textContent='✓ CUMPLE D('+D.toFixed(2)+')<K('+K.toFixed(2)+')';dk.className='spat-stat-val ok';}
+  else   {dk.textContent='✗ NO CUMPLE D('+D.toFixed(2)+'≥K('+K.toFixed(2)+')';dk.className='spat-stat-val warn';}
+}
+
+/* ── Canvas 2D ── */
+function _draw2D(geo,rs,puntas,R,Ht){
+  const cv=document.getElementById('spat-canvas2D');
+  const ctx=cv.getContext('2d');
+  const W=cv.offsetWidth, Hc=cv.offsetHeight||W;
+  cv.width=W*devicePixelRatio; cv.height=Hc*devicePixelRatio;
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  if(_tab==='planta')_drawPlanta(ctx,W,Hc,geo,rs,puntas);
+  else               _drawCorte(ctx,W,Hc,geo,rs,R,Ht,puntas);
+}
+
+function _bg2D(ctx,W,Hc){
+  ctx.fillStyle='#E9EEF5'; ctx.fillRect(0,0,W,Hc);
+  ctx.strokeStyle='#D0DAE8'; ctx.lineWidth=.5;
   for(let i=0;i<W;i+=16){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,Hc);ctx.stroke();}
   for(let j=0;j<Hc;j+=16){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke();}
-  /* Suelo */
+}
+
+function _drawPlanta(ctx,W,Hc,geo,rs,puntas){
+  const{pts,L,A}=geo;
+  const sc=Math.min(W*.75/L, Hc*.75/A);
+  const cx=W/2, cy=Hc/2;
+  _bg2D(ctx,W,Hc);
+  /* zonas */
+  const bb={x0:Math.min(...pts.map(p=>p.x)),x1:Math.max(...pts.map(p=>p.x)),y0:Math.min(...pts.map(p=>p.y)),y1:Math.max(...pts.map(p=>p.y))};
+  const step=3;
+  for(let wx=bb.x0;wx<bb.x1;wx+=step/sc)for(let wy=bb.y0;wy<bb.y1;wy+=step/sc){
+    if(!_inPoly(wx,wy,pts))continue;
+    ctx.fillStyle=puntas.some(p=>Math.hypot(p.x-wx,p.z-wy)<=rs)?'rgba(26,140,91,.15)':'rgba(194,59,34,.18)';
+    ctx.fillRect(cx+wx*sc,cy+wy*sc,step+1,step+1);
+  }
+  /* círculos de cobertura */
+  puntas.forEach(p=>{
+    const px=cx+p.x*sc, pz=cy+p.z*sc, r=rs*sc;
+    const g=ctx.createRadialGradient(px,pz,0,px,pz,r);
+    g.addColorStop(0,'rgba(10,61,145,.10)'); g.addColorStop(1,'rgba(10,61,145,0)');
+    ctx.beginPath(); ctx.arc(px,pz,r,0,Math.PI*2);
+    ctx.fillStyle=g; ctx.fill();
+    ctx.strokeStyle='rgba(10,61,145,.35)'; ctx.lineWidth=1; ctx.stroke();
+  });
+  /* perímetro */
+  ctx.beginPath(); ctx.moveTo(cx+pts[0].x*sc,cy+pts[0].y*sc);
+  pts.forEach(p=>ctx.lineTo(cx+p.x*sc,cy+p.y*sc));
+  ctx.closePath(); ctx.strokeStyle='#0A3D91'; ctx.lineWidth=2; ctx.stroke();
+  /* puntas */
+  puntas.forEach(p=>{
+    ctx.beginPath(); ctx.arc(cx+p.x*sc,cy+p.z*sc,4,0,Math.PI*2);
+    ctx.fillStyle='#2F6FCC'; ctx.fill();
+  });
+  /* escala */
+  const em=10,ep=em*sc,ex=W-18,ey=Hc-14;
+  ctx.strokeStyle='#4A5E7A'; ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(ex-ep,ey);ctx.lineTo(ex,ey);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ex-ep,ey-4);ctx.lineTo(ex-ep,ey+4);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ex,ey-4);ctx.lineTo(ex,ey+4);ctx.stroke();
+  ctx.fillStyle='#4A5E7A';ctx.font='9px "Space Mono",monospace';ctx.textAlign='center';ctx.fillText(em+'m',ex-ep/2,ey-6);
+  /* leyenda */
+  ctx.textAlign='left';ctx.fillStyle='rgba(10,61,145,.8)';ctx.font='bold 8px "Space Mono",monospace';
+  ctx.fillText('PLANTA — r='+rs.toFixed(1)+'m',6,12);
+  ctx.fillStyle='rgba(26,140,91,.9)';ctx.fillRect(6,18,8,7);
+  ctx.fillStyle='#4A5E7A';ctx.font='8px "Space Mono",monospace';ctx.fillText(' protegido',14,25);
+  ctx.fillStyle='rgba(194,59,34,.7)';ctx.fillRect(6,28,8,7);ctx.fillText(' expuesto',14,35);
+}
+
+function _drawCorte(ctx,W,Hc,geo,rs,R,Ht,puntas){
+  const{L}=geo;
+  const Hc2=8, Ae=+document.getElementById('n-equipo').value||6;
+  const scX=W*.78/(L+2*R), scY=Hc*.78/(Ht+R+2), sc=Math.min(scX,scY);
+  const cx=W/2, baseY=Hc*.88;
+  const toX=x=>cx+x*sc, toY=y=>baseY-y*sc;
+  _bg2D(ctx,W,Hc);
+  /* suelo */
   ctx.strokeStyle='#1E293B';ctx.lineWidth=2.5;
   ctx.beginPath();ctx.moveTo(0,baseY);ctx.lineTo(W,baseY);ctx.stroke();
-  ctx.strokeStyle='rgba(30,41,59,0.25)';ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(30,41,59,.22)';ctx.lineWidth=1;
   for(let i=0;i<W;i+=12){ctx.beginPath();ctx.moveTo(i,baseY);ctx.lineTo(i-8,baseY+10);ctx.stroke();}
-  /* Puntas X */
-  let puntaXs=[];
-  if(puntas&&puntas.length>0){
-    const sortedX=[...puntas].sort((a,b)=>a.x-b.x);
-    puntaXs=[sortedX[0].x];
-    for(let i=1;i<sortedX.length;i++){if(Math.abs(sortedX[i].x-puntaXs[puntaXs.length-1])>0.5)puntaXs.push(sortedX[i].x);}
-  } else {puntaXs=[-L/2,L/2];}
-  const toCanvX=x=>cx+x*sc;
-  const toCanvY=y=>baseY-y*sc;
-  /* Edificio */
-  const subL=L*sc,subH=H_col*sc,subX=cx-subL/2;
-  ctx.fillStyle='rgba(10,61,145,0.06)';ctx.fillRect(subX,toCanvY(H_col),subL,subH);
-  puntaXs.forEach(px=>{ctx.fillStyle='rgba(10,61,145,0.45)';ctx.fillRect(toCanvX(px)-2,toCanvY(H_col),4,subH);});
-  ctx.strokeStyle='#0A3D91';ctx.lineWidth=1.5;ctx.strokeRect(subX,toCanvY(H_col),subL,subH);
-  /* Equipo */
-  const eqW=Math.min(subL*0.22,40),eqH=Ae*sc;
-  ctx.fillStyle='rgba(245,196,0,0.15)';ctx.fillRect(cx-eqW/2,toCanvY(Ae),eqW,eqH);
-  ctx.strokeStyle='#C49A00';ctx.lineWidth=1;ctx.strokeRect(cx-eqW/2,toCanvY(Ae),eqW,eqH);
-  ctx.fillStyle='rgba(196,154,0,0.7)';ctx.font='bold 7px Space Mono,monospace';ctx.textAlign='center';
-  ctx.fillText('TRAFO',cx,toCanvY(Ae/2)+3);
-  /* Envolvente */
-  const yCentroReal=H_total+R;
-  const nSamples=300;
-  const xMinReal=-L/2-R*1.1,xMaxReal=L/2+R*1.1;
-  const envelopePts=[];
-  for(let si=0;si<=nSamples;si++){
-    const wx=xMinReal+(si/nSamples)*(xMaxReal-xMinReal);
-    let minY=null;
-    puntaXs.forEach(px=>{const dx=wx-px;if(Math.abs(dx)<R){const yP=yCentroReal-Math.sqrt(R*R-dx*dx);if(minY===null||yP<minY)minY=yP;}});
-    envelopePts.push({wx,minY});
+  /* proyectar puntas al eje X */
+  let pXs=[];
+  if(puntas&&puntas.length){
+    const sx=[...puntas].sort((a,b)=>a.x-b.x);
+    pXs=[sx[0].x];
+    for(let i=1;i<sx.length;i++){if(Math.abs(sx[i].x-pXs[pXs.length-1])>.5)pXs.push(sx[i].x);}
+  } else pXs=[-L/2,L/2];
+  /* edificio */
+  const sL=L*sc,sH=Hc2*sc,sX=cx-sL/2;
+  ctx.fillStyle='rgba(10,61,145,.05)'; ctx.fillRect(sX,toY(Hc2),sL,sH);
+  pXs.forEach(px=>{ctx.fillStyle='rgba(10,61,145,.40)';ctx.fillRect(toX(px)-2,toY(Hc2),4,sH);});
+  ctx.strokeStyle='#0A3D91';ctx.lineWidth=1.5;ctx.strokeRect(sX,toY(Hc2),sL,sH);
+  /* transformador */
+  const eqW=Math.min(sL*.22,40),eqH=Ae*sc;
+  ctx.fillStyle='rgba(245,196,0,.15)';ctx.fillRect(cx-eqW/2,toY(Ae),eqW,eqH);
+  ctx.strokeStyle='#C49A00';ctx.lineWidth=1;ctx.strokeRect(cx-eqW/2,toY(Ae),eqW,eqH);
+  ctx.fillStyle='rgba(196,154,0,.75)';ctx.font='bold 7px "Space Mono",monospace';ctx.textAlign='center';
+  ctx.fillText('TRAFO',cx,toY(Ae/2)+3);
+  /* envolvente */
+  const yC=Ht+R, nS=300;
+  const xL=-L/2-R*1.1, xR=L/2+R*1.1;
+  const env=[];
+  for(let si=0;si<=nS;si++){
+    const wx=xL+(si/nS)*(xR-xL); let mY=null;
+    pXs.forEach(px=>{const dx=wx-px;if(Math.abs(dx)<R){const yP=yC-Math.sqrt(R*R-dx*dx);if(mY===null||yP<mY)mY=yP;}});
+    env.push({wx,mY});
   }
-  /* Zona protegida */
-  ctx.beginPath();let started2=false;
-  for(let i=0;i<=nSamples;i++){const{wx,minY}=envelopePts[i];if(minY!==null){const cx2=toCanvX(wx),cy2=toCanvY(minY);if(!started2){ctx.moveTo(cx2,cy2);started2=true;}else ctx.lineTo(cx2,cy2);}}
-  for(let i=nSamples;i>=0;i--){const{wx,minY}=envelopePts[i];if(minY!==null)ctx.lineTo(toCanvX(wx),baseY);}
+  /* zona naranja */
+  ctx.beginPath(); let st=false;
+  env.forEach(({wx,mY})=>{if(mY!==null){const px2=toX(wx),py=toY(mY);st?(ctx.lineTo(px2,py)):(ctx.moveTo(px2,py),st=true);}});
+  for(let i=nS;i>=0;i--){const{wx,mY}=env[i];if(mY!==null)ctx.lineTo(toX(wx),baseY);}
   ctx.closePath();
-  const gradP=ctx.createLinearGradient(0,toCanvY(H_total),0,baseY);
-  gradP.addColorStop(0,'rgba(251,146,60,0.50)');gradP.addColorStop(1,'rgba(251,146,60,0.15)');
-  ctx.fillStyle=gradP;ctx.fill();
-  /* Esferas */
-  puntaXs.forEach((px,idx)=>{
-    const canvX=toCanvX(px),canvYc=toCanvY(yCentroReal),rPx=R*sc;
-    const sGrad=ctx.createRadialGradient(canvX-rPx*0.25,canvYc-rPx*0.25,rPx*0.05,canvX,canvYc,rPx);
-    sGrad.addColorStop(0,'rgba(143,179,232,0.45)');sGrad.addColorStop(0.6,'rgba(47,111,204,0.20)');sGrad.addColorStop(1,'rgba(10,61,145,0.03)');
-    ctx.beginPath();ctx.arc(canvX,canvYc,rPx,0,Math.PI*2);ctx.fillStyle=sGrad;ctx.fill();
-    ctx.beginPath();ctx.arc(canvX,canvYc,rPx,0,Math.PI*2);ctx.strokeStyle='rgba(10,61,145,0.35)';ctx.lineWidth=1.2;ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);
-    if(idx===puntaXs.length-1){
-      const ang=-Math.PI*0.35;
-      ctx.strokeStyle='rgba(10,61,145,0.8)';ctx.lineWidth=1.5;
-      ctx.beginPath();ctx.moveTo(canvX,canvYc);ctx.lineTo(canvX+Math.cos(ang)*rPx,canvYc+Math.sin(ang)*rPx);ctx.stroke();
-      ctx.fillStyle='rgba(10,61,145,0.9)';ctx.font='bold 9px Space Mono,monospace';ctx.textAlign='left';
-      ctx.fillText('R='+R.toFixed(1)+'m',canvX+Math.cos(ang)*rPx*0.55+3,canvYc+Math.sin(ang)*rPx*0.55);
+  const gZ=ctx.createLinearGradient(0,toY(Ht),0,baseY);
+  gZ.addColorStop(0,'rgba(251,146,60,.50)'); gZ.addColorStop(1,'rgba(251,146,60,.12)');
+  ctx.fillStyle=gZ; ctx.fill();
+  /* esferas */
+  pXs.forEach((px,idx)=>{
+    const cX=toX(px),cY=toY(yC),rP=R*sc;
+    const sg=ctx.createRadialGradient(cX-rP*.25,cY-rP*.25,rP*.05,cX,cY,rP);
+    sg.addColorStop(0,'rgba(143,179,232,.45)');sg.addColorStop(.6,'rgba(47,111,204,.20)');sg.addColorStop(1,'rgba(10,61,145,.02)');
+    ctx.beginPath();ctx.arc(cX,cY,rP,0,Math.PI*2);ctx.fillStyle=sg;ctx.fill();
+    ctx.beginPath();ctx.arc(cX,cY,rP,0,Math.PI*2);
+    ctx.strokeStyle='rgba(10,61,145,.32)';ctx.lineWidth=1.2;ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);
+    if(idx===pXs.length-1){
+      const ang=-Math.PI*.35;
+      ctx.strokeStyle='rgba(10,61,145,.8)';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(cX,cY);ctx.lineTo(cX+Math.cos(ang)*rP,cY+Math.sin(ang)*rP);ctx.stroke();
+      ctx.fillStyle='rgba(10,61,145,.9)';ctx.font='bold 9px "Space Mono",monospace';ctx.textAlign='left';
+      ctx.fillText('R='+R.toFixed(1)+'m',cX+Math.cos(ang)*rP*.55+3,cY+Math.sin(ang)*rP*.55);
     }
   });
-  /* Envolvente azul */
-  ctx.beginPath();started2=false;
-  for(let i=0;i<=nSamples;i++){const{wx,minY}=envelopePts[i];if(minY!==null){const cx2=toCanvX(wx),cy2=toCanvY(minY);if(!started2){ctx.moveTo(cx2,cy2);started2=true;}else ctx.lineTo(cx2,cy2);}else{started2=false;}}
-  ctx.strokeStyle='rgba(47,111,204,0.85)';ctx.lineWidth=2;ctx.setLineDash([7,3]);ctx.stroke();ctx.setLineDash([]);
-  /* Mástiles */
-  puntaXs.forEach(px=>{
-    const canvX=toCanvX(px),yTopM=toCanvY(H_col),yTip=toCanvY(H_total);
-    ctx.strokeStyle='#0A3D91';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(canvX,yTopM);ctx.lineTo(canvX,yTip);ctx.stroke();
-    ctx.beginPath();ctx.arc(canvX,yTip,4.5,0,Math.PI*2);ctx.fillStyle='#0A3D91';ctx.fill();
+  /* envolvente azul */
+  ctx.beginPath();st=false;
+  env.forEach(({wx,mY})=>{if(mY!==null){const px2=toX(wx),py=toY(mY);st?(ctx.lineTo(px2,py)):(ctx.moveTo(px2,py),st=true);}else st=false;});
+  ctx.strokeStyle='rgba(47,111,204,.85)';ctx.lineWidth=2;ctx.setLineDash([7,3]);ctx.stroke();ctx.setLineDash([]);
+  /* mástiles */
+  pXs.forEach(px=>{
+    const cX=toX(px);
+    ctx.strokeStyle='#0A3D91';ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(cX,toY(Hc2));ctx.lineTo(cX,toY(Ht));ctx.stroke();
+    ctx.beginPath();ctx.arc(cX,toY(Ht),4.5,0,Math.PI*2);
+    ctx.fillStyle='#0A3D91';ctx.fill();
     ctx.strokeStyle='#8FB3E8';ctx.lineWidth=1;ctx.stroke();
-    ctx.beginPath();ctx.arc(canvX,yTip,10,0,Math.PI*2);ctx.fillStyle='rgba(10,61,145,0.10)';ctx.fill();
+    ctx.beginPath();ctx.arc(cX,toY(Ht),10,0,Math.PI*2);
+    ctx.fillStyle='rgba(10,61,145,.10)';ctx.fill();
   });
-  /* Cotas */
-  const cotaX=toCanvX(puntaXs[0])-28;
+  /* cotas */
+  const cotX=toX(pXs[0])-28;
   ctx.strokeStyle='#4A5E7A';ctx.lineWidth=1;ctx.setLineDash([3,3]);
-  ctx.beginPath();ctx.moveTo(cotaX,baseY);ctx.lineTo(cotaX,toCanvY(H_total));ctx.stroke();ctx.setLineDash([]);
-  const drawArrow2=(x,y1,y2,label)=>{
-    ctx.strokeStyle='#4A5E7A';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,y1);ctx.lineTo(x,y2);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cotX,baseY);ctx.lineTo(cotX,toY(Ht));ctx.stroke();ctx.setLineDash([]);
+  const arrow=(x,y1,y2,lbl)=>{
+    ctx.strokeStyle='#4A5E7A';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,y1);ctx.lineTo(x,y2);ctx.stroke();
     ctx.beginPath();ctx.moveTo(x-3,y2+6);ctx.lineTo(x,y2);ctx.lineTo(x+3,y2+6);ctx.stroke();
     ctx.beginPath();ctx.moveTo(x-3,y1-6);ctx.lineTo(x,y1);ctx.lineTo(x+3,y1-6);ctx.stroke();
-    ctx.fillStyle='#4A5E7A';ctx.font='bold 9px Space Mono,monospace';ctx.textAlign='right';ctx.fillText(label,x-5,(y1+y2)/2+3);
+    ctx.fillStyle='#4A5E7A';ctx.font='bold 9px "Space Mono",monospace';ctx.textAlign='right';
+    ctx.fillText(lbl,x-5,(y1+y2)/2+3);
   };
-  drawArrow2(cotaX,baseY,toCanvY(H_total),'H='+H_total.toFixed(0)+'m');
-  ctx.setLineDash([2,3]);ctx.strokeStyle='rgba(47,111,204,0.5)';ctx.lineWidth=1;
-  const eqW2=Math.min(L*sc*0.22,40);
-  ctx.beginPath();ctx.moveTo(cx+eqW2/2+2,toCanvY(Ae));ctx.lineTo(cx+eqW2/2+24,toCanvY(Ae));ctx.stroke();
+  arrow(cotX,baseY,toY(Ht),'H='+Ht.toFixed(0)+'m');
+  /* cota He */
+  ctx.setLineDash([2,3]);ctx.strokeStyle='rgba(47,111,204,.5)';ctx.lineWidth=1;
+  const eqW2=Math.min(L*sc*.22,40);
+  ctx.beginPath();ctx.moveTo(cx+eqW2/2+2,toY(Ae));ctx.lineTo(cx+eqW2/2+24,toY(Ae));ctx.stroke();
   ctx.beginPath();ctx.moveTo(cx+eqW2/2+2,baseY);ctx.lineTo(cx+eqW2/2+24,baseY);ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle='rgba(47,111,204,0.8)';ctx.font='8px Space Mono,monospace';ctx.textAlign='left';
-  ctx.fillText('He='+Ae+'m',cx+eqW2/2+27,toCanvY(Ae/2)+3);
-  /* Título y leyenda */
-  ctx.fillStyle='rgba(10,61,145,0.85)';ctx.font='bold 9px Space Mono,monospace';ctx.textAlign='left';
-  ctx.fillText('CORTE — IEEE 998-2012 · '+puntaXs.length+' punt. captadoras',6,12);
-  const leyenda2=[
-    {color:'rgba(251,146,60,0.6)',label:'Zona protegida'},
-    {color:'rgba(47,111,204,0.85)',label:'Envolvente (esferas)',dash:true},
-    {color:'rgba(10,61,145,0.45)',label:'Esferas rodantes (R='+R.toFixed(1)+'m)',dash:true},
-    {color:'#0A3D91',label:'Puntas captadoras'},
+  ctx.fillStyle='rgba(47,111,204,.8)';ctx.font='8px "Space Mono",monospace';ctx.textAlign='left';
+  ctx.fillText('He='+Ae+'m',cx+eqW2/2+27,toY(Ae/2)+3);
+  /* título y leyenda */
+  ctx.fillStyle='rgba(10,61,145,.85)';ctx.font='bold 9px "Space Mono",monospace';ctx.textAlign='left';
+  ctx.fillText('CORTE — IEEE 998-2012 · '+pXs.length+' punt. captadoras',6,12);
+  const leg=[
+    {c:'rgba(251,146,60,.6)',  l:'Zona protegida'},
+    {c:'rgba(47,111,204,.85)', l:'Envolvente esferas', d:true},
+    {c:'rgba(10,61,145,.40)',  l:'Esferas R='+R.toFixed(1)+'m', d:true},
+    {c:'#0A3D91',              l:'Puntas captadoras'},
   ];
-  leyenda2.forEach((l,i)=>{
+  leg.forEach(({c,l,d},i)=>{
     const ly=22+i*11;
-    if(l.dash){ctx.strokeStyle=l.color;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);ctx.beginPath();ctx.moveTo(6,ly);ctx.lineTo(18,ly);ctx.stroke();ctx.setLineDash([]);}
-    else{ctx.fillStyle=l.color;ctx.fillRect(6,ly-5,12,7);}
-    ctx.fillStyle='#4A5E7A';ctx.font='8px Space Mono,monospace';ctx.textAlign='left';ctx.fillText(l.label,21,ly+1);
+    if(d){ctx.strokeStyle=c;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);ctx.beginPath();ctx.moveTo(6,ly);ctx.lineTo(18,ly);ctx.stroke();ctx.setLineDash([]);}
+    else{ctx.fillStyle=c;ctx.fillRect(6,ly-5,12,7);}
+    ctx.fillStyle='#4A5E7A';ctx.font='8px "Space Mono",monospace';ctx.textAlign='left';ctx.fillText(l,21,ly+1);
   });
 }
-
-/* Iniciar cuando se muestre la página de apantallamiento */
-document.addEventListener('DOMContentLoaded',()=>{
-  // Iniciar SPAT cuando el usuario navega a la página
-  const origShowPage = typeof showPage === 'function' ? showPage : null;
-  if(origShowPage){
-    window.showPage = function(id, el){
-      origShowPage(id, el);
-      if(id === 'page-apant' && !spatInited){
-        setTimeout(()=>{ spatInit3D(); spatCalcIEEE(); spatRenderizar(); }, 100);
-      }
-    };
-  }
-});
 </script>
-</body></html>
+</body>
+</html>
