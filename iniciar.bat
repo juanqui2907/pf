@@ -37,11 +37,9 @@ if errorlevel 1 (
     pip install reportlab
 )
 
-:: Abrir el navegador después de 1.5 s (en paralelo, sin bloquear)
-start "" cmd /c "timeout /t 2 >nul & start http://localhost:8000"
-
 :: Iniciar servidor Flask (bloquea aquí hasta que el usuario cierre la ventana)
 echo  Servidor corriendo en http://localhost:8000
 echo  Cierre esta ventana para detener la aplicacion.
 echo.
+python iniciar.py
 python servidor.py

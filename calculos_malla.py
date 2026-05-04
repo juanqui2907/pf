@@ -363,6 +363,18 @@ def sec3_geometria(forma, Dx=0, Dy=0, D=0, Db=0, D1=0, D1_esc=0,
     """
     r = {}   # resultado
 
+    # ── Recortes ajustados para L y T (Cálculo Lc C11-C14) ───────────────────
+    # Necesario aquí para que el área use los valores ajustados.
+    # Lx1_aj = CEILING(Lx1, Dy)   Ly1_aj = CEILING(Ly1, Dx)
+    Lx1_aj = Ly1_aj = Lx2_aj = Ly2_aj = 0
+    Nx1 = Ny1 = Nx2 = Ny2 = 0
+    if forma in (6, 7):
+        Lx1_aj = _ceiling(Lx1, Dy)
+        Ly1_aj = _ceiling(Ly1, Dx)
+    if forma == 7:
+        Lx2_aj = _ceiling(Lx2, Dy)
+        Ly2_aj = _ceiling(Ly2, Dx)
+
     # ── Área cubierta (Entradas B72) ──────────────────────────────────────────
     if forma == 1:
         A = Lx * Ly
@@ -377,9 +389,9 @@ def sec3_geometria(forma, Dx=0, Dy=0, D=0, Db=0, D1=0, D1_esc=0,
         s = (La + Lb_e + Lc_e) / 2
         A = math.sqrt(max(s * (s - La) * (s - Lb_e) * (s - Lc_e), 0))
     elif forma == 6:
-        A = Lx * Ly - Lx1 * Ly1
+        A = Lx * Ly - Lx1_aj * Ly1_aj
     elif forma == 7:
-        A = Lx * Ly - Lx1 * Ly1 - Lx2 * Ly2
+        A = Lx * Ly - Lx1_aj * Ly1_aj - Lx2_aj * Ly2_aj
     else:
         A = 0
     r["A"] = round(A, 4)
@@ -434,18 +446,12 @@ def sec3_geometria(forma, Dx=0, Dy=0, D=0, Db=0, D1=0, D1_esc=0,
         Nx = Ny = 0
     r["Nx"] = Nx; r["Ny"] = Ny
 
-    # Recortes ajustados para L y T (Cálculo Lc C11-C14)
-    # Lx1_aj = CEILING(Lx1, Dy)   Ly1_aj = CEILING(Ly1, Dx)
-    Lx1_aj = Ly1_aj = Lx2_aj = Ly2_aj = 0
-    Nx1 = Ny1 = Nx2 = Ny2 = 0
+    # Recortes ajustados — Nx/Ny de cada recorte (Cálculo Lc C11-C14)
+    # Lx1_aj / Ly1_aj / Lx2_aj / Ly2_aj ya están calculados al inicio.
     if forma in (6, 7):
-        Lx1_aj = _ceiling(Lx1, Dy)
-        Ly1_aj = _ceiling(Ly1, Dx)
         Nx1 = int(round(Ly1_aj / Dx)) if Dx > 0 else 0  # tramos eliminados en Y
         Ny1 = int(round(Lx1_aj / Dy)) if Dy > 0 else 0  # tramos eliminados en X
     if forma == 7:
-        Lx2_aj = _ceiling(Lx2, Dy)
-        Ly2_aj = _ceiling(Ly2, Dx)
         Nx2 = int(round(Ly2_aj / Dx)) if Dx > 0 else 0
         Ny2 = int(round(Lx2_aj / Dy)) if Dy > 0 else 0
     r["Lx1_aj"] = round(Lx1_aj, 4); r["Ly1_aj"] = round(Ly1_aj, 4)
@@ -1047,27 +1053,34 @@ def _generar_recomendaciones(p, out):
     # ── D actual según forma ──────────────────────────────────────────────────
     forma = int(p.get("forma", 1))
     Dx = float(p.get("Dx") or 0); Dy = float(p.get("Dy") or 0)
-    if forma in (1, 6, 7):
-        D_actual = round((Dx + Dy) / 2, 4) if (Dx > 0 and Dy > 0) else (Dx or Dy)
-    elif forma == 2:
-        D_actual = float(p.get("D") or 0)
-    elif forma == 3:
-        D_actual = float(p.get("Db") or 0)
-    elif forma == 4:
-        D_actual = float(p.get("D1") or 0)
-    else:
-        D_actual = float(p.get("D1_esc") or 0)
 
-    # D_menores: valores disponibles menores al actual
+    def _closest_smaller(lista, ref, n=5):
+        """Devuelve los n valores más cercanos por debajo de ref (paso siguiente lógico)."""
+        menores = sorted([d for d in lista if d < ref - 1e-9], reverse=True)
+        return menores[:n]
+
     if forma in (1, 6, 7):
-        lista_raw = sorted(set(ld.get("lista_Dx", []) + ld.get("lista_Dy", [])))
-    elif forma == 2:
-        lista_raw = ld.get("lista_D", [])
-    elif forma == 3:
-        lista_raw = ld.get("lista_Db", [])
+        # Mantener Dx y Dy separados para mostrárselos al usuario con precisión
+        D_actual = None   # no se usa para forma 1/6/7
+        Dx_menores = _closest_smaller(ld.get("lista_Dx", []), Dx)
+        Dy_menores = _closest_smaller(ld.get("lista_Dy", []), Dy)
+        D_menores  = []   # no se usa para forma 1/6/7
     else:
-        lista_raw = ld.get("lista_D1", [])
-    D_menores = [d for d in lista_raw if d < D_actual - 1e-9]
+        if forma == 2:
+            D_actual = float(p.get("D") or 0)
+            lista_raw = ld.get("lista_D", [])
+        elif forma == 3:
+            D_actual = float(p.get("Db") or 0)
+            lista_raw = ld.get("lista_Db", [])
+        elif forma == 4:
+            D_actual = float(p.get("D1") or 0)
+            lista_raw = ld.get("lista_D1", [])
+        else:
+            D_actual = float(p.get("D1_esc") or 0)
+            lista_raw = ld.get("lista_D1", [])
+        D_menores  = _closest_smaller(lista_raw, D_actual)
+        Dx_menores = []
+        Dy_menores = []
 
     # Configuración de varillas
     uv = int(p.get("uv", 0))
@@ -1102,15 +1115,22 @@ def _generar_recomendaciones(p, out):
         _JERARQUIA_UV = ["sin varillas", "solo esquinas", "perímetro", "todas las intersecciones"]
         _idx_uv = _JERARQUIA_UV.index(config_varillas) if config_varillas in _JERARQUIA_UV else -1
         _configuraciones_mayores = _JERARQUIA_UV[_idx_uv + 1:] if _idx_uv >= 0 else []
-        rec["em"] = {
-            "D":                      round(D_actual, 4),
-            "D_menores":              D_menores[:5],
-            "Nr":                     int(s3.get("nR", 0)),
-            "configuracion_actual":   config_varillas,
+        em_entry = {
+            "Nr":                      int(s3.get("nR", 0)),
+            "configuracion_actual":    config_varillas,
             "configuraciones_mayores": _configuraciones_mayores,
-            "Lr_actual":              Lr_actual,
-            "Lr_modelos_mayores":     [m for m in MODELOS_LR if m > Lr_actual + 1e-9],
+            "Lr_actual":               Lr_actual,
+            "Lr_modelos_mayores":      [m for m in MODELOS_LR if m > Lr_actual + 1e-9],
         }
+        if forma in (1, 6, 7):
+            em_entry["Dx"]        = round(Dx, 4)
+            em_entry["Dy"]        = round(Dy, 4)
+            em_entry["Dx_menores"] = Dx_menores
+            em_entry["Dy_menores"] = Dy_menores
+        else:
+            em_entry["D"]         = round(D_actual, 4)
+            em_entry["D_menores"] = D_menores
+        rec["em"] = em_entry
 
     # ── Criterio 4: Es ───────────────────────────────────────────────────────
     if not ok_Es:

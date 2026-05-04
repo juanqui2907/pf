@@ -287,17 +287,23 @@ def exportar_excel(nombre):
 
 # ─── API: Exportar PDF ────────────────────────────────────────────────────────
 
-@app.route('/proyectos/<nombre>/exportar/pdf', methods=['GET'])
+@app.route('/proyectos/<nombre>/exportar/pdf', methods=['GET', 'POST'])
 def exportar_pdf(nombre):
     try:
         from reportlab.lib.pagesizes import A4
         from reportlab.lib.styles import getSampleStyleSheet
-        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
         from reportlab.lib import colors
         from flask import send_file
-        import io
+        import io, base64
     except ImportError:
         return jsonify({'error': 'Instale reportlab: pip install reportlab'}), 500
+
+    # Recibir imagen de la vista 2D si viene en el body (POST)
+    malla2d_img = None
+    if request.method == 'POST':
+        body = request.get_json(silent=True) or {}
+        malla2d_img = body.get('malla2d_img')  # data URL base64 PNG
 
     hist = _load_hist(nombre)
     aprobada = next(
@@ -317,35 +323,54 @@ def exportar_pdf(nombre):
     story.append(Paragraph('TerraShield — Malla de puesta a tierra IEEE 80-2013', styles['Title']))
     story.append(Paragraph(f'Proyecto: <b>{nombre}</b>', styles['Normal']))
     story.append(Paragraph(
-        f'Fecha de exportación: {datetime.datetime.now().strftime("%Y-%m-%d %H:%M")}',
+        f'Fecha de exportación: {datetime.datetime.now().strftime("%d/%m/2024 %H:%M")}',
         styles['Normal']
     ))
     story.append(Spacer(1, 20))
+
+    # Insertar visualización 2D si fue enviada desde el cliente
+    if malla2d_img:
+        try:
+            img_data  = malla2d_img.split(',', 1)[-1]
+            img_bytes = base64.b64decode(img_data)
+            img_buf   = io.BytesIO(img_bytes)
+            img       = Image(img_buf, width=450, height=250)
+            img.hAlign = 'CENTER'
+            story.append(Paragraph('Visualización de la malla — Vista 2D', styles['Heading2']))
+            story.append(Spacer(1, 8))
+            story.append(img)
+            story.append(Spacer(1, 20))
+        except Exception:
+            pass  # Si falla la imagen, continúa sin ella
+
     story.append(Paragraph('Diseño Final Aprobado', styles['Heading2']))
     story.append(Spacer(1, 8))
 
+    nd = lambda k: str(aprobada.get(k, 'N/D'))  # helper: valor o N/D
+
     tabla_data = [
-        ['Parámetro', 'Valor', 'Unidad'],
-        ['Iteración N°',               str(aprobada.get('iter', '—')),              ''],
-        ['Fecha de cálculo',           aprobada.get('timestamp', '—'),              ''],
-        ['Lx — longitud X',            str(aprobada.get('Lx', '—')),               'm'],
-        ['Ly — longitud Y',            str(aprobada.get('Ly', '—')),               'm'],
-        ['D — espaciamiento',          str(aprobada.get('D', '—')),                'm'],
-        ['h — profundidad de malla',   str(aprobada.get('h', '—')),                'm'],
-        ['Lr — longitud de varilla',   str(aprobada.get('Lr', '—')),               'm'],
-        ['Nr — número de varillas',    str(aprobada.get('Nr', '—')),               ''],
-        ['hs — capa superficial',      str(aprobada.get('hs', '—')),               'm'],
-        ['ρs — resistividad sup.',     str(round(aprobada.get('rho_s', 0), 2)),    'Ω·m'],
-        ['Rg — resist. de malla',      str(aprobada.get('Rg', '—')),               'Ω  ✔'],
-        ['GPR — potencial de tierra',  str(aprobada.get('GPR', '—')),              'V  ✔'],
-        ['Em — voltaje de malla',      str(aprobada.get('Em', '—')),               'V  ✔'],
-        ['Es — voltaje de paso',       str(aprobada.get('Es', '—')),               'V  ✔'],
+        ['Parametro',                  'Valor',                                        'Unidad'],
+        ['Iteracion N.',               nd('iter'),                                     ''],
+        ['Fecha de calculo',           aprobada.get('timestamp', 'N/D'),               ''],
+        ['Lx - longitud X',            nd('Lx'),                                       'm'],
+        ['Ly - longitud Y',            nd('Ly'),                                       'm'],
+        ['D - espaciamiento',          nd('D'),                                        'm'],
+        ['h - profundidad de malla',   nd('h'),                                        'm'],
+        ['Lr - longitud de varilla',   nd('Lr'),                                       'm'],
+        ['Nr - numero de varillas',    nd('Nr'),                                       ''],
+        ['hs - capa superficial',      nd('hs'),                                       'm'],
+        ['rhos - resistividad sup.',   str(round(aprobada.get('rho_s', 0), 2)),        'Ohm.m'],
+        ['Rg - resist. de malla',      nd('Rg'),                                       'Ohm [OK]'],
+        ['GPR - potencial de tierra',  nd('GPR'),                                      'V   [OK]'],
+        ['Em - voltaje de malla',      nd('Em'),                                       'V   [OK]'],
+        ['Es - voltaje de paso',       nd('Es'),                                       'V   [OK]'],
     ]
 
     t = Table(tabla_data, colWidths=[210, 110, 80])
     t.setStyle(TableStyle([
         ('BACKGROUND',    (0, 0),  (-1, 0),  colors.HexColor('#0A3D91')),
         ('TEXTCOLOR',     (0, 0),  (-1, 0),  colors.white),
+        ('FONTNAME',      (0, 0),  (-1, -1), 'Helvetica'),
         ('FONTNAME',      (0, 0),  (-1, 0),  'Helvetica-Bold'),
         ('ROWBACKGROUNDS',(0, 1),  (-1, -1), [colors.white, colors.HexColor('#EEF3FF')]),
         ('GRID',          (0, 0),  (-1, -1), 0.4, colors.HexColor('#CCCCCC')),
@@ -356,22 +381,63 @@ def exportar_pdf(nombre):
     ]))
     story.append(t)
 
-    doc.build(story)
+    try:
+        doc.build(story)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Error al construir el PDF: {str(e)}'}), 500
+
     output.seek(0)
 
     fname = f"TerraShield_{_safe_nombre(nombre)}.pdf"
     return send_file(output, as_attachment=True, download_name=fname,
                      mimetype='application/pdf')
 
+# ─── API: Apantallamiento ─────────────────────────────────────────────────────
+
+@app.route('/apantallamiento/calcular', methods=['POST'])
+def post_calcular_apantallamiento():
+    import traceback as _tb
+    data = request.get_json(force=True, silent=True)
+    if not data:
+        return jsonify({'error': 'Body JSON requerido'}), 400
+    if not data.get('masts'):
+        return jsonify({'error': 'Se requiere al menos un mástil'}), 400
+    try:
+        import importlib, calculos_apant
+        importlib.reload(calculos_apant)
+        resultado = calculos_apant.calcular_apantallamiento(data)
+        return jsonify({'ok': True, **resultado})
+    except Exception as e:
+        print('[ERROR /apantallamiento/calcular]', _tb.format_exc())
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/apantallamiento/recomendar', methods=['POST'])
+def post_recomendar_apantallamiento():
+    import traceback as _tb
+    data = request.get_json(force=True, silent=True)
+    if not data:
+        return jsonify({'error': 'Body JSON requerido'}), 400
+    try:
+        import importlib, calculos_apant
+        importlib.reload(calculos_apant)
+        params       = data.get('params', {})
+        S            = float(data.get('S') or 0)
+        verification = data.get('verification', [])
+        if not params.get('masts'):
+            return jsonify({'error': 'Se requiere al menos un mástil en params'}), 400
+        if S <= 0:
+            return jsonify({'error': 'Se requiere S > 0'}), 400
+        recs = calculos_apant.calcular_recomendaciones(params, S, verification)
+        return jsonify({'ok': True, 'recommendations': recs})
+    except Exception as e:
+        print('[ERROR /apantallamiento/recomendar]', _tb.format_exc())
+        return jsonify({'error': str(e)}), 500
+
 # ─── Arranque ─────────────────────────────────────────────────────────────────
 
-def abrir_navegador():
-    import time
-    time.sleep(1.2)
-    webbrowser.open(f'http://localhost:{PORT}')
-
 if __name__ == '__main__':
-    threading.Thread(target=abrir_navegador, daemon=True).start()
     print("=" * 46)
     print("  TERRASHIELD v1.0.0")
     print(f"  Servidor Flask en http://localhost:{PORT}")

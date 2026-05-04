@@ -90,46 +90,12 @@ function showPage(pageId, navItem) {
   if (navItem) navItem.classList.add('active');
 
   const labels = {
-    'page-inicio':     'INICIO',
-    'page-datos':      'DATOS GENERALES',
-    'page-apant':      'APANTALLAMIENTO',
-    'page-malla':      'MALLA A TIERRA',
-    'page-verif':      'VERIFICACIONES',
-    'page-resultados': 'RESULTADOS',
-    'page-exportar':   'EXPORTAR REPORTE'
+    'page-inicio':   'INICIO',
+    'page-apant':    'APANTALLAMIENTO',
+    'page-malla':    'MALLA A TIERRA',
+    'page-exportar': 'EXPORTAR REPORTE'
   };
   document.getElementById('topbar-section-name').textContent = labels[pageId] || pageId;
-
-  /* ── SPAT: inicializar cuando se abre Apantallamiento ── */
-  if (pageId === 'page-apant') {
-    const appContent = document.querySelector('.app-content');
-    if (appContent) {
-      appContent.style.padding = '0';
-      appContent.style.overflow = 'hidden';
-    }
-    setTimeout(() => {
-      if (typeof spatInit3D === 'function' && !window.spatInited) {
-        spatInit3D();
-        spatCalcIEEE();
-        spatRender();
-      } else if (window.spatInited) {
-        /* ya iniciado: solo refrescar tamaño del renderer */
-        const c = document.getElementById('spat-container3D');
-        if (c && window.spatRenderer) {
-          window.spatRenderer.setSize(c.clientWidth, c.clientHeight);
-          window.spatCamera.aspect = c.clientWidth / c.clientHeight;
-          window.spatCamera.updateProjectionMatrix();
-        }
-      }
-    }, 80);
-  } else {
-    /* Restaurar padding normal en otras páginas */
-    const appContent = document.querySelector('.app-content');
-    if (appContent) {
-      appContent.style.padding = '';
-      appContent.style.overflow = '';
-    }
-  }
 }
 
 /* =============================================
@@ -153,16 +119,64 @@ function calcNgFromTd() {
   if (!isNaN(td) && td > 0) {
     const ng = parseFloat((0.0017 * Math.pow(td, 1.56)).toFixed(3));
     ngInput.value = ng;
-    if (fuente) fuente.textContent = `Calculado: Ng = 0.0017 × ${td}^1.56 = ${ng} flashes/km²/año (IEEE Std 998)`;
+    if (fuente) fuente.textContent = '';
   } else {
     // Restaurar valor de referencia del proyecto si Td se borra
     const d = AppState.validatedData;
     if (d) {
       ngInput.value = d.ngDisplay || (d.ng !== null && d.ng !== undefined ? d.ng : 'No disponible');
-      if (fuente) fuente.textContent = d.ng !== null ? `Valor de referencia departamental — ${d.departamento}` : 'Sin datos para esta zona';
+      if (fuente) fuente.textContent = '';
     } else {
       ngInput.value = '';
       if (fuente) fuente.textContent = '';
+    }
+  }
+}
+
+/* =============================================
+   MALLA: PRE-CARGAR ρ DESDE CLASIFICACIÓN
+   ============================================= */
+const MALLA_RHO_IEEE80 = {
+  'Suelo Orgánico Húmedo': 10,
+  'Suelo Húmedo':          100,
+  'Suelo Seco':            1000,
+  'Roca':                  10000
+};
+
+function mallaPrecargarRho(d) {
+  const inputRho  = document.getElementById('m-rho');
+  const selectCls = document.getElementById('m-rho-clase');
+  const notaEl    = document.getElementById('m-rho-nota');
+  if (!inputRho) return;
+
+  const rho       = d.rhoSuelo  ?? null;
+  const tipoSuelo = d.tipoSuelo ?? null;
+  const sueloNota = d.sueloNota ?? null;
+
+  // Determinar opción del select que corresponde al tipo clasificado
+  const rhoClase = tipoSuelo && MALLA_RHO_IEEE80[tipoSuelo] !== undefined
+    ? MALLA_RHO_IEEE80[tipoSuelo]
+    : null;
+
+  if (selectCls) {
+    selectCls.value = rhoClase !== null ? String(rhoClase) : '';
+  }
+
+  if (rho !== null) {
+    inputRho.value = rho;
+  } else if (rhoClase !== null) {
+    inputRho.value = rhoClase;
+  }
+  // Si no hay rho (no clasificable), dejar el valor actual sin tocar
+
+  // Nota explicativa
+  if (notaEl) {
+    if (sueloNota) {
+      notaEl.textContent = sueloNota;
+      notaEl.style.display = 'block';
+    } else {
+      notaEl.textContent = '';
+      notaEl.style.display = 'none';
     }
   }
 }
@@ -202,10 +216,9 @@ function crearProyecto() {
 
   if (AppState.validatedData) {
     const d = AppState.validatedData;
-    document.getElementById('stat-ng').textContent        = d.ng;
+    document.getElementById('stat-ng').textContent        = d.ng !== null && d.ng !== undefined ? parseFloat(d.ng).toFixed(2) : '—';
     document.getElementById('stat-ubicacion').textContent = d.municipio || '—';
     document.getElementById('stat-depto').textContent     = d.departamento || '—';
-    document.getElementById('res-ng').textContent         = d.ng;
 
     // Temperatura en panel principal
     const statTemp = document.getElementById('stat-temp');
@@ -219,25 +232,16 @@ function crearProyecto() {
       if (mTambFuente) mTambFuente.style.display = '';
     }
 
-    // Resistividad y tipo de suelo en datos generales
-    const inputRho = document.getElementById('dg-resistividad');
-    const fuenteRho = document.getElementById('dg-resistividad-fuente');
-    const inputTipo = document.getElementById('dg-tipo-suelo');
-    if (inputRho && d.rhoSuelo) {
-      inputRho.value = d.rhoSuelo;
-      if (fuenteRho) {
-        fuenteRho.textContent = `Estimación preliminar — ${d.sueloFuente || 'IGAC/IEEE 80'}`;
-        fuenteRho.style.display = 'block';
-      }
-    }
-    if (inputTipo && d.tipoSuelo) inputTipo.value = d.tipoSuelo;
+
+    // Resistividad en módulo de malla — desde clasificación de suelo validada
+    mallaPrecargarRho(d);
 
     // Ng en módulo de apantallamiento
     const apantNg     = document.getElementById('apant-ng-calc');
     const apantFuente = document.getElementById('apant-ng-fuente');
     if (apantNg) {
       apantNg.value = d.ng !== null && d.ng !== undefined ? d.ng : 'No disponible';
-      if (apantFuente) apantFuente.textContent = d.ng !== null ? `Valor de referencia departamental — ${d.departamento}` : 'Sin datos para esta zona (San Andrés). Puede ingresar Td manualmente.';
+      if (apantFuente) apantFuente.textContent = '';
     }
   }
 
@@ -285,7 +289,7 @@ function handleProjectFile(event) {
 
       if (proj.ubicacion) {
         const d = proj.ubicacion;
-        if (d.ng)           { document.getElementById('stat-ng').textContent = d.ng; document.getElementById('res-ng').textContent = d.ng; }
+        if (d.ng)           document.getElementById('stat-ng').textContent = parseFloat(d.ng).toFixed(2);
         if (d.municipio)    document.getElementById('stat-ubicacion').textContent = d.municipio;
         if (d.departamento) document.getElementById('stat-depto').textContent     = d.departamento;
         const statTemp = document.getElementById('stat-temp');
@@ -296,11 +300,7 @@ function handleProjectFile(event) {
           if (mTamb) mTamb.value = parseFloat(parseFloat(d.temp).toFixed(1));
           if (mTambFuente) mTambFuente.style.display = '';
         }
-        const inputRho  = document.getElementById('dg-resistividad');
-        const fuenteRho = document.getElementById('dg-resistividad-fuente');
-        const inputTipo = document.getElementById('dg-tipo-suelo');
-        if (inputRho  && d.rhoSuelo)  { inputRho.value = d.rhoSuelo; if (fuenteRho) { fuenteRho.textContent = `Estimación preliminar — ${d.sueloFuente || 'IGAC/IEEE 80'}`; fuenteRho.style.display = 'block'; } }
-        if (inputTipo && d.tipoSuelo) inputTipo.value = d.tipoSuelo;
+        mallaPrecargarRho(d);
       }
 
       // Crear archivo de historial si no existe y cargar historial previo
@@ -339,9 +339,16 @@ function saveProject() {
   }
 
   AppState.currentProject.datosGenerales = {
-    nombre:      document.getElementById('dg-nombre')?.value || AppState.currentProject.nombre,
-    actualizado: new Date().toISOString()
+    nombre:       document.getElementById('dg-nombre')?.value       || AppState.currentProject.nombre,
+    propietario:  document.getElementById('dg-propietario')?.value  || '',
+    responsable:  document.getElementById('dg-responsable')?.value  || '',
+    actualizado:  new Date().toISOString()
   };
+
+  // Guardar historial de malla si existe
+  if (AppState.mallaHistoria?.length > 0) {
+    AppState.currentProject.malla = { historial: AppState.mallaHistoria };
+  }
 
   const blob = new Blob([JSON.stringify(AppState.currentProject, null, 2)], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
@@ -371,7 +378,55 @@ function exportTXT() {
   txt += `Longitud: ${d.lon || '—'}°W\n`;
   txt += `Ng (densidad de rayos): ${d.ng || '—'} rayos/km²/año\n`;
   txt += `Temperatura estimada: ${d.temp || '—'} °C\n\n`;
-  txt += `--- APANTALLAMIENTO ---\nEn espera de cálculo (backend Python).\n\n`;
+  // Apantallamiento
+  txt += `--- APANTALLAMIENTO (IEEE Std 998 — EGM) ---\n`;
+  if (typeof _apantLastResult !== 'undefined' && _apantLastResult && _apantLastResult.S) {
+    const ar = _apantLastResult;
+    txt += `BIL: ${document.getElementById('apant-bil')?.value || '—'} kV\n`;
+    txt += `Zs:  ${document.getElementById('apant-zs')?.value  || '—'} Ω\n`;
+    txt += `k:   ${document.getElementById('apant-k')?.value   || '—'}\n`;
+    txt += `S (radio de esfera rodante): ${ar.S != null ? ar.S.toFixed(2) : '—'} m\n`;
+    const ngTxt = document.getElementById('apant-ng-calc')?.value?.trim() || '—';
+    const aTxt  = document.getElementById('apant-area')?.value || '—';
+    txt += `Ng:  ${ngTxt} flashes/km²·año\n`;
+    txt += `A (área subestación): ${aTxt} m²\n`;
+    const ngN = parseFloat(ngTxt);
+    const aN  = parseFloat(aTxt);
+    if (ngN > 0 && aN > 0) {
+      const bilN = parseFloat(document.getElementById('apant-bil')?.value) || 350;
+      const zsN  = parseFloat(document.getElementById('apant-zs')?.value)  || 300;
+      const kN   = parseFloat(document.getElementById('apant-k')?.value)   || 1.2;
+      const IsN  = (2.2 * bilN) / zsN;
+      const NsN  = ngN * aN / 1e6;
+      const PsN  = 1 / (1 + Math.pow(IsN / 24, 2.6));
+      const PpN  = 1 - PsN;
+      const lamN = NsN * PpN;
+      const f4   = v => isFinite(v) ? parseFloat(v.toPrecision(4)) : '∞';
+      txt += `Is (corriente crítica): ${f4(IsN)} kA\n`;
+      txt += `Ns (impactos directos esperados): ${f4(NsN)} impactos/año\n`;
+      txt += `P_pen (prob. de penetración estimada): ${f4(PpN * 100)} %\n`;
+      txt += `λ (tasa anual de penetración): ${lamN > 0 ? f4(lamN) : '0'} pen./año\n`;
+      txt += `T_pen (años entre penetraciones): ${lamN > 0 ? f4(1/lamN) : '∞'} años/pen.\n`;
+    }
+    if (ar.verification && ar.verification.length > 0) {
+      txt += `\nVerificación de equipos:\n`;
+      ar.verification.forEach(v => {
+        const pct = v.points_evaluated > 0
+          ? ((v.points_protected / v.points_evaluated) * 100).toFixed(1) + '%'
+          : '—';
+        const exceso = v.max_excess_m != null ? ` | exceso max: +${v.max_excess_m.toFixed(2)} m` : '';
+        txt += `  ${v.equipment_name}: ${v.fully_shielded ? 'PROTEGIDO' : 'SIN PROTECCION'} (${pct} cobertura${exceso})\n`;
+      });
+    }
+    const recs = ar._recs || [];
+    if (recs.length > 0) {
+      txt += `\nRecomendaciones correctivas:\n`;
+      recs.forEach((r, i) => { txt += `  [${i+1}] ${r.title}\n`; });
+    }
+  } else {
+    txt += `Sin cálculo de apantallamiento registrado en esta sesión.\n`;
+  }
+  txt += `\n`;
   txt += `--- MALLA A TIERRA ---\nEn espera de cálculo (backend Python).\n\n`;
   txt += `=== FIN DEL REPORTE ===\n`;
 

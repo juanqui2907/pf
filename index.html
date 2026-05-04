@@ -10,187 +10,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<style>
-/* =====================================================
-   SPAT v7 — CSS integrado en TerraShield
-   ===================================================== */
-.spat-wrap {
-  display: grid;
-  grid-template-columns: 280px 1fr 260px;
-  flex: 1;            /* llena el flex-container de #page-apant */
-  min-height: 0;      /* permite que flex-item se encoja */
-  overflow: hidden;
-  border-top: 1px solid var(--grey-line);
-}
-.spat-panel {
-  background: var(--white);
-  border-right: 1px solid var(--grey-line);
-  padding: 12px 13px;
-  overflow-y: auto;
-  display: flex; flex-direction: column; gap: 9px;
-}
-.spat-panel:last-child { border-right: none; border-left: 1px solid var(--grey-line); }
-.spat-panel-title {
-  font-family: var(--font-mono); font-size: 9px;
-  letter-spacing: 3px; color: var(--blue-main);
-  border-bottom: 1px solid var(--grey-line);
-  padding-bottom: 6px; text-transform: uppercase;
-}
-.spat-ieee-section {
-  background: linear-gradient(135deg,rgba(10,61,145,0.04),rgba(47,111,204,0.04));
-  border: 1px solid rgba(10,61,145,0.18);
-  border-radius: var(--radius-sm); padding: 10px;
-  display: flex; flex-direction: column; gap: 8px;
-}
-.spat-ieee-title {
-  font-family: var(--font-mono); font-size: 9px;
-  color: var(--blue-main); letter-spacing: 2px;
-  display: flex; align-items: center; gap: 6px;
-}
-.spat-ieee-title::before { content:''; width:3px; height:3px; background:var(--blue-main); border-radius:50%; }
-.spat-calc-chain {
-  display: flex; flex-direction: column; gap: 4px;
-  background: rgba(255,255,255,0.8); border-radius: var(--radius-sm);
-  padding: 8px; font-family: var(--font-mono); font-size: 11px;
-}
-.spat-calc-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 2px 0; border-bottom: 1px dotted rgba(10,61,145,0.15);
-}
-.spat-calc-row:last-child { border-bottom: none; }
-.spat-calc-label { color: var(--text-light); font-size: 10px; }
-.spat-calc-val { color: var(--blue-main); font-weight: bold; }
-.spat-calc-formula { color: rgba(47,111,204,0.5); font-size: 9px; }
-.spat-field-group { display: flex; flex-direction: column; gap: 5px; }
-.spat-field-label {
-  font-size: 10px; letter-spacing: 1px; color: var(--text-light);
-  font-family: var(--font-mono); display: flex; justify-content: space-between;
-}
-.spat-field-label span { color: var(--blue-main); font-weight: bold; }
-.spat-wrap input[type="range"] {
-  width: 100%; -webkit-appearance: none; height: 3px;
-  background: var(--grey-line); border-radius: 2px; cursor: pointer;
-}
-.spat-wrap input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%;
-  background: var(--blue-main); box-shadow: 0 0 8px rgba(10,61,145,0.4); cursor: pointer;
-}
-.spat-wrap input[type="number"] {
-  background: var(--grey-bg); border: 1px solid var(--grey-line);
-  color: var(--text-dark); padding: 5px 8px; border-radius: var(--radius-sm);
-  width: 100%; font-family: var(--font-mono); font-size: 12px; transition: border .2s;
-}
-.spat-wrap input[type="number"]:focus {
-  outline: none; border-color: var(--blue-main);
-  box-shadow: 0 0 0 3px rgba(10,61,145,0.1);
-}
-.spat-radio-computed {
-  background: rgba(10,61,145,0.06); border: 1.5px solid rgba(10,61,145,0.25);
-  border-radius: var(--radius-sm); padding: 8px 10px;
-  display: flex; justify-content: space-between; align-items: center;
-  font-family: var(--font-mono);
-}
-.spat-radio-computed .rc-label { font-size: 10px; color: var(--text-light); }
-.spat-radio-computed .rc-value { font-size: 18px; color: var(--blue-main); font-weight: bold; }
-.spat-radio-computed .rc-unit  { font-size: 11px; color: var(--text-light); }
-.spat-btn {
-  padding: 8px 14px; border: none; border-radius: var(--radius-sm); cursor: pointer;
-  font-family: var(--font-title); font-weight: 700; font-size: 12px;
-  letter-spacing: 1.5px; transition: all .2s; width: 100%;
-}
-.spat-btn-primary { background: var(--blue-main); color: #fff; box-shadow: 0 4px 16px rgba(10,61,145,0.25); }
-.spat-btn-primary:hover { background: var(--blue-deep); transform: translateY(-1px); }
-.spat-btn-secondary { background: transparent; color: var(--text-mid); border: 1px solid var(--grey-line); }
-.spat-btn-secondary:hover { border-color: var(--blue-mid); color: var(--blue-mid); }
-.spat-mode-sel { display: flex; gap: 3px; }
-.spat-mode-btn {
-  flex: 1; padding: 6px; font-size: 10px; letter-spacing: 1px;
-  background: var(--grey-bg); border: 1px solid var(--grey-line);
-  color: var(--text-mid); cursor: pointer; border-radius: var(--radius-sm);
-  font-family: var(--font-mono); transition: all .2s;
-}
-.spat-mode-btn.active { background: rgba(10,61,145,0.1); border-color: var(--blue-main); color: var(--blue-main); font-weight: bold; }
-.spat-tog-row {
-  display: flex; justify-content: space-between; align-items: center;
-  font-family: var(--font-mono); font-size: 10px; color: var(--text-mid);
-}
-.spat-tog { position: relative; width: 36px; height: 18px; }
-.spat-tog input { opacity: 0; width: 0; height: 0; }
-.spat-tog-sl {
-  position: absolute; cursor: pointer; inset: 0;
-  background: var(--grey-mid); border-radius: 18px; transition: .3s;
-}
-.spat-tog-sl::before {
-  position: absolute; content: ''; width: 12px; height: 12px;
-  left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: .3s;
-}
-.spat-tog input:checked + .spat-tog-sl { background: var(--blue-main); }
-.spat-tog input:checked + .spat-tog-sl::before { transform: translateX(18px); }
-/* ── Viewport 3D ── */
-#spat-viewport {
-  position: relative;
-  overflow: hidden;
-  background: var(--blue-pale);
-}
-#spat-container3D {
-  position: absolute;   /* llena 100% del viewport con medidas reales */
-  inset: 0;
-}
-.spat-vp-overlay {
-  position: absolute; top: 10px; left: 10px; z-index: 2;
-  font-family: var(--font-mono); font-size: 9px;
-  color: var(--text-mid); pointer-events: none; line-height: 1.9;
-  background: rgba(255,255,255,0.85); padding: 6px 10px;
-  border-radius: var(--radius-sm); border: 1px solid var(--grey-line);
-}
-.spat-vp-mode {
-  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 2;
-  font-family: var(--font-mono); font-size: 10px; color: var(--blue-main);
-  letter-spacing: 2px; pointer-events: none;
-  background: rgba(255,255,255,0.9); padding: 3px 10px;
-  border-radius: 20px; border: 1px solid rgba(10,61,145,0.25); white-space: nowrap;
-}
-.spat-vp-ieee {
-  position: absolute; top: 10px; right: 10px; z-index: 2;
-  font-family: var(--font-mono); font-size: 9px; color: var(--blue-main);
-  background: rgba(10,61,145,0.07); border: 1px solid rgba(10,61,145,0.18);
-  padding: 4px 8px; border-radius: var(--radius-sm);
-  pointer-events: none; line-height: 1.7;
-}
-/* ── Panel derecho ── */
-.spat-res-card { background: var(--grey-bg); border: 1px solid var(--grey-line); border-radius: var(--radius-sm); padding: 10px; }
-.spat-res-card .spat-ct { font-size: 9px; letter-spacing: 2px; color: var(--text-light); font-family: var(--font-mono); margin-bottom: 8px; }
-.spat-stat { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--grey-line); font-size: 12px; }
-.spat-stat:last-child { border-bottom: none; }
-.spat-stat-lbl { color: var(--text-mid); font-size: 11px; }
-.spat-stat-val { color: var(--blue-main); font-family: var(--font-mono); font-weight: bold; }
-.spat-stat-val.warn { color: var(--error); }
-.spat-stat-val.ok   { color: var(--success); }
-.spat-leg-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-mid); }
-.spat-leg-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.spat-tab-bar  { display: flex; gap: 2px; margin-bottom: 4px; }
-.spat-tab {
-  flex: 1; padding: 5px; font-size: 10px; text-align: center; cursor: pointer;
-  background: var(--grey-bg); border: 1px solid var(--grey-line);
-  border-radius: 3px; color: var(--text-mid); font-family: var(--font-mono); transition: all .2s;
-}
-.spat-tab.active { background: rgba(10,61,145,0.08); border-color: var(--blue-main); color: var(--blue-main); }
-#spat-canvas2D { width: 100%; aspect-ratio: 1; background: var(--grey-bg); border-radius: var(--radius-sm); border: 1px solid var(--grey-line); }
-.spat-sep { height: 1px; background: linear-gradient(90deg,transparent,var(--grey-line),transparent); flex-shrink: 0; }
-.spat-alert { background: rgba(194,59,34,0.07); border: 1px solid rgba(194,59,34,0.3); border-radius: var(--radius-sm); padding: 8px 10px; font-size: 11px; color: var(--error); display: none; }
-.spat-alert.show { display: block; }
-/* Header del módulo */
-.spat-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 16px 8px; flex-shrink: 0;
-  border-bottom: 1px solid var(--grey-line);
-  background: var(--white);
-}
-.spat-header h2 { font-family: var(--font-title); font-size: 1.1rem; letter-spacing: .06em; color: var(--blue-deep); font-weight: 700; margin: 0; }
-.spat-header p  { font-size: 0.72rem; color: var(--text-light); margin: 2px 0 0; }
-.spat-badge { font-family: var(--font-mono); font-size: 10px; color: var(--blue-main); background: rgba(10,61,145,0.07); border: 1px solid rgba(10,61,145,0.2); padding: 3px 8px; border-radius: var(--radius-sm); letter-spacing: 1px; white-space: nowrap; }
-</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
@@ -224,7 +45,7 @@
       <path d="M14 31V34M17 31V34M20 31V34M23 31V34M26 31V34" stroke="#8FB3E8" stroke-width="0.8"/>
     </svg>
     <span class="ts-brand">TERRASHIELD</span>
-    <span class="ts-version">v1.0.0-beta</span>
+    <span class="ts-version">v1.0.0</span>
   </div>
 
   <div class="home-hero" style="position:relative;overflow:hidden;">
@@ -280,9 +101,9 @@
 
   </div><!-- /z-index wrapper -->
     <div class="home-credits">
-      Proyecto Final — Grupo de Investigación en Ingeniería Eléctrica<br>
+      Proyecto Final<br>
       Universidad del Norte · Barranquilla, Colombia<br>
-      <span style="color:var(--text-light);font-family:var(--font-mono);font-size:0.65rem;">© 2024 TerraShield — Todos los derechos reservados</span>
+      <span style="color:var(--text-light);font-family:var(--font-mono);font-size:0.65rem;">© 2026 TerraShield — Todos los derechos reservados</span>
     </div>
   </div>
 </div>
@@ -313,11 +134,6 @@
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
         <span class="nav-label">Inicio</span>
       </div>
-      <div class="nav-item" onclick="showPage('page-datos', this)">
-        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
-        <span class="nav-label">Datos generales</span>
-      </div>
-
       <div class="nav-section-label" style="margin-top:10px;">MÓDULOS</div>
       <div class="nav-item" onclick="showPage('page-apant', this)">
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L3 7v7c0 5.25 3.75 10.15 9 11.25C17.25 24.15 21 19.25 21 14V7L12 2z"/></svg></span>
@@ -327,21 +143,10 @@
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M2 8h20M2 14h20M8 2v20M14 2v20"/></svg></span>
         <span class="nav-label">Malla a tierra</span>
       </div>
-      <div class="nav-item" onclick="showPage('page-verif', this)">
-        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></span>
-        <span class="nav-label">Verificaciones</span>
-      </div>
-
       <div class="nav-section-label" style="margin-top:10px;">SALIDA</div>
-      <div class="nav-item has-badge" onclick="showPage('page-resultados', this)">
-        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
-        <span class="nav-label">Resultados</span>
-        <span class="nav-badge">→</span>
-      </div>
-      <div class="nav-item" id="nav-exportar" onclick="navExportarClick(this)" style="opacity:0.45;pointer-events:auto;cursor:not-allowed;">
+      <div class="nav-item" id="nav-exportar" onclick="navExportarClick(this)">
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
         <span class="nav-label">Exportar reporte</span>
-        <span id="nav-exportar-lock" style="font-size:0.65rem;margin-left:4px;">🔒</span>
       </div>
     </nav>
 
@@ -388,7 +193,7 @@
         </div>
         <div class="info-banner">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Proyecto activo. Complete los datos generales antes de iniciar los módulos de cálculo.
+          Proyecto activo. Use los módulos de cálculo para completar el diseño.
         </div>
         <div class="card-grid">
           <div class="stat-card">
@@ -400,8 +205,8 @@
           <div class="stat-card">
             <div class="sc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M2 8h20M2 14h20M8 2v20M14 2v20"/></svg></div>
             <div class="sc-label">Resistencia de malla</div>
-            <div class="sc-value">—</div>
-            <div class="sc-unit">Ω — Por calcular</div>
+            <div class="sc-value" id="stat-rg">—</div>
+            <div class="sc-unit" id="stat-rg-unit">Ω — Por calcular</div>
           </div>
           <div class="stat-card">
             <div class="sc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
@@ -422,235 +227,376 @@
             <div class="sc-unit" id="stat-depto">Sin definir</div>
           </div>
         </div>
-        <h3 style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-light);margin-bottom:12px;">Estado del proyecto</h3>
-        <div class="status-list">
-          <div class="status-item"><span class="status-dot done"></span><span class="si-label">Datos del proyecto</span><span class="si-tag done">Completado</span></div>
-          <div class="status-item"><span class="status-dot done"></span><span class="si-label">Ubicación validada</span><span class="si-tag done">Completado</span></div>
-          <div class="status-item"><span class="status-dot pending"></span><span class="si-label">Datos técnicos de la subestación</span><span class="si-tag pending">Pendiente</span></div>
-          <div class="status-item"><span class="status-dot pending"></span><span class="si-label">Cálculo de apantallamiento</span><span class="si-tag pending">Pendiente</span></div>
-          <div class="status-item"><span class="status-dot pending"></span><span class="si-label">Diseño de malla a tierra</span><span class="si-tag pending">Pendiente</span></div>
-          <div class="status-item"><span class="status-dot pending"></span><span class="si-label">Verificaciones y criterios</span><span class="si-tag pending">Pendiente</span></div>
-        </div>
-      </div>
-
-      <!-- PAGE: DATOS GENERALES -->
-      <div id="page-datos" class="section-page">
-        <div class="page-header">
-          <h1>Datos generales</h1>
-          <p>Información técnica básica de la subestación y condiciones del sitio</p>
-        </div>
-        <div class="form-card">
+        <div class="form-card" style="margin-bottom:18px;">
           <div class="form-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg> Identificación del proyecto</div>
           <div class="form-row" style="margin-bottom:14px;">
             <div class="form-group" style="margin-bottom:0;"><label class="form-label">Nombre del proyecto</label><input class="form-input" id="dg-nombre" placeholder="Ej: SE_Barranquilla_Norte"></div>
             <div class="form-group" style="margin-bottom:0;"><label class="form-label">Tipo de instalación</label><input class="form-input" value="Subestación eléctrica" disabled></div>
           </div>
           <div class="form-row">
-            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Propietario / Empresa</label><input class="form-input" placeholder="Nombre de la entidad"></div>
-            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Responsable técnico</label><input class="form-input" placeholder="Nombre del ingeniero"></div>
+            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Propietario / Empresa</label><input class="form-input" id="dg-propietario" placeholder="Nombre de la entidad"></div>
+            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Responsable técnico</label><input class="form-input" id="dg-responsable" placeholder="Nombre del ingeniero"></div>
           </div>
         </div>
-        <div class="form-card">
-          <div class="form-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Parámetros eléctricos</div>
-          <div class="form-row" style="margin-bottom:14px;">
-            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Tensión nominal (kV)</label><select class="select-input"><option>13.2</option><option>34.5</option><option>115</option><option>230</option><option>500</option></select></div>
-            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Corriente de cortocircuito (kA)</label><input class="form-input" type="number" placeholder="0.00"></div>
-          </div>
-          <div class="form-row">
-            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Potencia instalada (MVA)</label><input class="form-input" type="number" placeholder="0.00"></div>
-            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Duración de falla (s)</label><input class="form-input" type="number" value="0.5"></div>
-          </div>
-        </div>
-        <div class="form-card">
-          <div class="form-card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 010 20M2 12h20"/></svg> Condiciones del suelo</div>
-          <div class="form-row" style="margin-bottom:14px;">
-            <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label" style="display:flex;align-items:center;gap:6px;">
-                Resistividad del suelo (Ω·m)
-                <span class="tooltip-wrap">
-                  <svg class="tooltip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                  <span class="tooltip-text">Este valor es una estimación preliminar basada en datos IGAC. Debe ser verificado mediante mediciones experimentales en sitio según IEEE Std 81.</span>
-                </span>
-              </label>
-              <input class="form-input" type="number" id="dg-resistividad" placeholder="100">
-              <div id="dg-resistividad-fuente" style="font-size:0.68rem;color:var(--text-light);margin-top:4px;display:none;"></div>
-            </div>
-            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Resistividad superficial (Ω·m)</label><input class="form-input" type="number" placeholder="3000"></div>
-          </div>
-          <div class="form-row">
-            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Espesor capa superficial (m)</label><input class="form-input" type="number" value="0.1"></div>
-            <div class="form-group" style="margin-bottom:0;"><label class="form-label">Tipo de suelo (IEEE 80)</label><input class="form-input" id="dg-tipo-suelo" placeholder="—" disabled style="background:var(--blue-pale);font-size:0.82rem;"></div>
-          </div>
-        </div>
-        <div style="display:flex;gap:10px;justify-content:flex-end;">
-          <button class="btn btn-secondary">Cancelar</button>
-          <button class="btn btn-primary" onclick="showToast('Datos guardados correctamente', 'success')">Guardar datos</button>
+
+        <h3 style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-light);margin-bottom:12px;">Estado del proyecto</h3>
+        <div class="status-list">
+          <div class="status-item"><span class="status-dot done"></span><span class="si-label">Datos del proyecto</span><span class="si-tag done">Completado</span></div>
+          <div class="status-item"><span class="status-dot done"></span><span class="si-label">Ubicación validada</span><span class="si-tag done">Completado</span></div>
+          <div class="status-item"><span class="status-dot pending"></span><span class="si-label">Cálculo de apantallamiento</span><span class="si-tag pending">Pendiente</span></div>
+          <div class="status-item" id="si-malla"><span class="status-dot pending"></span><span class="si-label">Diseño de malla a tierra</span><span class="si-tag pending" id="si-malla-tag">Pendiente</span></div>
         </div>
       </div>
 
-      <!-- PAGE: APANTALLAMIENTO — SPAT v7.0 integrado -->
+      <!-- PAGE: APANTALLAMIENTO -->
       <div id="page-apant" class="section-page">
+        <div class="page-header">
+          <h1>Apantallamiento</h1>
+          <p>Diseño de protección contra descargas atmosféricas directas — IEEE Std 998</p>
+        </div>
 
-        <!-- Cuerpo: 3 columnas -->
-        <div class="spat-wrap">
+        <!-- Método de cálculo -->
+        <div class="form-card" style="margin-bottom:20px;">
+          <div class="form-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+            Método de cálculo
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 0 4px;">
+            <span class="field-tag">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 11 12 14 22 4"/></svg>
+              Modelo Electrogeométrico (EGM)
+            </span>
+            <span style="font-size:0.73rem;color:var(--text-light);">IEEE Std 998 — Esfera rodante (Rolling Sphere Method)</span>
+          </div>
+        </div>
 
-          <!-- ── PANEL IZQUIERDO ── -->
-          <div class="spat-panel">
-            <div class="spat-panel-title">⚡ Geometría de Subestación</div>
+        <!-- Parámetros EGM -->
+        <div class="form-card" style="margin-bottom:20px;">
+          <div class="form-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Parámetros del modelo
+          </div>
+          <div class="form-row" style="margin-bottom:14px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" style="display:flex;align-items:center;gap:6px;">
+                BIL — Nivel básico de impulso (kV)
+                <span class="tooltip-wrap">
+                  <svg class="tooltip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span class="tooltip-text">Basic Insulation Level: nivel de tensión de impulso que el equipo soporta sin falla. Determina el radio de la esfera rodante.</span>
+                </span>
+              </label>
+              <input class="form-input" type="number" id="apant-bil" placeholder="Ej: 350" value="350" min="1">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" style="display:flex;align-items:center;gap:6px;">
+                Zs — Impedancia de descarga (Ω)
+                <span class="tooltip-wrap">
+                  <svg class="tooltip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span class="tooltip-text">Impedancia de onda del sistema de puesta a tierra. Junto con BIL, determina la corriente crítica de rayo Is = 2.2·BIL/Zs.</span>
+                </span>
+              </label>
+              <input class="form-input" type="number" id="apant-zs" placeholder="Ej: 300" value="300" min="1">
+            </div>
+          </div>
+          <div class="form-row" style="margin-bottom:14px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" style="display:flex;align-items:center;gap:6px;">
+                k — Factor de forma
+                <span class="tooltip-wrap">
+                  <svg class="tooltip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span class="tooltip-text">Factor de forma para el cálculo del radio de esfera. S = k · 8 · Is^0.65. k = 1.0 para estructuras en campo abierto; k = 1.2 con conductores adyacentes (IEEE 998).</span>
+                </span>
+              </label>
+              <select class="select-input" id="apant-k" style="height:34px;font-size:0.88rem;">
+                <option value="1">1</option>
+                <option value="1.2" selected>1.2</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" style="display:flex;align-items:center;gap:6px;">
+                Td — Días de tormenta al año
+                <span class="tooltip-wrap">
+                  <svg class="tooltip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span class="tooltip-text">Nivel isoceráunico. Permite calcular el GFD: Ng = 0.0017 × Td^1.56 (IEEE Std 998).</span>
+                </span>
+              </label>
+              <input class="form-input" type="number" id="apant-td" placeholder="Ej: 80" min="0" max="365" oninput="calcNgFromTd()">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" style="display:flex;align-items:center;gap:6px;">
+                Ng — GFD calculado (flashes/km²/año)
+                <span class="tooltip-wrap">
+                  <svg class="tooltip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span class="tooltip-text">Ground Flash Density. Se calcula automáticamente desde Td, o se toma de la ubicación del proyecto.</span>
+                </span>
+              </label>
+              <input class="form-input" type="text" id="apant-ng-calc" placeholder="Se calcula con Td, o viene del proyecto" disabled style="background:var(--blue-pale);font-size:0.82rem;">
+              <div id="apant-ng-fuente" style="font-size:0.68rem;color:var(--text-light);margin-top:4px;"></div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" style="display:flex;align-items:center;gap:6px;">
+                A — Área de la subestación (m²)
+                <span class="tooltip-wrap">
+                  <svg class="tooltip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span class="tooltip-text">Área del patio de la subestación en m². Se usa para estimar el número esperado de impactos directos: Ns = Ng × A / 1 000 000 (IEEE Std 998).</span>
+                </span>
+              </label>
+              <input class="form-input" type="number" id="apant-area" placeholder="Ej: 10000" min="1">
+            </div>
+          </div>
+        </div>
 
-            <div class="spat-field-group">
-              <div class="spat-field-label">LARGO (m) <span id="lbl-L">50</span></div>
-              <input type="range" id="s-largo" min="10" max="200" value="50" oninput="spatSync('s-largo','n-largo','lbl-L');spatCalc()">
-              <input type="number" id="n-largo" value="50" min="10" max="200" oninput="spatSync('n-largo','s-largo','lbl-L');spatCalc()">
-            </div>
-            <div class="spat-field-group">
-              <div class="spat-field-label">ANCHO (m) <span id="lbl-A">30</span></div>
-              <input type="range" id="s-ancho" min="10" max="150" value="30" oninput="spatSync('s-ancho','n-ancho','lbl-A');spatCalc()">
-              <input type="number" id="n-ancho" value="30" min="10" max="150" oninput="spatSync('n-ancho','s-ancho','lbl-A');spatCalc()">
-            </div>
-            <div class="spat-field-group">
-              <div class="spat-field-label">ALTURA EQUIPO CRÍTICO (m) <span id="lbl-He">6</span></div>
-              <input type="range" id="s-equipo" min="1" max="30" value="6" oninput="spatSync('s-equipo','n-equipo','lbl-He');spatCalc()">
-              <input type="number" id="n-equipo" value="6" min="1" max="30" oninput="spatSync('n-equipo','s-equipo','lbl-He');spatCalc()">
-            </div>
-            <div class="spat-field-group">
-              <div class="spat-field-label">ALTURA PUNTA CAPTADORA (m) <span id="lbl-Hp">8</span></div>
-              <input type="range" id="s-punta" min="1" max="25" value="8" oninput="spatSync('s-punta','n-punta','lbl-Hp');spatCalc()">
-              <input type="number" id="n-punta" value="8" min="1" max="25" oninput="spatSync('n-punta','s-punta','lbl-Hp');spatCalc()">
-            </div>
+        <!-- Sistema de apantallamiento: mástiles, equipos, cables de guarda -->
+        <div class="form-card" style="margin-bottom:20px;">
+          <div class="form-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            Sistema de apantallamiento
+          </div>
 
-            <div class="spat-sep"></div>
-            <div class="spat-panel-title">🔬 Cálculo IEEE 998-2012</div>
-            <div class="spat-ieee-section">
-              <div class="spat-ieee-title">DATOS DE ENTRADA NORMA</div>
-              <div class="spat-field-group">
-                <div class="spat-field-label">BIL (kV) <span id="lbl-BIL">650</span></div>
-                <input type="range" id="s-bil" min="95" max="1800" value="650" step="5" oninput="spatSync('s-bil','n-bil','lbl-BIL');spatCalc()">
-                <input type="number" id="n-bil" value="650" min="95" max="1800" oninput="spatSync('n-bil','s-bil','lbl-BIL');spatCalc()">
+          <!-- Barra de tabs -->
+          <div class="toggle-group" id="apant-tab-bar" style="margin-bottom:18px;">
+            <button class="toggle-btn active" onclick="apantSwitchTab('mastiles')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;margin-right:5px;"><line x1="12" y1="2" x2="12" y2="22"/><path d="M8 6h4M8 10h6M8 14h4"/></svg>
+              Mástiles
+            </button>
+            <button class="toggle-btn" onclick="apantSwitchTab('equipos')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;margin-right:5px;"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+              Equipos
+            </button>
+            <button class="toggle-btn" onclick="apantSwitchTab('guardas')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;margin-right:5px;"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              Cables de guarda
+            </button>
+          </div>
+
+          <!-- TAB: Mástiles -->
+          <div id="apant-tab-mastiles" class="apant-tab-pane">
+            <div class="apant-list" id="apant-mastiles-list">
+              <div class="apant-list-empty">Sin mástiles — agregue al menos uno para calcular</div>
+            </div>
+            <div class="apant-add-row">
+              <div class="form-group">
+                <label class="form-label">X (m)</label>
+                <input class="form-input" id="apant-new-mx" type="number" value="0" step="1" style="height:34px;width:80px;">
               </div>
-              <div class="spat-field-group">
-                <div class="spat-field-label">h — Altura conductor (m) <span id="lbl-h">8</span></div>
-                <input type="range" id="s-h" min="1" max="30" value="8" oninput="spatSync('s-h','n-h','lbl-h');spatCalc()">
-                <input type="number" id="n-h" value="8" min="1" max="30" oninput="spatSync('n-h','s-h','lbl-h');spatCalc()">
+              <div class="form-group">
+                <label class="form-label">Y (m)</label>
+                <input class="form-input" id="apant-new-my" type="number" value="0" step="1" style="height:34px;width:80px;">
               </div>
-              <div class="spat-field-group">
-                <div class="spat-field-label">r — Radio conductor (m) <span id="lbl-r">0.0148</span></div>
-                <input type="number" id="n-r" value="0.0148" min="0.001" max="0.1" step="0.001" oninput="document.getElementById('lbl-r').textContent=this.value;spatCalc()">
+              <div class="form-group">
+                <label class="form-label">Altura h (m)</label>
+                <input class="form-input" id="apant-new-mh" type="number" value="15" step="0.5" min="0.1" style="height:34px;width:90px;">
               </div>
-              <div class="spat-field-group">
-                <div class="spat-field-label">k — Factor tipo</div>
-                <div class="spat-mode-sel">
-                  <button class="spat-mode-btn" id="k-cable" onclick="spatSetK(1.0)">CABLE k=1.0</button>
-                  <button class="spat-mode-btn active" id="k-mastil" onclick="spatSetK(1.2)">MÁSTIL k=1.2</button>
-                </div>
+              <button class="btn btn-primary" style="height:34px;flex-shrink:0;" onclick="apantAddMast()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Agregar mástil
+              </button>
+            </div>
+          </div>
+
+          <!-- TAB: Equipos -->
+          <div id="apant-tab-equipos" class="apant-tab-pane" style="display:none;">
+            <div class="apant-list" id="apant-equipos-list">
+              <div class="apant-list-empty">Sin equipos — opcional, para verificar apantallamiento punto a punto</div>
+            </div>
+            <div class="apant-add-row">
+              <div class="form-group" style="flex-basis:150px;min-width:120px;">
+                <label class="form-label">Nombre</label>
+                <input class="form-input" id="apant-new-cname" type="text" placeholder="Ej: Transformador" style="height:34px;width:100%;">
+              </div>
+              <div class="form-group">
+                <label class="form-label">X base (m)</label>
+                <input class="form-input" id="apant-new-cx" type="number" value="5" step="1" style="height:34px;width:72px;">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Y base (m)</label>
+                <input class="form-input" id="apant-new-cy" type="number" value="5" step="1" style="height:34px;width:72px;">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Z base (m)</label>
+                <input class="form-input" id="apant-new-cz" type="number" value="0" step="0.5" style="height:34px;width:72px;">
+              </div>
+              <div class="form-group">
+                <label class="form-label">dx (m)</label>
+                <input class="form-input" id="apant-new-cdx" type="number" value="5" step="0.5" min="0.1" style="height:34px;width:68px;">
+              </div>
+              <div class="form-group">
+                <label class="form-label">dy (m)</label>
+                <input class="form-input" id="apant-new-cdy" type="number" value="5" step="0.5" min="0.1" style="height:34px;width:68px;">
+              </div>
+              <div class="form-group">
+                <label class="form-label">dz — alto (m)</label>
+                <input class="form-input" id="apant-new-cdz" type="number" value="3" step="0.5" min="0.1" style="height:34px;width:80px;">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Color</label>
+                <input type="color" id="apant-new-ccolor" value="#F5C400" style="height:34px;width:44px;padding:2px 3px;border:1px solid var(--grey-line);border-radius:var(--radius-md);cursor:pointer;background:var(--white);">
+              </div>
+              <button class="btn btn-primary" style="height:34px;flex-shrink:0;" onclick="apantAddCube()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Agregar equipo
+              </button>
+            </div>
+          </div>
+
+          <!-- TAB: Cables de guarda -->
+          <div id="apant-tab-guardas" class="apant-tab-pane" style="display:none;">
+            <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius-md);padding:13px 15px;margin-bottom:14px;">
+              <div style="display:flex;align-items:center;gap:7px;margin-bottom:9px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.2" style="width:14px;height:14px;flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span style="font-size:0.77rem;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:0.05em;">Importante — Configuración de cables de guarda</span>
+              </div>
+              <div style="font-size:0.78rem;color:var(--text-mid);line-height:1.75;">
+                <div style="font-weight:600;margin-bottom:4px;">Seleccione una geometría válida:</div>
+                <ul style="margin:0 0 10px 20px;padding:0;">
+                  <li>1 guarda independiente</li>
+                  <li>2 guardas paralelas</li>
+                  <li>3 guardas conectadas</li>
+                  <li>4 guardas en rectángulo/cuadrado</li>
+                </ul>
+                <div style="font-weight:600;margin-bottom:4px;">Condiciones:</div>
+                <ul style="margin:0 0 0 20px;padding:0;">
+                  <li>✓ Las guardas deben ser paralelas o perpendiculares.</li>
+                  <li>✓ La separación entre guardas no debe superar el diámetro de la esfera rodante.</li>
+                </ul>
               </div>
             </div>
-
-            <div class="spat-calc-chain">
-              <div class="spat-ieee-title" style="margin-bottom:4px">CADENA DE CÁLCULO</div>
-              <div class="spat-calc-row"><span class="spat-calc-label">Rc (corona)</span><span><span class="spat-calc-val" id="cc-Rc">—</span> <span class="spat-calc-formula">m</span></span></div>
-              <div class="spat-calc-row"><span class="spat-calc-label">Zs (impedancia)</span><span><span class="spat-calc-val" id="cc-Zs">—</span> <span class="spat-calc-formula">Ω</span></span></div>
-              <div class="spat-calc-row"><span class="spat-calc-label">Is = 2.2·BIL/Zs</span><span><span class="spat-calc-val" id="cc-Is">—</span> <span class="spat-calc-formula">kA</span></span></div>
-              <div class="spat-calc-row"><span class="spat-calc-label">S = 8·k·Is^0.65</span><span><span class="spat-calc-val" id="cc-S">—</span> <span class="spat-calc-formula">m</span></span></div>
+            <div class="apant-list" id="apant-guardas-list">
+              <div class="apant-list-empty">Sin cables de guarda — opcional</div>
             </div>
+            <div class="apant-add-row">
+              <div class="form-group" style="flex-basis:200px;min-width:160px;">
+                <label class="form-label">Mástil inicial</label>
+                <select class="select-input" id="apant-new-gi" style="height:34px;font-size:0.82rem;">
+                  <option value="">— Agregue mástiles primero —</option>
+                </select>
+              </div>
+              <div class="form-group" style="flex-basis:200px;min-width:160px;">
+                <label class="form-label">Mástil final</label>
+                <select class="select-input" id="apant-new-gj" style="height:34px;font-size:0.82rem;">
+                  <option value="">— Agregue mástiles primero —</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" style="height:34px;flex-shrink:0;" onclick="apantAddGuardWire()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Agregar cable
+              </button>
+            </div>
+          </div>
+        </div>
 
-            <div class="spat-radio-computed">
+        <!-- Botón calcular -->
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:28px;">
+          <button class="btn btn-primary" id="apant-btn-calc" onclick="apantCalcular()" style="height:42px;font-size:0.88rem;padding:0 28px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            Calcular apantallamiento
+          </button>
+          <div id="apant-spinner" style="display:none;font-size:0.78rem;color:var(--text-light);gap:8px;align-items:center;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;animation:spin 1s linear infinite;"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg>
+            Calculando modelo 3D…
+          </div>
+          <div id="apant-error" style="display:none;font-size:0.78rem;color:var(--error);"></div>
+        </div>
+
+        <!-- Resultados -->
+        <div id="apant-resultados" style="display:none;">
+
+          <!-- Banner radio de esfera -->
+          <div class="info-banner" style="margin-bottom:20px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="2" y1="12" x2="8" y2="12"/><line x1="16" y1="12" x2="22" y2="12"/></svg>
+            <span>Radio de esfera rodante calculado: <strong id="apant-val-S" style="font-family:var(--font-mono);">—</strong> m &nbsp;·&nbsp; S = k · 8 · (2.2·BIL/Zs)<sup>0.65</sup></span>
+          </div>
+
+          <!-- Gráfico 3D Plotly -->
+          <div class="apant-chart-wrap" style="margin-bottom:20px;">
+            <div style="padding:12px 18px 10px;border-bottom:1px solid var(--grey-line);display:flex;align-items:center;gap:8px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;color:var(--blue-mid);flex-shrink:0;"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              <span style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-mid);">Superficie de apantallamiento — Vista 3D</span>
+              <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
+                <button class="btn btn-secondary" id="apant-cam-top"   onclick="apantSetCamera('top')"   style="height:28px;font-size:0.72rem;padding:0 12px;">Superior</button>
+                <button class="btn btn-secondary" id="apant-cam-front" onclick="apantSetCamera('front')" style="height:28px;font-size:0.72rem;padding:0 12px;">Frontal</button>
+                <button class="btn btn-secondary" id="apant-cam-side"  onclick="apantSetCamera('side')"  style="height:28px;font-size:0.72rem;padding:0 12px;">Lateral</button>
+                <button class="btn btn-secondary" id="apant-cam-3d"    onclick="apantSetCamera('3d')"    style="height:28px;font-size:0.72rem;padding:0 12px;">3D libre</button>
+                <div style="width:1px;height:18px;background:var(--grey-line);margin:0 4px;"></div>
+                <button class="btn btn-secondary" id="apant-btn-clean" onclick="apantToggleCleanView()" style="height:28px;font-size:0.72rem;padding:0 12px;display:flex;align-items:center;gap:5px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:13px;height:13px;flex-shrink:0;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  Vista limpia
+                </button>
+                <div style="width:1px;height:18px;background:var(--grey-line);margin:0 4px;"></div>
+                <button class="btn btn-secondary" onclick="apantDescargarImagen()" style="height:28px;font-size:0.72rem;padding:0 12px;display:flex;align-items:center;gap:5px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:13px;height:13px;flex-shrink:0;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  PNG
+                </button>
+              </div>
+            </div>
+            <div id="apant-chart" style="width:100%;height:720px;"></div>
+          </div>
+
+          <!-- Tabla de verificación de equipos -->
+          <div class="result-table-wrap" id="apant-verif-wrap" style="display:none;margin-bottom:20px;">
+            <div style="padding:14px 16px 12px;border-bottom:1px solid var(--grey-line);display:flex;align-items:center;gap:8px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;color:var(--blue-mid);flex-shrink:0;"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
               <div>
-                <div class="rc-label">RADIO DE ESFERA (IEEE 998)</div>
-                <div style="font-size:9px;color:rgba(10,61,145,0.6);font-family:var(--font-mono);margin-top:2px" id="np-label">NP —</div>
-              </div>
-              <div style="display:flex;align-items:baseline;gap:4px">
-                <div class="rc-value" id="radio-display">—</div>
-                <div class="rc-unit">m</div>
+                <div style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-mid);">Verificación de equipos apantallados</div>
+                <div style="font-size:0.71rem;color:var(--text-light);margin-top:3px;">Comprobación punto a punto mediante el método de la esfera rodante (EGM). Cada equipo se muestrea en su superficie superior y lateral.</div>
               </div>
             </div>
-
-            <div class="spat-sep"></div>
-            <div class="spat-panel-title">📐 Modo de Posición Punta</div>
-            <div class="spat-mode-sel">
-              <button class="spat-mode-btn active" id="mode-auto"  onclick="spatSetMode('auto')">AUTO</button>
-              <button class="spat-mode-btn"        id="mode-perim" onclick="spatSetMode('perim')">PERÍMETRO</button>
-              <button class="spat-mode-btn"        id="mode-grid"  onclick="spatSetMode('grid')">GRILLA</button>
+            <div style="padding:10px 16px 6px;border-bottom:1px solid var(--grey-line);display:flex;gap:20px;font-size:0.72rem;color:var(--text-light);">
+              <span style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#16a34a;"></span>Protegido — ningún punto sobrepasa la envolvente de protección</span>
+              <span style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#dc2626;"></span>Sin protección — al menos un punto queda expuesto</span>
             </div>
-
-            <div class="spat-panel-title">👁 Visualización 3D</div>
-            <div class="spat-tog-row">
-              <span>Esferas rodantes</span>
-              <label class="spat-tog"><input type="checkbox" id="toggle-spheres" checked onchange="spatAutoRender()"><span class="spat-tog-sl"></span></label>
-            </div>
-            <div class="spat-tog-row">
-              <span>Manta de protección</span>
-              <label class="spat-tog"><input type="checkbox" id="toggle-manta" checked onchange="spatAutoRender()"><span class="spat-tog-sl"></span></label>
-            </div>
-            <div class="spat-tog-row">
-              <span>Opacidad esfera</span>
-              <input type="range" id="sphere-opacity" min="3" max="35" value="15" style="width:80px" oninput="spatAutoRender()">
-            </div>
-            <div class="spat-tog-row">
-              <span>Opacidad manta</span>
-              <input type="range" id="manta-opacity" min="5" max="50" value="22" style="width:80px" oninput="spatAutoRender()">
-            </div>
-
-            <div class="spat-alert" id="spat-alert">⚠ Altura total supera el radio. Verificar parámetros.</div>
-            <button class="spat-btn spat-btn-primary"   onclick="spatRender()">▶ CALCULAR Y RENDERIZAR</button>
-            <button class="spat-btn spat-btn-secondary" onclick="spatResetCam()">↺ RESETEAR CÁMARA</button>
-
-            <div class="spat-sep"></div>
-            <div class="spat-panel-title">LEYENDA</div>
-            <div style="display:flex;flex-direction:column;gap:6px">
-              <div class="spat-leg-item"><div class="spat-leg-dot" style="background:#8FB3E8;border:2px solid #8FB3E8"></div>Esfera Rodante (imaginaria)</div>
-              <div class="spat-leg-item"><div class="spat-leg-dot" style="background:#38bdf8;opacity:.7"></div>Manta / Zona de Protección</div>
-              <div class="spat-leg-item"><div class="spat-leg-dot" style="background:#2F6FCC"></div>Punta Captadora</div>
-              <div class="spat-leg-item"><div class="spat-leg-dot" style="background:#0A3D91"></div>Estructura Civil</div>
-              <div class="spat-leg-item"><div class="spat-leg-dot" style="background:#F5C400"></div>Transformador</div>
+            <table class="result-table">
+              <thead>
+                <tr>
+                  <th>Equipo</th>
+                  <th>Puntos protegidos / evaluados</th>
+                  <th>Cobertura</th>
+                  <th>Exceso máx.</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody id="apant-verif-tbody"></tbody>
+            </table>
+            <div style="padding:10px 16px;font-size:0.71rem;color:var(--text-light);border-top:1px solid var(--grey-line);">
+              El exceso máximo indica cuánto se eleva el punto más crítico por encima de la envolvente de protección. Un valor "—" en equipos protegidos indica que todos los puntos quedan dentro de la zona segura. Basado en IEEE Std 998 — Rolling Sphere Method.
             </div>
           </div>
 
-          <!-- ── VIEWPORT 3D ── -->
-          <div id="spat-viewport">
-            <div id="spat-container3D"></div>
-            <div class="spat-vp-overlay" id="spat-info">MODO: —<br>PUNTAS: —<br>COB: —<br>R: —</div>
-            <div class="spat-vp-mode">ÓRBITA · SCROLL ZOOM · DOBLE-CLIC RESET</div>
-            <div class="spat-vp-ieee" id="spat-ieee-info">—</div>
+          <!-- Recomendaciones correctivas -->
+          <div id="apant-recs-outer" style="display:none;margin-bottom:20px;">
+            <div class="result-table-wrap">
+              <div style="padding:14px 16px 12px;border-bottom:1px solid var(--grey-line);display:flex;align-items:center;gap:10px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;color:var(--blue-mid);flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <div style="flex:1;">
+                  <div style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-mid);">Recomendaciones correctivas</div>
+                  <div style="font-size:0.71rem;color:var(--text-light);margin-top:2px;">Propuestas geométricas basadas en los puntos críticos no apantallados. Cada propuesta se verifica internamente con el modelo EGM.</div>
+                </div>
+                <button class="btn btn-primary" id="apant-btn-recs" onclick="apantGetRecommendations()" style="height:34px;font-size:0.78rem;padding:0 16px;flex-shrink:0;display:flex;align-items:center;gap:6px;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:13px;height:13px;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                  Analizar recomendaciones
+                </button>
+              </div>
+              <div id="apant-recs-body" style="padding:16px 18px;">
+                <div style="font-size:0.78rem;color:var(--text-light);">Haga clic en "Analizar recomendaciones" para generar propuestas de mejora basadas en los puntos críticos.</div>
+              </div>
+            </div>
           </div>
 
-          <!-- ── PANEL DERECHO ── -->
-          <div class="spat-panel">
-            <div class="spat-panel-title">📊 Resultados</div>
-
-            <div class="spat-res-card">
-              <div class="spat-ct">PARÁMETROS IEEE 998</div>
-              <div class="spat-stat"><span class="spat-stat-lbl">Zs (impedancia corona)</span><span class="spat-stat-val" id="r-Zs">—</span></div>
-              <div class="spat-stat"><span class="spat-stat-lbl">Is (corriente permis.)</span><span class="spat-stat-val" id="r-Is">—</span></div>
-              <div class="spat-stat"><span class="spat-stat-lbl">S = Radio esfera</span><span class="spat-stat-val" id="r-S">—</span></div>
+          <!-- Cálculos estadísticos IEEE 998 — al final -->
+          <div class="result-table-wrap" id="apant-ieee-wrap" style="display:none;margin-bottom:20px;">
+            <div style="padding:14px 16px 10px;border-bottom:1px solid var(--grey-line);display:flex;align-items:center;gap:8px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;color:var(--blue-mid);flex-shrink:0;"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+              <span style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-mid);">Análisis estadístico de riesgo — IEEE Std 998</span>
             </div>
-            <div class="spat-res-card">
-              <div class="spat-ct">GEOMETRÍA DE PROTECCIÓN</div>
-              <div class="spat-stat"><span class="spat-stat-lbl">Radio eficaz en suelo</span><span class="spat-stat-val" id="r-rsuelo">—</span></div>
-              <div class="spat-stat"><span class="spat-stat-lbl">Puntas captadoras</span><span class="spat-stat-val" id="r-npuntas">—</span></div>
-              <div class="spat-stat"><span class="spat-stat-lbl">Altura total</span><span class="spat-stat-val" id="r-htotal">—</span></div>
-              <div class="spat-stat"><span class="spat-stat-lbl">Cobertura estimada</span><span class="spat-stat-val ok" id="r-cob">—</span></div>
-              <div class="spat-stat"><span class="spat-stat-lbl">Área subestación</span><span class="spat-stat-val" id="r-area">—</span></div>
-            </div>
-            <div class="spat-res-card">
-              <div class="spat-ct">VERIFICACIÓN IEEE 998 (D &lt; K)</div>
-              <div class="spat-stat"><span class="spat-stat-lbl">K = H − A</span><span class="spat-stat-val" id="r-K">—</span></div>
-              <div class="spat-stat"><span class="spat-stat-lbl">E = S − H</span><span class="spat-stat-val" id="r-E">—</span></div>
-              <div class="spat-stat"><span class="spat-stat-lbl">F = S − E</span><span class="spat-stat-val" id="r-F">—</span></div>
-              <div class="spat-stat"><span class="spat-stat-lbl">D = K − F</span><span class="spat-stat-val" id="r-D">—</span></div>
-              <div class="spat-stat"><span class="spat-stat-lbl">Condición D &lt; K</span><span class="spat-stat-val" id="r-DK">—</span></div>
-            </div>
-
-            <div class="spat-sep"></div>
-            <div class="spat-panel-title">🗺 PLANTA / CORTE 2D</div>
-            <div class="spat-tab-bar">
-              <div class="spat-tab active" id="tab-planta" onclick="spatSetTab('planta')">PLANTA</div>
-              <div class="spat-tab"        id="tab-corte"  onclick="spatSetTab('corte')">CORTE</div>
-            </div>
-            <canvas id="spat-canvas2D"></canvas>
+            <div id="apant-ieee-body" style="padding:16px 18px;"></div>
           </div>
 
-        </div><!-- /spat-wrap -->
+        </div><!-- /apant-resultados -->
+
       </div><!-- /page-apant -->
 
       <!-- PAGE: MALLA A TIERRA -->
@@ -768,11 +714,11 @@
           <div id="esp-rect" class="malla-esp-block">
             <div class="form-row">
               <div class="form-group" style="margin-bottom:0;">
-                <label class="form-label">Dx — Espaciamiento en X (m)</label>
+                <label class="form-label">Dx — Espaciamiento entre conductores paralelos al eje X (m)</label>
                 <select class="select-input" id="m-Dx"><option value="">— seleccione geometría primero —</option></select>
               </div>
               <div class="form-group" style="margin-bottom:0;">
-                <label class="form-label">Dy — Espaciamiento en Y (m)</label>
+                <label class="form-label">Dy — Espaciamiento entre conductores paralelos al eje Y (m)</label>
                 <select class="select-input" id="m-Dy"><option value="">— seleccione geometría primero —</option></select>
               </div>
             </div>
@@ -815,12 +761,35 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V12m0 0C12 7 7 4 2 6m10 6c0-5 5-8 10-6"/></svg>
             §3 · Parámetros del suelo
           </div>
-          <div class="form-row" style="margin-bottom:14px;">
+          <div class="form-row" style="margin-bottom:8px;">
             <div class="form-group" style="margin-bottom:0;">
-              <label class="form-label">ρ — Resistividad del suelo (Ω·m)</label>
+              <label class="form-label">
+                ρ — Resistividad del suelo (Ω·m)
+                <span class="tooltip-wrap">
+                  <svg class="tooltip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span class="tooltip-text">Este valor es una estimación preliminar basada en la clasificación de suelo obtenida en la validación de ubicación. Debe ser verificado mediante mediciones experimentales en sitio según IEEE Std 81.</span>
+                </span>
+              </label>
               <input class="form-input" type="number" id="m-rho" value="100" step="1" min="1">
             </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">
+                Clasificación IEEE 80
+                <span class="tooltip-wrap">
+                  <svg class="tooltip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span class="tooltip-text">Clasificaciones referenciales de suelo según IEEE 80 para estimación preliminar. No sustituyen mediciones en campo.</span>
+                </span>
+              </label>
+              <select class="form-input" id="m-rho-clase" onchange="mallaRhoClaseChange(this.value)">
+                <option value="">— Sin clasificar —</option>
+                <option value="10">Suelo Orgánico Húmedo (10 Ω·m)</option>
+                <option value="100">Suelo Húmedo (100 Ω·m)</option>
+                <option value="1000">Suelo Seco (1 000 Ω·m)</option>
+                <option value="10000">Roca (10 000 Ω·m)</option>
+              </select>
+            </div>
           </div>
+          <div id="m-rho-nota" style="font-size:0.68rem;color:var(--text-light);margin-bottom:10px;display:none;"></div>
         </div>
 
         <!-- §4 VARILLAS -->
@@ -1147,9 +1116,6 @@
 
           </div>
 
-          <!-- ── RECOMENDACIONES ───────────────────────────────────────── -->
-          <div id="m-rec-wrap" style="margin-top:4px;display:none;"></div>
-
           <!-- ── VISUALIZACIÓN 2D / 3D ───────────────────────────────── -->
           <div class="form-card" style="margin-top:4px;">
             <div class="form-card-title" style="display:flex;align-items:center;justify-content:space-between;">
@@ -1165,6 +1131,9 @@
             <div id="viz-2d" style="width:100%;height:480px;"></div>
             <div id="viz-3d" style="width:100%;height:480px;display:none;"></div>
           </div>
+
+          <!-- ── RECOMENDACIONES ───────────────────────────────────────── -->
+          <div id="m-rec-wrap" style="margin-top:4px;display:none;"></div>
 
         </div><!-- /m-resultados -->
 
@@ -1183,15 +1152,20 @@
                   <thead>
                     <tr style="background:var(--grey-bg);color:var(--text-mid);text-transform:uppercase;font-size:0.65rem;letter-spacing:0.05em;">
                       <th style="padding:8px 10px;text-align:center;border-bottom:1px solid var(--grey-line);">#</th>
-                      <th style="padding:8px 10px;text-align:left;border-bottom:1px solid var(--grey-line);">Lx × Ly</th>
+                      <th style="padding:8px 10px;text-align:left;border-bottom:1px solid var(--grey-line);">Dimensiones</th>
                       <th style="padding:8px 10px;text-align:right;border-bottom:1px solid var(--grey-line);">D (m)</th>
                       <th style="padding:8px 10px;text-align:right;border-bottom:1px solid var(--grey-line);">h (m)</th>
                       <th style="padding:8px 10px;text-align:right;border-bottom:1px solid var(--grey-line);">Lr (m)</th>
                       <th style="padding:8px 10px;text-align:right;border-bottom:1px solid var(--grey-line);">Nr</th>
+                      <th style="padding:8px 10px;text-align:right;border-bottom:1px solid var(--grey-line);">Sf</th>
+                      <th style="padding:8px 10px;text-align:right;border-bottom:1px solid var(--grey-line);">tf (s)</th>
+                      <th style="padding:8px 10px;text-align:right;border-bottom:1px solid var(--grey-line);">hs (m)</th>
                       <th style="padding:8px 10px;text-align:right;border-bottom:1px solid var(--grey-line);">Rg (Ω)</th>
                       <th style="padding:8px 10px;text-align:right;border-bottom:1px solid var(--grey-line);">GPR (V)</th>
                       <th style="padding:8px 10px;text-align:right;border-bottom:1px solid var(--grey-line);">Em (V)</th>
                       <th style="padding:8px 10px;text-align:right;border-bottom:1px solid var(--grey-line);">Es (V)</th>
+                      <th style="padding:8px 10px;text-align:right;border-bottom:1px solid var(--grey-line);">Etouch (V)</th>
+                      <th style="padding:8px 10px;text-align:right;border-bottom:1px solid var(--grey-line);">Estep (V)</th>
                       <th style="padding:8px 12px;text-align:center;border-bottom:1px solid var(--grey-line);">Estado</th>
                       <th style="padding:8px 10px;border-bottom:1px solid var(--grey-line);"></th>
                     </tr>
@@ -1204,88 +1178,11 @@
 
       </div><!-- /page-malla -->
 
-      <!-- PAGE: VERIFICACIONES -->
-      <div id="page-verif" class="section-page">
-        <div class="page-header">
-          <h1>Verificaciones</h1>
-          <p>Criterios de aceptación según IEEE Std 80 e IEC 62305</p>
-        </div>
-        <div class="form-card">
-          <div class="form-card-title">Criterios de seguridad humana</div>
-          <div class="result-table-wrap" style="box-shadow:none;border:none;">
-            <table class="result-table">
-              <thead><tr><th>Parámetro</th><th>Calculado</th><th>Límite</th><th>Unidad</th><th>Estado</th></tr></thead>
-              <tbody>
-                <tr><td>Tensión de paso</td><td class="mono">—</td><td class="mono">—</td><td class="mono">V</td><td><span class="badge-pending">Pendiente</span></td></tr>
-                <tr><td>Tensión de contacto</td><td class="mono">—</td><td class="mono">—</td><td class="mono">V</td><td><span class="badge-pending">Pendiente</span></td></tr>
-                <tr><td>Resistencia de la malla</td><td class="mono">—</td><td class="mono">≤ 1.0</td><td class="mono">Ω</td><td><span class="badge-pending">Pendiente</span></td></tr>
-                <tr><td>Elevación de potencial (GPR)</td><td class="mono">—</td><td class="mono">—</td><td class="mono">V</td><td><span class="badge-pending">Pendiente</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="form-card">
-          <div class="form-card-title">Apantallamiento</div>
-          <div class="result-table-wrap" style="box-shadow:none;border:none;">
-            <table class="result-table">
-              <thead><tr><th>Componente</th><th>Área protegida</th><th>% Cobertura</th><th>Estado</th></tr></thead>
-              <tbody>
-                <tr><td>Pararrayos tipo A</td><td class="mono">—</td><td class="mono">—</td><td><span class="badge-pending">Pendiente</span></td></tr>
-                <tr><td>Cables de guardia</td><td class="mono">—</td><td class="mono">—</td><td><span class="badge-pending">Pendiente</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- PAGE: RESULTADOS -->
-      <div id="page-resultados" class="section-page">
-        <div class="page-header">
-          <h1>Resultados del diseño</h1>
-          <p>Resumen técnico consolidado del proyecto</p>
-        </div>
-        <div class="result-table-wrap">
-          <table class="result-table">
-            <thead><tr><th>Módulo</th><th>Parámetro</th><th>Valor</th><th>Unidad</th><th>Norma</th><th>Estado</th></tr></thead>
-            <tbody>
-              <tr><td>Apantallamiento</td><td>Radio de protección (pararrayos)</td><td class="mono">—</td><td class="mono">m</td><td class="mono">IEEE 998</td><td><span class="badge-pending">Pendiente</span></td></tr>
-              <tr><td>Apantallamiento</td><td>Ángulo de protección</td><td class="mono">—</td><td class="mono">°</td><td class="mono">IEEE 998</td><td><span class="badge-pending">Pendiente</span></td></tr>
-              <tr><td>Malla a tierra</td><td>Resistencia de la malla (Rm)</td><td class="mono">—</td><td class="mono">Ω</td><td class="mono">IEEE 80</td><td><span class="badge-pending">Pendiente</span></td></tr>
-              <tr><td>Malla a tierra</td><td>Tensión de paso permitida</td><td class="mono">—</td><td class="mono">V</td><td class="mono">IEEE 80</td><td><span class="badge-pending">Pendiente</span></td></tr>
-              <tr><td>Malla a tierra</td><td>Tensión de contacto permitida</td><td class="mono">—</td><td class="mono">V</td><td class="mono">IEEE 80</td><td><span class="badge-pending">Pendiente</span></td></tr>
-              <tr><td>Climatología</td><td>Densidad de rayos (Ng)</td><td class="mono" id="res-ng">—</td><td class="mono">ray/km²/año</td><td class="mono">IEC 62305</td><td><span class="badge-pending">Pendiente</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="result-placeholder" style="margin-top:16px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-          <span>Ejecute los módulos de cálculo para visualizar los resultados aquí</span>
-        </div>
-      </div>
-
       <!-- PAGE: EXPORTAR -->
       <div id="page-exportar" class="section-page">
         <div class="page-header">
           <h1>Exportar reporte</h1>
-          <p>Disponible cuando todos los criterios de seguridad se cumplen en el diseño de malla</p>
-        </div>
-
-        <!-- Aviso de estado -->
-        <div id="export-status-banner" style="border-radius:var(--radius-md);padding:12px 18px;margin-bottom:18px;display:flex;align-items:center;gap:10px;font-size:0.82rem;font-weight:600;background:rgba(194,59,34,0.08);border:1px solid rgba(194,59,34,0.3);color:var(--error);">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-          <span id="export-status-text">El diseño aún no cumple todos los criterios. Calcule la malla hasta que Rg, GPR, Em y Es sean aceptables.</span>
-        </div>
-
-        <div class="export-card" id="ec-excel">
-          <div class="ec-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 3v18M3 9h18M3 15h18"/></svg></div>
-          <div class="ec-info">
-            <div class="ec-title">Reporte Excel (.xlsx)</div>
-            <div class="ec-desc">Una fila con todos los parámetros de la iteración aprobada; criterios resaltados en verde</div>
-          </div>
-          <button id="btn-export-excel" class="btn btn-primary" disabled onclick="exportarExcel()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Exportar Excel
-          </button>
+          <p>Genere y descargue el reporte técnico del proyecto</p>
         </div>
 
         <div class="export-card" id="ec-pdf">
@@ -1294,7 +1191,7 @@
             <div class="ec-title">Reporte técnico PDF</div>
             <div class="ec-desc">Tabla del diseño final aprobado con encabezado del proyecto y fecha</div>
           </div>
-          <button id="btn-export-pdf" class="btn btn-primary" disabled onclick="exportarPDF()">
+          <button id="btn-export-pdf" class="btn btn-primary" onclick="exportarPDF()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Generar PDF
           </button>
@@ -1361,7 +1258,6 @@
             <path id="dept-sucre"      d="M90,100 L108,105 L100,130 L85,135 L75,120 L80,105 Z" fill="#8FB3E8" stroke="#fff" stroke-width="1.5" class="dept-path" data-dept="Sucre" style="cursor:pointer;"/>
             <path id="dept-cordoba"    d="M60,95 L80,105 L75,120 L85,135 L70,148 L50,145 L40,125 L45,105 Z" fill="#8FB3E8" stroke="#fff" stroke-width="1.5" class="dept-path" data-dept="Córdoba" style="cursor:pointer;"/>
             <path id="dept-cesar"      d="M200,90 L225,85 L240,100 L235,130 L215,140 L195,130 L185,115 L185,95 Z" fill="#8FB3E8" stroke="#fff" stroke-width="1.5" class="dept-path" data-dept="Cesar" style="cursor:pointer;"/>
-            <circle cx="30" cy="40" r="8" fill="#8FB3E8" stroke="#fff" stroke-width="1.5" class="dept-path" data-dept="San Andrés" style="cursor:pointer;"/>
             <text x="232" y="48"  font-size="7.5" fill="#0A3D91" font-family="DM Sans, sans-serif" font-weight="600" text-anchor="middle">La Guajira</text>
             <text x="183" y="78"  font-size="7.5" fill="#0A3D91" font-family="DM Sans, sans-serif" font-weight="600" text-anchor="middle">Magdalena</text>
             <text x="154" y="98"  font-size="6.5" fill="#0A3D91" font-family="DM Sans, sans-serif" font-weight="600" text-anchor="middle">Atlántico</text>
@@ -1369,7 +1265,6 @@
             <text x="88"  y="118" font-size="7"   fill="#0A3D91" font-family="DM Sans, sans-serif" font-weight="600" text-anchor="middle">Sucre</text>
             <text x="62"  y="122" font-size="7.5" fill="#0A3D91" font-family="DM Sans, sans-serif" font-weight="600" text-anchor="middle">Córdoba</text>
             <text x="213" y="115" font-size="7.5" fill="#0A3D91" font-family="DM Sans, sans-serif" font-weight="600" text-anchor="middle">Cesar</text>
-            <text x="30"  y="43"  font-size="6"   fill="#0A3D91" font-family="DM Sans, sans-serif" font-weight="600" text-anchor="middle">S.A.</text>
 
             <g id="map-selected-pin" display="none">
               <circle id="map-pin-circle" cx="0" cy="0" r="5" fill="#F5C400" stroke="#0A3D91" stroke-width="1.5"/>
@@ -1493,7 +1388,6 @@
         <li><span class="toc-num">05</span> <a href="#">Ingreso de datos técnicos de la subestación</a></li>
         <li><span class="toc-num">06</span> <a href="#">Módulo de apantallamiento (IEEE Std 998 / IEC 62305)</a></li>
         <li><span class="toc-num">07</span> <a href="#">Módulo de malla de puesta a tierra (IEEE Std 80)</a></li>
-        <li><span class="toc-num">08</span> <a href="#">Verificaciones y criterios de aceptación</a></li>
         <li><span class="toc-num">09</span> <a href="#">Generación de reportes técnicos</a></li>
         <li><span class="toc-num">10</span> <a href="#">Integración con backend Python</a></li>
         <li><span class="toc-num">11</span> <a href="#">Formato de archivo de proyecto (.json)</a></li>
@@ -1526,6 +1420,7 @@
 <!-- Scripts — orden importante: app.js primero, location_validation.js después -->
 <script src="app.js"></script>
 <script src="location_validation.js"></script>
+<script src="apantallamiento.js"></script>
 
 <script>
 /* =============================================
@@ -1673,7 +1568,7 @@ function mallaFillEspaciamientos(forma, data) {
     lista.forEach(v => {
       const opt = document.createElement('option');
       opt.value = v;
-      opt.textContent = v + ' m';
+      opt.textContent = (typeof v === 'number' ? v.toFixed(1) : v) + ' m';
       if (String(v) === String(prev)) opt.selected = true;
       sel.appendChild(opt);
     });
@@ -2229,6 +2124,14 @@ function mallaCalcular() {
       ok_GPR: !!s7.gpr_ok,
       ok_Em:  !!s8.em_ok,
       ok_Es:  !!s8.es_ok,
+      Sf:     payload.Sf,
+      tf:     payload.tf,
+      Etouch: parseFloat((data.sec6?.E_touch_V ?? 0).toFixed(2)),
+      Estep:  parseFloat((data.sec6?.E_step_V  ?? 0).toFixed(2)),
+      Lx1_aj: s3.Lx1_aj ?? 0,
+      Ly1_aj: s3.Ly1_aj ?? 0,
+      Lx2_aj: s3.Lx2_aj ?? 0,
+      Ly2_aj: s3.Ly2_aj ?? 0,
       payload: payload,
     };
 
@@ -2246,6 +2149,7 @@ function mallaCalcular() {
 
     mallaRenderHistorial(AppState.mallaHistoria);
     mallaUpdateExportState(AppState.mallaHistoria);
+    mallaActualizarInicio(nuevaIter);
   })
   .catch(err => {
     document.getElementById('m-btn-calcular').disabled = false;
@@ -2257,7 +2161,7 @@ function mallaCalcular() {
   });
 }
 
-function fmt(v, d = 4) {
+function fmt(v, d = 2) {
   if (v === null || v === undefined) return '—';
   return typeof v === 'number' ? v.toFixed(d) : v;
 }
@@ -2309,7 +2213,7 @@ function mallaRenderResultados(payload, data) {
     kv('Calibre seleccionado', (s2.kcmil ? s2.kcmil + ' kcmil' : '—') + (s2.AWG ? ' (' + s2.AWG + ' AWG)' : '')),
     kv('Área del conductor', fmt(s2.area_mm2), 'mm²'),
     kv('Diámetro', fmt(s2.diametro_m ? s2.diametro_m * 1000 : null, 2), 'mm'),
-    kv('Factor asimetría Df', fmt(s2.Df, 4)),
+    kv('Factor asimetría Df', fmt(s2.Df)),
     kv('I asimétrica sistema', fmt(s2.I_asim_sistema_kA), 'kA'),
   ].join('');
 
@@ -2334,33 +2238,33 @@ function mallaRenderResultados(payload, data) {
   // ── §5 Rg ─────────────────────────────────────────────────────────────────
   document.getElementById('r-sec5').innerHTML = [
     kv('Método', s5.metodo || '—'),
-    kv('Rg', fmt(s5.Rg, 6), 'Ω'),
-    s5.R1 != null ? kv('R1 (Schwarz)', fmt(s5.R1, 6), 'Ω') : '',
-    s5.R2 != null ? kv('R2 (Schwarz)', fmt(s5.R2, 6), 'Ω') : '',
-    kv('k1', fmt(s5.k1, 6)),
-    kv('k2', fmt(s5.k2, 6)),
+    kv('Rg', fmt(s5.Rg), 'Ω'),
+    s5.R1 != null ? kv('R1 (Schwarz)', fmt(s5.R1), 'Ω') : '',
+    s5.R2 != null ? kv('R2 (Schwarz)', fmt(s5.R2), 'Ω') : '',
+    kv('k1', fmt(s5.k1)),
+    kv('k2', fmt(s5.k2)),
     kv('Verificación', s5.verif_Rg || '—'),
   ].join('');
 
   // ── §6 Tensiones ─────────────────────────────────────────────────────────
   document.getElementById('r-sec6').innerHTML = [
-    kv('Cs', fmt(s6.Cs, 6)),
+    kv('Cs', fmt(s6.Cs)),
     kv('E_touch admisible', fmt(s6.E_touch_V, 2), 'V'),
     kv('E_step admisible', fmt(s6.E_step_V, 2), 'V'),
   ].join('');
 
   // ── §8 Em y Es ────────────────────────────────────────────────────────────
   document.getElementById('r-sec8').innerHTML = [
-    kv('n = na·nb·nc·nd', fmt(s8.n, 4)),
-    kv('na', fmt(s8.na, 6)),
-    kv('nb', fmt(s8.nb, 6)),
-    kv('nc', fmt(s8.nc, 6)),
-    kv('nd', fmt(s8.nd, 6)),
-    kv('Kii', fmt(s8.Kii, 6)),
-    kv('Kh', fmt(s8.Kh, 6)),
-    kv('Ki', fmt(s8.Ki, 6)),
-    kv('Km', fmt(s8.Km, 6)),
-    kv('Ks', fmt(s8.Ks, 6)),
+    kv('n = na·nb·nc·nd', fmt(s8.n)),
+    kv('na', fmt(s8.na)),
+    kv('nb', fmt(s8.nb)),
+    kv('nc', fmt(s8.nc)),
+    kv('nd', fmt(s8.nd)),
+    kv('Kii', fmt(s8.Kii)),
+    kv('Kh', fmt(s8.Kh)),
+    kv('Ki', fmt(s8.Ki)),
+    kv('Km', fmt(s8.Km)),
+    kv('Ks', fmt(s8.Ks)),
     kv('LM', fmt(s8.LM), 'm'),
     kv('LS', fmt(s8.LS), 'm'),
     kv('Em', fmt(s8.Em_V, 2), 'V'),
@@ -2456,8 +2360,8 @@ function mallaRenderRecomendaciones(data, pesoActual) {
         <div style="${subStyle}">Longitud de varilla</div>
         <p style="${textStyle}">${
           lrMayores.length > 0
-            ? `Tu varilla actual es de ${boldVal(r.Lr_actual + ' m')}. Los modelos disponibles más largos son: ${boldVal(lrMayores.join(' m, ') + ' m')}. Varillas más profundas alcanzan capas de menor resistividad.`
-            : `Tu varilla actual es de ${boldVal(r.Lr_actual + ' m')}. Ya usas el modelo más largo disponible.`
+            ? `Tu varilla actual es de ${boldVal(parseFloat(r.Lr_actual).toFixed(1) + ' m')}. Los modelos disponibles más largos son: ${boldVal(lrMayores.map(v => parseFloat(v).toFixed(1)).join(' m, ') + ' m')}. Varillas más profundas alcanzan capas de menor resistividad.`
+            : `Tu varilla actual es de ${boldVal(parseFloat(r.Lr_actual).toFixed(1) + ' m')}. Ya usas el modelo más largo disponible.`
         }</p>
       </div>`;
   }
@@ -2488,7 +2392,20 @@ function mallaRenderRecomendaciones(data, pesoActual) {
   // ── Criterio 3: Em ────────────────────────────────────────────────────
   if (rec.em) {
     const r = rec.em;
-    const dList = (r.D_menores || []).map(d => boldVal(d + ' m')).join(', ') || '—';
+    const hasDxDy = r.Dx !== undefined && r.Dy !== undefined;
+    const dxList  = hasDxDy ? (r.Dx_menores || []).map(d => boldVal(parseFloat(d).toFixed(1) + ' m')).join(', ') || '—' : '';
+    const dyList  = hasDxDy ? (r.Dy_menores || []).map(d => boldVal(parseFloat(d).toFixed(1) + ' m')).join(', ') || '—' : '';
+    const dList   = !hasDxDy ? ((r.D_menores || []).map(d => boldVal(parseFloat(d).toFixed(1) + ' m')).join(', ') || '—') : '';
+    const geoText = hasDxDy
+      ? (() => {
+          const dxSame = !dxList || dxList === '—';
+          const dySame = !dyList || dyList === '—';
+          const intro = `Tus espaciamientos actuales son ${boldVal('Dx = ' + parseFloat(r.Dx).toFixed(1) + ' m')} y ${boldVal('Dy = ' + parseFloat(r.Dy).toFixed(1) + ' m')}.`;
+          const dxRec = dxSame ? `Dx (${parseFloat(r.Dx).toFixed(1)} m) ya es el mínimo disponible.` : `Opciones menores para Dx: ${dxList}.`;
+          const dyRec = dySame ? `Dy (${parseFloat(r.Dy).toFixed(1)} m) ya es el mínimo disponible.` : `Opciones menores para Dy: ${dyList}.`;
+          return `${intro} ${dxRec} ${dyRec} Reducir el espaciamiento densifica la cuadrícula y disminuye Em (actúa sobre el factor Km).`;
+        })()
+      : `Tu espaciamiento actual es ${boldVal('D = ' + parseFloat(r.D).toFixed(1) + ' m')}. Los espaciamientos menores disponibles son: ${dList}. Reducir D densifica la cuadrícula y disminuye Em — es la acción más directa sobre el factor Km.`;
     html += `
       <div style="${cardBase}background:rgba(194,59,34,0.06);border:1px solid rgba(194,59,34,0.22);">
         <div style="${titleStyle}">
@@ -2496,7 +2413,7 @@ function mallaRenderRecomendaciones(data, pesoActual) {
           Em &gt; E_touch — Voltaje de malla fuera de límite
         </div>
         <div style="${subStyle}">Geometría</div>
-        <p style="${textStyle}">Tu espaciamiento actual es ${boldVal('D = ' + r.D + ' m')}. Los espaciamientos menores disponibles son: ${dList}. Reducir D densifica la cuadrícula y disminuye Em — es la acción más directa sobre el factor Km.</p>
+        <p style="${textStyle}">${geoText}</p>
         ${(r.configuracion_actual !== 'todas las intersecciones' && r.configuracion_actual !== 'personalizado') ? `${divider}
         <div style="${subStyle}">Varillas — configuración</div>
         ${(() => {
@@ -2515,10 +2432,10 @@ function mallaRenderRecomendaciones(data, pesoActual) {
         ${divider}
         <div style="${subStyle}">Varillas — longitud</div>
         ${(() => {
-          const lrList = (r.Lr_modelos_mayores || []).map(v => boldVal(v + ' m')).join(', ');
+          const lrList = (r.Lr_modelos_mayores || []).map(v => boldVal(parseFloat(v).toFixed(1) + ' m')).join(', ');
           const txt = lrList
-            ? `Tu varilla actual es de ${boldVal(r.Lr_actual + ' m')}. Los modelos disponibles más largos son: ${lrList}. Varillas más largas incrementan LM, reduciendo directamente Em.`
-            : `Tu varilla actual es de ${boldVal(r.Lr_actual + ' m')}. Ya usas el modelo más largo disponible.`;
+            ? `Tu varilla actual es de ${boldVal(parseFloat(r.Lr_actual).toFixed(1) + ' m')}. Los modelos disponibles más largos son: ${lrList}. Varillas más largas incrementan LM, reduciendo directamente Em.`
+            : `Tu varilla actual es de ${boldVal(parseFloat(r.Lr_actual).toFixed(1) + ' m')}. Ya usas el modelo más largo disponible.`;
           return `<p style="${textStyle}">${txt}</p>`;
         })()}
         ${divider}
@@ -2581,7 +2498,7 @@ function mallaRenderHistorial(historia) {
 
   if (!historia || historia.length === 0) {
     count.textContent = '';
-    tbody.innerHTML = `<tr><td colspan="12" style="padding:20px;text-align:center;color:var(--text-light);font-size:0.8rem;font-style:italic;">
+    tbody.innerHTML = `<tr><td colspan="17" style="padding:20px;text-align:center;color:var(--text-light);font-size:0.8rem;font-style:italic;">
       Aún no hay iteraciones. Calcula para comenzar el historial.
     </td></tr>`;
     return;
@@ -2592,10 +2509,34 @@ function mallaRenderHistorial(historia) {
   // Más reciente al tope
   const rows = [...historia].reverse();
 
-  tbody.innerHTML = rows.map((it, idx) => {
-    const prev = rows[idx + 1]; // iteración cronológicamente anterior
+  // Etiqueta de dimensiones según forma; recibe el objeto de iteración completo
+  function dimLabel(it) {
+    const p = it.payload;
+    if (!p) return '—';
+    const f = parseInt(p.forma);
+    const n1 = v => (v != null ? parseFloat(v).toFixed(1) : '?');
+    if (f === 1) return `Lx ${n1(p.Lx)} / Ly ${n1(p.Ly)}`;
+    if (f === 6) {
+      const parts = [`Lx ${n1(p.Lx)} / Ly ${n1(p.Ly)}`];
+      if (it.Lx1_aj || it.Ly1_aj) parts.push(`Lx1* ${n1(it.Lx1_aj)} / Ly1* ${n1(it.Ly1_aj)}`);
+      return parts.join(' / ');
+    }
+    if (f === 7) {
+      const parts = [`Lx ${n1(p.Lx)} / Ly ${n1(p.Ly)}`];
+      if (it.Lx1_aj || it.Ly1_aj) parts.push(`Lx1* ${n1(it.Lx1_aj)} / Ly1* ${n1(it.Ly1_aj)}`);
+      if (it.Lx2_aj || it.Ly2_aj) parts.push(`Lx2* ${n1(it.Lx2_aj)} / Ly2* ${n1(it.Ly2_aj)}`);
+      return parts.join(' / ');
+    }
+    if (f === 2) return `L ${n1(p.L)}`;
+    if (f === 3) return `Lb ${n1(p.Lb)} / Li ${n1(p.Li)}`;
+    if (f === 4) return `Lx ${n1(p.Lx)} / Ly ${n1(p.Ly)}`;
+    if (f === 5) return `La ${n1(p.La)} / Lb ${n1(p.Lb_e)} / Lc ${n1(p.Lc_e)}`;
+    return `${n1(p.Lx || p.L)} × ${n1(p.Ly || p.L)}`;
+  }
 
-    // Devuelve el valor de background según si el valor mejoró/empeoró
+  tbody.innerHTML = rows.map((it, idx) => {
+    const prev = rows[idx + 1];
+
     function bgColor(key) {
       if (!prev || prev[key] === undefined) return '';
       const curr = parseFloat(it[key]);
@@ -2604,32 +2545,39 @@ function mallaRenderHistorial(historia) {
       return curr < p ? 'rgba(26,140,91,0.12)' : 'rgba(194,59,34,0.08)';
     }
 
-    // Estilos base de celda, con color de fondo opcional mezclado
     function tdS(align, key) {
       const bg = key ? bgColor(key) : '';
       const base = `padding:7px 10px;border-bottom:1px solid var(--grey-line);font-family:var(--font-mono);text-align:${align};`;
       return `style="${base}${bg ? 'background:' + bg + ';' : ''}"`;
     }
 
-    function icon(ok) {
-      return ok
-        ? '<span style="color:var(--success);">✔</span>'
-        : '<span style="color:var(--error);">✘</span>';
+    function criterio(label, ok) {
+      const color = ok ? 'var(--success)' : 'var(--error)';
+      const sym   = ok ? '✔' : '✘';
+      return `<div style="color:${color};white-space:nowrap;">${label} ${sym}</div>`;
     }
+
+    const d1  = v => (v != null && !isNaN(v)) ? parseFloat(v).toFixed(1) : '—';
+    const d2  = v => (v != null && !isNaN(v)) ? parseFloat(v).toFixed(2) : '—';
 
     return `<tr>
       <td style="padding:7px 10px;border-bottom:1px solid var(--grey-line);text-align:center;">${it.iter}</td>
-      <td style="padding:7px 10px;border-bottom:1px solid var(--grey-line);font-family:var(--font-mono);">${it.Lx}×${it.Ly}</td>
-      <td ${tdS('right','D')}>${it.D}</td>
-      <td ${tdS('right','')}>${it.h}</td>
-      <td ${tdS('right','')}>${it.Lr}</td>
+      <td style="padding:7px 10px;border-bottom:1px solid var(--grey-line);font-family:var(--font-mono);white-space:nowrap;">${dimLabel(it)}</td>
+      <td ${tdS('right','D')}>${d1(it.D)}</td>
+      <td ${tdS('right','')}>${d1(it.h)}</td>
+      <td ${tdS('right','')}>${d1(it.Lr)}</td>
       <td style="padding:7px 10px;border-bottom:1px solid var(--grey-line);text-align:center;">${it.Nr}</td>
-      <td ${tdS('right','Rg')}>${it.Rg}</td>
-      <td ${tdS('right','GPR')}>${it.GPR}</td>
-      <td ${tdS('right','Em')}>${it.Em}</td>
-      <td ${tdS('right','Es')}>${it.Es}</td>
-      <td style="padding:7px 12px;border-bottom:1px solid var(--grey-line);text-align:center;letter-spacing:3px;">
-        ${icon(it.ok_Rg)}${icon(it.ok_GPR)}${icon(it.ok_Em)}${icon(it.ok_Es)}
+      <td ${tdS('right','')}>${d1(it.Sf)}</td>
+      <td ${tdS('right','')}>${d1(it.tf)}</td>
+      <td ${tdS('right','')}>${d1(it.hs)}</td>
+      <td ${tdS('right','Rg')}>${d2(it.Rg)}</td>
+      <td ${tdS('right','GPR')}>${d1(it.GPR)}</td>
+      <td ${tdS('right','Em')}>${d1(it.Em)}</td>
+      <td ${tdS('right','Es')}>${d1(it.Es)}</td>
+      <td ${tdS('right','')}>${d1(it.Etouch)}</td>
+      <td ${tdS('right','')}>${d1(it.Estep)}</td>
+      <td style="padding:7px 12px;border-bottom:1px solid var(--grey-line);text-align:left;line-height:1.5;">
+        ${criterio('Rg', it.ok_Rg)}${criterio('GPR', it.ok_GPR)}${criterio('Em', it.ok_Em)}${criterio('Es', it.ok_Es)}
       </td>
       <td style="padding:7px 10px;border-bottom:1px solid var(--grey-line);">
         <button class="btn btn-secondary"
@@ -2703,54 +2651,55 @@ function mallaRestaurar(iterNum) {
   showToast(`Iteración #${iterNum} restaurada en el formulario`, 'success');
 }
 
+// ── Clasificación IEEE 80 → ρ del suelo ───────────────────────────────────
+function mallaRhoClaseChange(val) {
+  const input = document.getElementById('m-rho');
+  if (val && input) input.value = val;
+}
+
+// ── Actualizar panel de inicio tras calcular malla ────────────────────────
+function mallaActualizarInicio(iter) {
+  const statRg   = document.getElementById('stat-rg');
+  const statUnit = document.getElementById('stat-rg-unit');
+  const siMalla  = document.getElementById('si-malla');
+  const siTag    = document.getElementById('si-malla-tag');
+
+  if (statRg) statRg.textContent = iter.Rg.toFixed(2);
+
+  const cumple = iter.ok_Rg && iter.ok_GPR && iter.ok_Em && iter.ok_Es;
+  if (statUnit) statUnit.textContent = cumple ? 'Ω — Diseño aprobado' : 'Ω — Revisar criterios';
+
+  if (siMalla) {
+    const dot = siMalla.querySelector('.status-dot');
+    if (dot) { dot.className = cumple ? 'status-dot done' : 'status-dot warn'; }
+  }
+  if (siTag) {
+    siTag.className  = cumple ? 'si-tag done' : 'si-tag warn';
+    siTag.textContent = cumple ? 'Calculado ✔' : 'Calculado — revisar';
+  }
+}
+
 // ── Estado de exportación ──────────────────────────────────────────────────
 
 function mallaUpdateExportState(historia) {
-  const ultima  = historia && historia.length > 0 ? historia[historia.length - 1] : null;
-  const aprobada = ultima &&
-    ultima.ok_Rg && ultima.ok_GPR && ultima.ok_Em && ultima.ok_Es;
-
-  // Sidebar
   const navExp  = document.getElementById('nav-exportar');
   const navLock = document.getElementById('nav-exportar-lock');
-  if (navExp) {
-    navExp.style.opacity = aprobada ? '1' : '0.45';
-    navExp.style.cursor  = aprobada ? '' : 'not-allowed';
-  }
-  if (navLock) navLock.style.display = aprobada ? 'none' : '';
+  if (navExp)  { navExp.style.opacity = '1'; navExp.style.cursor = ''; }
+  if (navLock) navLock.style.display = 'none';
 
-  // Botones en página de exportar
   const btnXlsx = document.getElementById('btn-export-excel');
   const btnPdf  = document.getElementById('btn-export-pdf');
-  if (btnXlsx) btnXlsx.disabled = !aprobada;
-  if (btnPdf)  btnPdf.disabled  = !aprobada;
+  if (btnXlsx) btnXlsx.disabled = false;
+  if (btnPdf)  btnPdf.disabled  = false;
 
-  // Banner de estado
   const banner = document.getElementById('export-status-banner');
-  const txt    = document.getElementById('export-status-text');
-  if (banner && txt) {
-    if (aprobada) {
-      banner.style.background = 'rgba(26,140,91,0.08)';
-      banner.style.border     = '1px solid rgba(26,140,91,0.3)';
-      banner.style.color      = 'var(--success)';
-      txt.textContent = 'Diseño aprobado — todos los criterios se cumplen. Los reportes están disponibles.';
-    } else {
-      banner.style.background = 'rgba(194,59,34,0.08)';
-      banner.style.border     = '1px solid rgba(194,59,34,0.3)';
-      banner.style.color      = 'var(--error)';
-      txt.textContent = 'El diseño aún no cumple todos los criterios. Calcule la malla hasta que Rg, GPR, Em y Es sean aceptables.';
-    }
-  }
+  if (banner) banner.style.display = 'none';
 
-  AppState.exportarDesbloqueado = !!aprobada;
+  AppState.exportarDesbloqueado = true;
 }
 
 function navExportarClick(el) {
-  if (AppState.exportarDesbloqueado) {
-    showPage('page-exportar', el);
-  } else {
-    showToast('El reporte se habilita cuando todos los criterios de la malla se cumplen', 'warn');
-  }
+  showPage('page-exportar', el);
 }
 
 function exportarExcel() {
@@ -2759,16 +2708,323 @@ function exportarExcel() {
   window.location.href = `/proyectos/${encodeURIComponent(nombre)}/exportar/excel`;
 }
 
-function exportarPDF() {
+async function exportarPDF() {
   const nombre = AppState.currentProject?.nombre;
   if (!nombre) { showToast('No hay proyecto activo', 'error'); return; }
-  window.location.href = `/proyectos/${encodeURIComponent(nombre)}/exportar/pdf`;
+
+  const btn         = document.getElementById('btn-export-pdf');
+  const btnOriginal = btn ? btn.innerHTML : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Generando...'; }
+
+  try {
+    // ── 1. Tomar la ultima iteracion del historial (con o sin todos OK) ───
+    const hist = AppState.mallaHistoria || [];
+    if (!hist.length) {
+      showToast('Calcule la malla al menos una vez antes de exportar.', 'error');
+      return;
+    }
+    const iter = [...hist].reverse()[0]; // ultima iteracion calculada
+    const todoOk = iter.ok_Rg && iter.ok_GPR && iter.ok_Em && iter.ok_Es;
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const W   = doc.internal.pageSize.getWidth();
+    let   y   = 15;
+
+    // ── 2. Fecha real ─────────────────────────────────────────────────────
+    const ahora    = new Date();
+    const pad      = n => String(n).padStart(2, '0');
+    const fechaStr = `${pad(ahora.getDate())}/${pad(ahora.getMonth()+1)}/${ahora.getFullYear()}  ${pad(ahora.getHours())}:${pad(ahora.getMinutes())}`;
+
+    // ── 3. Encabezado ─────────────────────────────────────────────────────
+    doc.setFillColor(10, 61, 145);
+    doc.rect(0, 0, W, 28, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('TERRASHIELD', 14, 12);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Malla de puesta a tierra — IEEE Std 80-2013', 14, 20);
+    doc.text(`Proyecto: ${nombre}   |   Fecha: ${fechaStr}`, 14, 26);
+    y = 36;
+
+    // Advertencia si no todos los criterios estan OK
+    if (!todoOk) {
+      doc.setFillColor(255, 243, 205);
+      doc.rect(14, y, W - 28, 8, 'F');
+      doc.setTextColor(133, 77, 14);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'bold');
+      doc.text('ADVERTENCIA: No todos los criterios IEEE 80 estan aprobados en esta iteracion.', 16, y + 5.5);
+      y += 13;
+    }
+
+    // ── 4. Imagen 2D de la malla ──────────────────────────────────────────
+    try {
+      // Hacer la seccion visible temporalmente si estuviera oculta
+      const viz = document.getElementById('viz-2d');
+      const wasHidden = viz && viz.style.display === 'none';
+      if (wasHidden) viz.style.display = '';
+
+      const imgData = await Plotly.toImage('viz-2d', { format: 'png', width: 880, height: 460 });
+
+      if (wasHidden) viz.style.display = 'none';
+
+      const imgH = 78;
+      const imgW = imgH * (880 / 460);
+      const imgX = (W - imgW) / 2;
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(30, 30, 30);
+      doc.text('Visualizacion de la malla — Vista 2D', 14, y);
+      y += 5;
+      doc.addImage(imgData, 'PNG', imgX, y, imgW, imgH);
+      y += imgH + 8;
+    } catch (e) {
+      console.warn('[exportarPDF] imagen 2D no disponible:', e);
+    }
+
+    // ── 5. Tabla de resultados ─────────────────────────────────────────────
+    const nd  = k => { const v = iter[k]; return (v !== undefined && v !== null) ? String(v) : 'N/D'; };
+    const ok  = k => iter[`ok_${k}`] ? '[OK]' : '[--]';
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 30, 30);
+    doc.text('Resultado del diseno — Iteracion ' + nd('iter'), 14, y);
+    y += 4;
+
+    doc.autoTable({
+      startY: y,
+      head: [['Parametro', 'Valor', 'Unidad / Estado']],
+      body: [
+        ['Iteracion N.',           nd('iter'),                                                          ''],
+        ['Fecha de calculo',       iter.timestamp || 'N/D',                                            ''],
+        ['Lx - longitud X',        nd('Lx'),                                                           'm'],
+        ['Ly - longitud Y',        nd('Ly'),                                                           'm'],
+        ['D - espaciamiento',      nd('D'),                                                            'm'],
+        ['h - profundidad',        nd('h'),                                                            'm'],
+        ['Lr - longitud varilla',  nd('Lr'),                                                           'm'],
+        ['Nr - num. varillas',     nd('Nr'),                                                           ''],
+        ['hs - capa superficial',  nd('hs'),                                                           'm'],
+        ['rhos - resist. sup.',    iter.rho_s != null ? String(Math.round(iter.rho_s * 100) / 100) : 'N/D', 'Ohm.m'],
+        ['Rg - resist. de malla',  nd('Rg'),                                                           'Ohm ' + ok('Rg')],
+        ['GPR - potencial tierra', nd('GPR'),                                                          'V   ' + ok('GPR')],
+        ['Em - voltaje de malla',  nd('Em'),                                                           'V   ' + ok('Em')],
+        ['Es - voltaje de paso',   nd('Es'),                                                           'V   ' + ok('Es')],
+      ],
+      styles:      { fontSize: 9, cellPadding: 3 },
+      headStyles:  { fillColor: [10, 61, 145], textColor: 255, fontStyle: 'bold' },
+      alternateRowStyles: { fillColor: [238, 243, 255] },
+      columnStyles: { 0: { cellWidth: 80 }, 1: { cellWidth: 50 }, 2: { cellWidth: 42 } },
+      margin: { left: 14, right: 14 },
+    });
+
+    // ── 6. Pie de página — malla ──────────────────────────────────────────
+    const pageH = doc.internal.pageSize.getHeight();
+    doc.setFontSize(7);
+    doc.setTextColor(150, 150, 150);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`TerraShield — Proyecto Final | Universidad del Norte · Barranquilla, Colombia | (c) ${ahora.getFullYear()}`, W / 2, pageH - 6, { align: 'center' });
+
+    // ── 7. Página de apantallamiento (si hay resultados) ──────────────────
+    if (typeof _apantLastResult !== 'undefined' && _apantLastResult && _apantLastResult.S) {
+      doc.addPage();
+      let ya = 0;
+
+      // Encabezado igual al de malla
+      doc.setFillColor(10, 61, 145);
+      doc.rect(0, 0, W, 28, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16); doc.setFont('helvetica', 'bold');
+      doc.text('TERRASHIELD', 14, 12);
+      doc.setFontSize(9);  doc.setFont('helvetica', 'normal');
+      doc.text('Apantallamiento — IEEE Std 998  ·  Método de la Esfera Rodante (EGM)', 14, 20);
+      doc.text(`Proyecto: ${nombre}   |   Fecha: ${fechaStr}`, 14, 26);
+      ya = 36;
+
+      // Imagen 3D del apantallamiento
+      try {
+        const pageApant  = document.getElementById('page-apant');
+        const resApant   = document.getElementById('apant-resultados');
+        const chartApant = document.getElementById('apant-chart');
+        const hidPage = pageApant  && pageApant.style.display  === 'none';
+        const hidRes  = resApant   && resApant.style.display   === 'none';
+        if (hidPage) pageApant.style.display  = '';
+        if (hidRes)  resApant.style.display   = '';
+
+        const apImg = await Plotly.toImage('apant-chart', { format: 'png', width: 1200, height: 650 });
+
+        if (hidPage) pageApant.style.display  = 'none';
+        if (hidRes)  resApant.style.display   = 'none';
+
+        const apImgH = 72;
+        const apImgW = apImgH * (1200 / 650);
+        const apImgX = Math.max((W - apImgW) / 2, 14);
+
+        doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(30, 30, 30);
+        doc.text('Modelo 3D de apantallamiento — vista superior/3D libre', 14, ya);
+        ya += 5;
+        doc.addImage(apImg, 'PNG', apImgX, ya, apImgW, apImgH);
+        ya += apImgH + 8;
+      } catch (eImg) {
+        console.warn('[exportarPDF] imagen apant-chart no disponible:', eImg);
+      }
+
+      // Tabla de parámetros EGM
+      const apBIL = document.getElementById('apant-bil')?.value || '—';
+      const apZs  = document.getElementById('apant-zs')?.value  || '—';
+      const apK   = document.getElementById('apant-k')?.value   || '—';
+      const apS   = _apantLastResult.S != null ? _apantLastResult.S.toFixed(2) : '—';
+      const apNg  = document.getElementById('apant-ng-calc')?.value?.trim() || '—';
+      const apTd  = document.getElementById('apant-td')?.value  || '—';
+      const apA   = document.getElementById('apant-area')?.value || '—';
+
+      doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(30, 30, 30);
+      doc.text('Parámetros del modelo EGM', 14, ya);
+      ya += 4;
+      doc.autoTable({
+        startY: ya,
+        head: [['Parámetro', 'Valor', 'Unidad']],
+        body: [
+          ['BIL — Nivel básico de impulso', apBIL, 'kV'],
+          ['Zs — Impedancia de descarga',   apZs,  'Ω'],
+          ['k — Factor de forma',           apK,   '—'],
+          ['S — Radio de esfera rodante',   apS,   'm'],
+          ['Ng — Densidad de descargas',    apNg,  'flashes/km²·año'],
+          ['Td — Días de tormenta al año',  apTd,  'días'],
+          ['A — Área de la subestación',    apA,   'm²'],
+        ],
+        styles:     { fontSize: 9, cellPadding: 3 },
+        headStyles: { fillColor: [10, 61, 145], textColor: 255, fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: [238, 243, 255] },
+        columnStyles: { 0: { cellWidth: 100 }, 1: { cellWidth: 60 }, 2: { cellWidth: 60 } },
+        margin: { left: 14, right: 14 },
+      });
+      ya = doc.lastAutoTable.finalY + 10;
+
+      // Tabla estadística IEEE 998 (solo si Ng y A son válidos)
+      const ngNum = parseFloat(apNg);
+      const aNum  = parseFloat(apA);
+      if (ngNum > 0 && aNum > 0) {
+        const bilN = parseFloat(apBIL) || 350;
+        const zsN  = parseFloat(apZs)  || 300;
+        const kN   = parseFloat(apK)   || 1.2;
+        const IsN  = (2.2 * bilN) / zsN;
+        const sN   = 8 * kN * Math.pow(IsN, 0.65);
+        const NsN  = ngNum * aNum / 1e6;
+        const PsN  = 1 / (1 + Math.pow(IsN / 24, 2.6));
+        const PpN  = 1 - PsN;
+        const lamN = NsN * PpN;
+        const f4   = v => isFinite(v) && v !== 0 ? parseFloat(v.toPrecision(4)).toString() : (v === 0 ? '0' : 'Inf');
+
+        doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(30, 30, 30);
+        doc.text('Analisis estadistico de riesgo - IEEE Std 998', 14, ya);
+        ya += 4;
+        doc.autoTable({
+          startY: ya,
+          head: [['Variable', 'Formula', 'Valor', 'Unidad']],
+          body: [
+            ['Ns - Impactos directos esperados',   'Ng x A / 1e6',           f4(NsN),                        'impactos/año'],
+            ['Ts - Años entre impactos',            '1 / Ns',                 NsN > 0 ? f4(1/NsN) : 'Inf',    'años/impacto'],
+            ['Is - Corriente critica',              '2.2 x BIL / Zs',        f4(IsN),                        'kA'],
+            ['S - Radio de esfera',                 '8 x k x Is^0.65',       f4(sN),                         'm'],
+            ['P - Prob. superar Is',                '1/(1+(Is/24)^2.6)',      f4(PsN * 100) + ' %',           ''],
+            ['P_pen - Prob. de penetracion',        '1 - P',                  f4(PpN * 100) + ' %',           ''],
+            ['lambda - Tasa anual de penetracion',  'Ns x P_pen',             lamN > 0 ? f4(lamN) : '0',      'pen./año'],
+            ['T_pen - Años entre penetraciones',    '1 / lambda',             lamN > 0 ? f4(1/lamN) : 'Inf',  'años/pen.'],
+          ],
+          styles:     { fontSize: 8, cellPadding: 3 },
+          headStyles: { fillColor: [10, 61, 145], textColor: 255, fontStyle: 'bold' },
+          alternateRowStyles: { fillColor: [238, 243, 255] },
+          columnStyles: { 0: { cellWidth: 86 }, 1: { cellWidth: 58 }, 2: { cellWidth: 30 }, 3: { cellWidth: 44 } },
+          margin: { left: 14, right: 14 },
+        });
+        ya = doc.lastAutoTable.finalY + 10;
+      }
+
+      // Tabla de verificación de equipos
+      const apVerif = _apantLastResult.verification || [];
+      if (apVerif.length > 0) {
+        doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(30, 30, 30);
+        doc.text('Verificación de equipos apantallados', 14, ya);
+        ya += 4;
+        doc.autoTable({
+          startY: ya,
+          head: [['Equipo', 'Protegidos / Total', 'Cobertura', 'Exceso máx.', 'Estado']],
+          body: apVerif.map(v => {
+            const pct = v.points_evaluated > 0
+              ? ((v.points_protected / v.points_evaluated) * 100).toFixed(1) + '%'
+              : '—';
+            return [
+              v.equipment_name || '—',
+              `${v.points_protected} / ${v.points_evaluated}`,
+              pct,
+              v.max_excess_m != null ? `+${v.max_excess_m.toFixed(2)} m` : '—',
+              v.fully_shielded ? 'PROTEGIDO' : 'SIN PROTECCION',
+            ];
+          }),
+          styles:     { fontSize: 8, cellPadding: 3 },
+          headStyles: { fillColor: [10, 61, 145], textColor: 255, fontStyle: 'bold' },
+          alternateRowStyles: { fillColor: [238, 243, 255] },
+          columnStyles: { 0: { cellWidth: 55 }, 1: { cellWidth: 40 }, 2: { cellWidth: 28 }, 3: { cellWidth: 32 }, 4: { cellWidth: 38 } },
+          margin: { left: 14, right: 14 },
+          didParseCell: d => {
+            if (d.section === 'body' && d.column.index === 4) {
+              d.cell.styles.textColor = d.cell.text[0] === 'PROTEGIDO' ? [22, 163, 74] : [220, 38, 38];
+              d.cell.styles.fontStyle = 'bold';
+            }
+          },
+        });
+        ya = doc.lastAutoTable.finalY + 10;
+      }
+
+      // Recomendaciones
+      const apRecs = _apantLastResult._recs || [];
+      if (apRecs.length > 0) {
+        doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(30, 30, 30);
+        doc.text('Recomendaciones correctivas', 14, ya);
+        ya += 4;
+        doc.autoTable({
+          startY: ya,
+          head: [['Propuesta', 'Razón', 'Cobertura verificada']],
+          body: apRecs.map(r => [
+            r.title || '—',
+            r.reason || '—',
+            r.validation?.equipment_coverage || '—',
+          ]),
+          styles:     { fontSize: 8, cellPadding: 3 },
+          headStyles: { fillColor: [10, 61, 145], textColor: 255, fontStyle: 'bold' },
+          alternateRowStyles: { fillColor: [238, 243, 255] },
+          columnStyles: { 0: { cellWidth: 70 }, 1: { cellWidth: 90 }, 2: { cellWidth: 46 } },
+          margin: { left: 14, right: 14 },
+        });
+        ya = doc.lastAutoTable.finalY + 10;
+      }
+
+      // Pie de página — apantallamiento
+      doc.setFontSize(7); doc.setTextColor(150, 150, 150); doc.setFont('helvetica', 'normal');
+      doc.text(`TerraShield — Proyecto Final | Universidad del Norte · Barranquilla, Colombia | (c) ${ahora.getFullYear()}`, W / 2, pageH - 6, { align: 'center' });
+    }
+
+    doc.save(`TerraShield_${nombre}.pdf`);
+    showToast('PDF generado correctamente', 'success');
+
+  } catch (e) {
+    console.error('[exportarPDF]', e);
+    showToast('Error al generar PDF: ' + e.message, 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = btnOriginal; }
+  }
 }
 
 // Inicializar al cargar
 document.addEventListener('DOMContentLoaded', function() {
   mallaVarillaChange();
   mallaSuperChange();
+  mallaLoadEspaciamientos();  // poblar Dx/Dy con la geometría por defecto
   mallaRenderHistorial([]);   // panel visible con estado vacío desde el inicio
   mallaUpdateExportState([]); // candado activo en sidebar
 
@@ -2914,7 +3170,7 @@ function buildGridGeometry(p, s3) {
       // Esquinas interiores del recorte: no son nodos de la grilla pero sí
       // están en el perímetro real de la forma L/T
       if (forma === 6) {
-        rods.push({ x: Lx1_aj, y: Ly - Ly1_aj });
+        rods.push({ x: Lx - Lx1_aj, y: Ly - Ly1_aj });
       } else if (forma === 7) {
         rods.push({ x: Lx1_aj,      y: Ly - Ly1_aj });
         rods.push({ x: Lx - Lx2_aj, y: Ly - Ly2_aj });
@@ -3264,584 +3520,6 @@ function mallaRenderPlots(payload, data) {
   mallaSwitchTab('2d');
   mallaRender2D(payload, s3);
   mallaRender3D(payload, s3);
-}
-</script>
-
-<!-- ============================================================
-     SPAT v7.0 — Motor Three.js + OrbitControls (inline)
-     Paleta azul TerraShield
-     ============================================================ -->
-<script>
-/* ── OrbitControls inline ── */
-(function(){const e=THREE;class t extends e.EventDispatcher{constructor(t,i){super();this.object=t;this.domElement=i;this.enabled=true;this.target=new e.Vector3();this.minDistance=0;this.maxDistance=Infinity;this.minPolarAngle=0;this.maxPolarAngle=Math.PI;this.enableDamping=false;this.dampingFactor=0.05;this.enableZoom=true;this.zoomSpeed=1;this.enableRotate=true;this.rotateSpeed=1;this.enablePan=true;this.panSpeed=1;this.screenSpacePanning=true;const r=new e.Vector2(),s=new e.Vector2(),n=new e.Vector2();let o=0,a=0,l=1,c=new e.Vector3(),h=new e.Spherical(),d=new e.Spherical(),p=new e.Vector3(),f=new e.Vector2(),m=new e.Vector2();const V=e=>{if(!this.enabled)return;if(e.type==='wheel'){if(!this.enableZoom)return;e.preventDefault();if(e.deltaY<0)l/=Math.pow(0.95,this.zoomSpeed);else if(e.deltaY>0)l*=Math.pow(0.95,this.zoomSpeed);}};const E=e=>{if(!this.enabled)return;e.preventDefault();if(e.touches.length===1){s.set(e.touches[0].pageX,e.touches[0].pageY);n.subVectors(s,r);o-=(n.x/i.clientHeight)*Math.PI*this.rotateSpeed;a-=(n.y/i.clientHeight)*Math.PI*this.rotateSpeed;}r.copy(s);this.update();};const T=e=>{if(!this.enabled)return;if(e.touches.length===1){r.set(e.touches[0].pageX,e.touches[0].pageY);s.copy(r);}};i.addEventListener('wheel',V,{passive:false});i.addEventListener('touchstart',T,{passive:false});i.addEventListener('touchmove',E,{passive:false});let A=false,L=false;const M=e=>{if(!this.enabled)return;if(e.button===0){A=true;r.set(e.clientX,e.clientY);}if(e.button===2){L=true;f.set(e.clientX,e.clientY);}};const S=e=>{if(!this.enabled)return;if(A){s.set(e.clientX,e.clientY);n.subVectors(s,r);o-=(n.x/i.clientHeight)*Math.PI*this.rotateSpeed;a-=(n.y/i.clientHeight)*Math.PI*this.rotateSpeed;r.copy(s);}if(L){m.set(e.clientX,e.clientY);const t=new e.Vector2().subVectors(m,f);if(this.screenSpacePanning){p.setFromMatrixColumn(this.object.matrix,0);p.multiplyScalar(-t.x*(new e.Vector3().subVectors(this.object.position,this.target).length()/i.clientHeight)*this.panSpeed);c.add(p);p.setFromMatrixColumn(this.object.matrix,1);p.multiplyScalar(t.y*(new e.Vector3().subVectors(this.object.position,this.target).length()/i.clientHeight)*this.panSpeed);c.add(p);}f.copy(m);}};const P=()=>{A=false;L=false;};i.addEventListener('mousedown',M);i.addEventListener('mousemove',S);i.addEventListener('mouseup',P);this.update=()=>{const r=new e.Spherical();r.setFromVector3(new e.Vector3().subVectors(this.object.position,this.target));if(this.enableDamping){r.theta+=o*this.dampingFactor;r.phi+=a*this.dampingFactor;o*=(1-this.dampingFactor);a*=(1-this.dampingFactor);}else{r.theta+=o;r.phi+=a;o=0;a=0;}r.phi=Math.max(this.minPolarAngle,Math.min(this.maxPolarAngle,r.phi));r.makeSafe();r.radius*=l;r.radius=Math.max(this.minDistance,Math.min(this.maxDistance,r.radius));l=1;this.target.add(c);c.set(0,0,0);const s=new e.Vector3().setFromSpherical(r).add(this.target);this.object.position.copy(s);this.object.lookAt(this.target);this.object.updateMatrixWorld();return false;};this.dispose=()=>{i.removeEventListener('wheel',V);i.removeEventListener('mousedown',M);i.removeEventListener('mousemove',S);i.removeEventListener('mouseup',P);i.removeEventListener('touchstart',T);i.removeEventListener('touchmove',E);};}}THREE.OrbitControls=t;})();
-</script>
-<script>
-/* ══════════════════════════════════════════════
-   SPAT v7.0 — integrado en TerraShield
-   Paleta azul TerraShield (sin morado)
-   ══════════════════════════════════════════════ */
-
-/* ── Estado global (prefijo "spat" para no colisionar) ── */
-window.spatInited = false;
-let _sc, _cam, _ren, _ctrl, _subGrp, _protGrp;
-let _mode = 'auto', _kFactor = 1.2, _rTimer = null, _tab = 'planta';
-let _lastPuntas = [], _lastR = 0, _lastHTotal = 0;
-
-/* Paleta de colores 3D — azul TerraShield */
-const SP = {
-  sphere:0x2F6FCC, sphereWF:0x8FB3E8,
-  mast:0x2F6FCC,
-  steel:0x0A3D91, beam:0x8FB3E8, concrete:0xD6E4F7,
-  trafo:0xF5C400, radiator:0xC49A00, insulator:0xD6E4F7, copper:0x8FB3E8,
-  ground:0xE9EEF5, sky:0xD6E4F7,
-  grid1:0x8FB3E8, grid2:0xD0DAE8,
-  wire:0x2F6FCC, manta:0x0A3D91,
-};
-
-/* ── Helpers geométricos ── */
-function _getGeo() {
-  const L = +document.getElementById('n-largo').value  || 50;
-  const A = +document.getElementById('n-ancho').value  || 30;
-  return { pts:[{x:-L/2,y:-A/2},{x:L/2,y:-A/2},{x:L/2,y:A/2},{x:-L/2,y:A/2}], L, A, area:L*A };
-}
-function _inPoly(px,py,pts){
-  let inside=false;
-  for(let i=0,j=pts.length-1;i<pts.length;j=i++){
-    const xi=pts[i].x,yi=pts[i].y,xj=pts[j].x,yj=pts[j].y;
-    if(((yi>py)!==(yj>py))&&(px<(xj-xi)*(py-yi)/(yj-yi)+xi))inside=!inside;
-  }
-  return inside;
-}
-function _distSeg(px,py,ax,ay,bx,by){
-  const dx=bx-ax,dy=by-ay;
-  if(!dx&&!dy)return Math.hypot(px-ax,py-ay);
-  const t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/(dx*dx+dy*dy)));
-  return Math.hypot(px-(ax+t*dx),py-(ay+t*dy));
-}
-
-/* ── IEEE 998-2012 ── */
-function _solveRc(BIL,h,E0=1500){
-  const tgt=BIL/E0; let Rc=tgt*0.5;
-  for(let i=0;i<50;i++){
-    const f=Rc*Math.log(2*h/Rc)-tgt;
-    const fp=Math.log(2*h/Rc)-1;
-    const dR=f/fp; Rc-=dR;
-    if(Math.abs(dR)<1e-9)break;
-    if(Rc<=0)Rc=0.001;
-  }
-  return Math.max(0.001,Rc);
-}
-function _ieee998(){
-  const BIL = +document.getElementById('n-bil').value || 650;
-  const h   = +document.getElementById('n-h').value   || 8;
-  const r   = +document.getElementById('n-r').value   || 0.0148;
-  const Rc  = _solveRc(BIL,h);
-  const Zs  = 60*Math.sqrt(Math.log(2*h/Rc)*Math.log(2*h/r));
-  const Is  = (2.2*BIL)/Zs;
-  const S   = 8*_kFactor*Math.pow(Is,0.65);
-  return {Rc,Zs,Is,S};
-}
-
-/* ── Controles UI ── */
-function spatSync(a,b,c){
-  const v=document.getElementById(a).value;
-  document.getElementById(b).value=v;
-  if(c)document.getElementById(c).textContent=v;
-}
-function spatCalc(){
-  const{Rc,Zs,Is,S}=_ieee998();
-  document.getElementById('cc-Rc').textContent=Rc.toFixed(4);
-  document.getElementById('cc-Zs').textContent=Zs.toFixed(1);
-  document.getElementById('cc-Is').textContent=Is.toFixed(3);
-  document.getElementById('cc-S').textContent=S.toFixed(2);
-  document.getElementById('radio-display').textContent=S.toFixed(1);
-  document.getElementById('np-label').textContent=S<=20?'NP I':S<=30?'NP II':S<=45?'NP III':'NP IV';
-  if(window.spatInited)spatAutoRender();
-}
-function spatSetK(v){
-  _kFactor=v;
-  document.getElementById('k-cable').classList.toggle('active',v===1.0);
-  document.getElementById('k-mastil').classList.toggle('active',v===1.2);
-  spatCalc();
-}
-function spatSetMode(m){
-  _mode=m;
-  ['auto','perim','grid'].forEach(x=>document.getElementById('mode-'+x).classList.toggle('active',x===m));
-  spatAutoRender();
-}
-function spatSetTab(t){
-  _tab=t;
-  document.getElementById('tab-planta').classList.toggle('active',t==='planta');
-  document.getElementById('tab-corte').classList.toggle('active',t==='corte');
-  const{S}=_ieee998();
-  const geo=_getGeo();
-  const Hp=+document.getElementById('n-punta').value||8;
-  const Ht=8+Hp;
-  const rs=Ht<S?Math.sqrt(S*S-(S-Ht)*(S-Ht)):S;
-  _draw2D(geo,rs,_lastPuntas,S,Ht);
-}
-function spatAutoRender(){
-  if(!window.spatInited)return;
-  clearTimeout(_rTimer);
-  _rTimer=setTimeout(spatRender,200);
-}
-
-/* ── Posición de puntas ── */
-function _calcPuntas(geo,Hp,R,modo){
-  const Hcol=8, Ht=Hcol+Hp;
-  const rs=Ht<R?Math.sqrt(R*R-(R-Ht)*(R-Ht)):R;
-  const{L,A,pts}=geo;
-  const puntas=[];
-  const ok=(px,pz)=>_inPoly(px,pz,pts)||pts.some((a,i)=>{const b=pts[(i+1)%pts.length];return _distSeg(px,pz,a.x,a.y,b.x,b.y)<0.8;});
-  if(modo==='grid'){
-    const paso=rs*1.5;
-    const nX=Math.max(2,Math.ceil(L/paso)+1),nZ=Math.max(2,Math.ceil(A/paso)+1);
-    for(let i=0;i<nX;i++)for(let j=0;j<nZ;j++){
-      const px=-L/2+(i/(nX-1))*L, pz=-A/2+(j/(nZ-1))*A;
-      if(ok(px,pz))puntas.push({x:px,z:pz});
-    }
-  } else {
-    pts.forEach(p=>puntas.push({x:p.x,z:p.y}));
-    if(modo==='auto'){
-      const dMax=2*rs*0.85;
-      for(let i=0;i<pts.length;i++){
-        const a=pts[i],b=pts[(i+1)%pts.length];
-        const dist=Math.hypot(b.x-a.x,b.y-a.y);
-        const n=Math.ceil(dist/dMax)-1;
-        for(let k=1;k<n;k++){const t=k/n;puntas.push({x:a.x+(b.x-a.x)*t,z:a.y+(b.y-a.y)*t});}
-      }
-      const paso=dMax*0.9, nX=Math.ceil(L/paso), nZ=Math.ceil(A/paso);
-      for(let ci=1;ci<nX;ci++)for(let cj=1;cj<nZ;cj++){
-        const ix=-L/2+(ci/nX)*L, iz=-A/2+(cj/nZ)*A;
-        if(ok(ix,iz)&&puntas.every(p=>Math.hypot(p.x-ix,p.z-iz)>rs*0.9))puntas.push({x:ix,z:iz});
-      }
-    }
-  }
-  return {puntas:puntas.filter(p=>ok(p.x,p.z)),rs};
-}
-
-/* ── Init Three.js ── */
-function spatInit3D(){
-  const cont = document.getElementById('spat-container3D');
-  if(!cont)return;
-  const W = cont.clientWidth  || cont.offsetWidth  || 600;
-  const H = cont.clientHeight || cont.offsetHeight || 400;
-  _sc  = new THREE.Scene();
-  _sc.background = new THREE.Color(0xD6E4F7);
-  _sc.fog = new THREE.FogExp2(0xD6E4F7,0.004);
-  _cam = new THREE.PerspectiveCamera(50, W/H, 0.1, 2000);
-  _cam.position.set(90,60,90);
-  _ren = new THREE.WebGLRenderer({antialias:true});
-  _ren.setSize(W,H);
-  _ren.setPixelRatio(Math.min(window.devicePixelRatio,2));
-  _ren.shadowMap.enabled=true;
-  _ren.shadowMap.type=THREE.PCFSoftShadowMap;
-  cont.appendChild(_ren.domElement);
-  /* Exponer en window para que app.js pueda refrescar tamaño */
-  window.spatRenderer = _ren;
-  window.spatCamera   = _cam;
-  _ctrl = new THREE.OrbitControls(_cam, _ren.domElement);
-  _ctrl.enableDamping=true; _ctrl.dampingFactor=0.08;
-  _ctrl.minDistance=10; _ctrl.maxDistance=600;
-  _ctrl.target.set(0,10,0);
-  _ren.domElement.addEventListener('dblclick', spatResetCam);
-  _sc.add(new THREE.AmbientLight(0xffffff,0.9));
-  const sun=new THREE.DirectionalLight(0xffffff,1.2);
-  sun.position.set(60,120,40); sun.castShadow=true;
-  sun.shadow.mapSize.set(2048,2048);
-  Object.assign(sun.shadow.camera,{near:.1,far:600,left:-150,right:150,top:150,bottom:-150});
-  _sc.add(sun);
-  const fill=new THREE.DirectionalLight(0x8FB3E8,.35);
-  fill.position.set(-60,40,-60); _sc.add(fill);
-  _sc.add(new THREE.GridHelper(500,50,0x8FB3E8,0xD0DAE8));
-  const gnd=new THREE.Mesh(
-    new THREE.PlaneGeometry(500,500),
-    new THREE.MeshStandardMaterial({color:0xE9EEF5,roughness:1}));
-  gnd.rotation.x=-Math.PI/2; gnd.receiveShadow=true; _sc.add(gnd);
-  _subGrp=new THREE.Group(); _protGrp=new THREE.Group();
-  _sc.add(_subGrp); _sc.add(_protGrp);
-  (function loop(){requestAnimationFrame(loop);_ctrl.update();_ren.render(_sc,_cam);})();
-  window.addEventListener('resize',()=>{
-    const W2=cont.clientWidth,H2=cont.clientHeight;
-    if(!W2||!H2)return;
-    _cam.aspect=W2/H2; _cam.updateProjectionMatrix();
-    _ren.setSize(W2,H2);
-  });
-  window.spatInited=true;
-}
-function spatResetCam(){ _cam.position.set(90,60,90); _ctrl.target.set(0,10,0); }
-
-/* ── Render principal ── */
-function spatRender(){
-  const Hp  = +document.getElementById('n-punta').value  || 8;
-  const Hcol= 8;
-  const He  = +document.getElementById('n-equipo').value || 6;
-  const {Zs,Is,S:R} = _ieee998();
-  const geo = _getGeo();
-
-  document.getElementById('spat-alert').classList.toggle('show', Hp+Hcol >= R*1.8);
-
-  [_subGrp,_protGrp].forEach(g=>{while(g.children.length)g.remove(g.children[0]);});
-
-  const {puntas,rs} = _calcPuntas(geo,Hp,R,_mode);
-  _lastPuntas=puntas; _lastR=R; _lastHTotal=Hcol+Hp;
-
-  _buildSubest(geo,Hcol,He);
-
-  const showSph  = document.getElementById('toggle-spheres').checked;
-  const showMant = document.getElementById('toggle-manta').checked;
-  const sphOpac  = parseInt(document.getElementById('sphere-opacity').value)/100;
-  const mantOpac = parseInt(document.getElementById('manta-opacity').value)/100;
-
-  puntas.forEach(p=>_buildMastil(p.x,p.z,Hcol,Hp));
-
-  if(showSph){
-    puntas.forEach(p=>{
-      const yPt=Hcol+Hp+0.5, yC=yPt+R;
-      const sg=new THREE.SphereGeometry(R,48,32);
-      const sp=new THREE.Mesh(sg,new THREE.MeshPhongMaterial({color:SP.sphere,transparent:true,opacity:sphOpac,side:THREE.DoubleSide,shininess:80,specular:0x8FB3E8,depthWrite:false}));
-      sp.position.set(p.x,yC,p.z); _protGrp.add(sp);
-      const wf=new THREE.Mesh(sg,new THREE.MeshBasicMaterial({color:SP.sphereWF,wireframe:true,transparent:true,opacity:.08}));
-      wf.position.set(p.x,yC,p.z); _protGrp.add(wf);
-    });
-  }
-  if(showMant)_buildManta(puntas,Hcol,Hp,R,geo,mantOpac);
-
-  puntas.forEach(p=>{
-    const mat=new THREE.LineBasicMaterial({color:SP.wire,transparent:true,opacity:.3});
-    const g2=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(p.x,0,p.z),new THREE.Vector3(p.x,Hcol+Hp,p.z)]);
-    _protGrp.add(new THREE.Line(g2,mat));
-  });
-
-  const cob=_cobertura(geo,puntas,rs);
-  _updateResults(R,rs,puntas.length,Hcol+Hp,cob,Zs,Is,geo);
-  _draw2D(geo,rs,puntas,R,Hcol+Hp);
-  document.getElementById('spat-info').innerHTML=`MODO: ${_mode.toUpperCase()}<br>PUNTAS: ${puntas.length}<br>COB: ${cob}%<br>R: ${R.toFixed(1)} m`;
-  document.getElementById('spat-ieee-info').innerHTML=`IEEE 998-2012<br>Zs = ${Zs.toFixed(0)} Ω<br>Is = ${Is.toFixed(3)} kA<br>S = ${R.toFixed(2)} m`;
-}
-
-/* ── Mástil ── */
-function _buildMastil(x,z,Hc,Hp){
-  const mat=new THREE.MeshStandardMaterial({color:SP.mast,metalness:.9,roughness:.1,emissive:0x0B1F4D,emissiveIntensity:.15});
-  const m=new THREE.Mesh(new THREE.CylinderGeometry(.04,.09,Hp+.5,8),mat);
-  m.position.set(x,Hc+Hp/2+.25,z); m.castShadow=true; _protGrp.add(m);
-  const pt=new THREE.Mesh(new THREE.SphereGeometry(.22,12,12),mat);
-  pt.position.set(x,Hc+Hp+.5,z); _protGrp.add(pt);
-  const au=new THREE.Mesh(new THREE.SphereGeometry(.8,12,12),new THREE.MeshBasicMaterial({color:SP.mast,transparent:true,opacity:.15,side:THREE.DoubleSide}));
-  au.position.set(x,Hc+Hp+.5,z); _protGrp.add(au);
-}
-
-/* ── Manta 3D ── */
-function _buildManta(puntas,Hc,Hp,R,geo,opac){
-  const {L,A}=geo;
-  const yPt=Hc+Hp+.5, yC=yPt+R;
-  const res=70;
-  const x0=-L/2-R, x1=L/2+R, z0=-A/2-R, z1=A/2+R;
-  const dx=(x1-x0)/res, dz=(z1-z0)/res;
-  const H=[];
-  for(let i=0;i<=res;i++){
-    H.push([]);
-    for(let j=0;j<=res;j++){
-      const wx=x0+i*dx, wz=z0+j*dz;
-      let minH=null;
-      puntas.forEach(p=>{
-        const d2=(wx-p.x)**2+(wz-p.z)**2;
-        if(d2<R*R){const h=yC-Math.sqrt(R*R-d2);if(minH===null||h<minH)minH=h;}
-      });
-      H[i].push(minH);
-    }
-  }
-  const pos=[],nor=[],uvs=[];
-  const tri=(ax,ay,az,bx,by,bz,cx,cy,cz)=>{
-    const ux=bx-ax,uy=by-ay,uz=bz-az,vx=cx-ax,vy=cy-ay,vz=cz-az;
-    const nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;
-    const nl=Math.sqrt(nx*nx+ny*ny+nz*nz)||1;
-    pos.push(ax,ay,az,bx,by,bz,cx,cy,cz);
-    for(let t=0;t<3;t++)nor.push(nx/nl,ny/nl,nz/nl);
-    uvs.push(0,0,1,0,0,1);
-  };
-  for(let i=0;i<res;i++){
-    for(let j=0;j<res;j++){
-      const h00=H[i][j],h10=H[i+1][j],h01=H[i][j+1],h11=H[i+1][j+1];
-      if([h00,h10,h01,h11].filter(v=>v!==null).length<3)continue;
-      const x00=x0+i*dx,     z00=z0+j*dz;
-      const x10=x0+(i+1)*dx, z10=z0+j*dz;      /* ← z10 correcto */
-      const x01=x0+i*dx,     z01=z0+(j+1)*dz;
-      const x11=x0+(i+1)*dx, z11=z0+(j+1)*dz;
-      const y00=h00??0, y10=h10??0, y01=h01??0, y11=h11??0;
-      tri(x00,y00,z00, x10,y10,z10, x01,y01,z01);
-      tri(x10,y10,z10, x11,y11,z11, x01,y01,z01);
-    }
-  }
-  if(!pos.length)return;
-  const bg=new THREE.BufferGeometry();
-  bg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
-  bg.setAttribute('normal',  new THREE.Float32BufferAttribute(nor,3));
-  bg.setAttribute('uv',      new THREE.Float32BufferAttribute(uvs,2));
-  bg.computeVertexNormals();
-  _protGrp.add(new THREE.Mesh(bg,new THREE.MeshPhongMaterial({color:0x0A3D91,transparent:true,opacity:opac,side:THREE.DoubleSide,shininess:60,specular:0x8FB3E8,depthWrite:false})));
-  _protGrp.add(new THREE.Mesh(bg,new THREE.MeshBasicMaterial({color:0x2F6FCC,wireframe:true,transparent:true,opacity:.10})));
-  puntas.forEach(p=>{
-    const rS=Math.sqrt(Math.max(0,R*R-yC*yC));
-    if(rS<=0)return;
-    const pts2=[];
-    for(let i=0;i<=72;i++){const a=(i/72)*Math.PI*2;pts2.push(new THREE.Vector3(p.x+rS*Math.cos(a),.05,p.z+rS*Math.sin(a)));}
-    _protGrp.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts2),new THREE.LineBasicMaterial({color:0x0A3D91,transparent:true,opacity:.5})));
-  });
-}
-
-/* ── Subestación 3D ── */
-function _buildSubest(geo,Hc,He){
-  const mk=(g2,col,x,y,z,rg=.7,mt=0)=>{
-    const m=new THREE.Mesh(g2,new THREE.MeshStandardMaterial({color:col,roughness:rg,metalness:mt}));
-    m.position.set(x,y,z); m.castShadow=m.receiveShadow=true; _subGrp.add(m); return m;
-  };
-  const{pts,L,A}=geo;
-  const sh=new THREE.Shape();
-  sh.moveTo(pts[0].x,pts[0].y);
-  for(let i=1;i<pts.length;i++)sh.lineTo(pts[i].x,pts[i].y);
-  sh.closePath();
-  const piso=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:.2,bevelEnabled:false}),new THREE.MeshStandardMaterial({color:SP.concrete,roughness:.9}));
-  piso.rotation.x=-Math.PI/2; piso.position.y=0; piso.receiveShadow=true; _subGrp.add(piso);
-  for(let i=0;i<pts.length;i++){
-    const a=pts[i],b=pts[(i+1)%pts.length];
-    const len=Math.hypot(b.x-a.x,b.y-a.y);
-    const w=new THREE.Mesh(new THREE.BoxGeometry(len,.6,.25),new THREE.MeshStandardMaterial({color:SP.concrete,roughness:.9}));
-    w.position.set((a.x+b.x)/2,.3,(a.y+b.y)/2);
-    w.rotation.y=-Math.atan2(b.y-a.y,b.x-a.x); _subGrp.add(w);
-  }
-  pts.forEach(p=>mk(new THREE.BoxGeometry(.3,Hc,.3),SP.steel,p.x,Hc/2,p.y,.5,.8));
-  for(let i=0;i<pts.length;i++){
-    const a=pts[i],b=pts[(i+1)%pts.length];
-    const len=Math.hypot(b.x-a.x,b.y-a.y);
-    const viga=new THREE.Mesh(new THREE.BoxGeometry(len,.2,.2),new THREE.MeshStandardMaterial({color:SP.beam,roughness:.4,metalness:.7}));
-    viga.position.set((a.x+b.x)/2,Hc,(a.y+b.y)/2);
-    viga.rotation.y=-Math.atan2(b.y-a.y,b.x-a.x); _subGrp.add(viga);
-  }
-  const tW=Math.min(L*.22,8),tD=Math.min(A*.3,8),tH=He;
-  mk(new THREE.BoxGeometry(tW,tH,tD),SP.trafo,0,tH/2,0,.5,.2);
-  for(let i=-2;i<=2;i++){
-    mk(new THREE.BoxGeometry(.12,tH*.7,.8),SP.radiator, tW/2+.06,tH*.5,i*.5,.3,.4);
-    mk(new THREE.BoxGeometry(.12,tH*.7,.8),SP.radiator,-tW/2-.06,tH*.5,i*.5,.3,.4);
-  }
-  for(let i=-1;i<=1;i++)mk(new THREE.CylinderGeometry(.06,.08,1.2,8),SP.insulator,i*.6,tH+.6,0,.8);
-  mk(new THREE.BoxGeometry(Math.min(L*.4,12),.06,.06),SP.copper,0,He+.1,-Math.min(A*.12,4),.3,.9);
-  mk(new THREE.BoxGeometry(Math.min(L*.4,12),.06,.06),SP.copper,0,He+.1, Math.min(A*.12,4),.3,.9);
-}
-
-/* ── Cobertura ── */
-function _cobertura(geo,puntas,rs){
-  const{pts,L,A}=geo; const N=25; let tot=0,cub=0;
-  for(let i=0;i<=N;i++)for(let j=0;j<=N;j++){
-    const px=-L/2+(i/N)*L, pz=-A/2+(j/N)*A;
-    if(!_inPoly(px,pz,pts))continue; tot++;
-    if(puntas.some(p=>Math.hypot(p.x-px,p.z-pz)<=rs))cub++;
-  }
-  return tot?Math.round(cub/tot*100):0;
-}
-
-/* ── Resultados ── */
-function _updateResults(R,rs,nPt,hTot,cob,Zs,Is,geo){
-  const $=id=>document.getElementById(id);
-  $('r-Zs').textContent=Zs.toFixed(1)+' Ω';
-  $('r-Is').textContent=Is.toFixed(3)+' kA';
-  $('r-S').textContent=R.toFixed(2)+' m';
-  $('r-rsuelo').textContent=rs.toFixed(2)+' m';
-  $('r-npuntas').textContent=nPt;
-  $('r-htotal').textContent=hTot.toFixed(1)+' m';
-  $('r-area').textContent=geo.area.toFixed(1)+' m²';
-  const ce=$('r-cob'); ce.textContent=cob+'%';
-  ce.className='spat-stat-val '+(cob>=95?'ok':cob>=70?'':'warn');
-  const Ae=+document.getElementById('n-equipo').value||6;
-  const K=hTot-Ae, E=R-hTot, F=R-E, D=K-F;
-  const fmt=v=>(v>=0?'+':'')+v.toFixed(2);
-  $('r-K').textContent=K.toFixed(2)+' m'; $('r-K').className='spat-stat-val';
-  $('r-E').textContent=E.toFixed(2)+' m'; $('r-E').className=E>=0?'spat-stat-val':'spat-stat-val warn';
-  $('r-F').textContent=F.toFixed(2)+' m'; $('r-F').className='spat-stat-val';
-  $('r-D').textContent=fmt(D)+' m';       $('r-D').className=D<=K?'spat-stat-val':'spat-stat-val warn';
-  const dk=$('r-DK');
-  if(D<K){dk.textContent='✓ CUMPLE D('+D.toFixed(2)+')<K('+K.toFixed(2)+')';dk.className='spat-stat-val ok';}
-  else   {dk.textContent='✗ NO CUMPLE D('+D.toFixed(2)+'≥K('+K.toFixed(2)+')';dk.className='spat-stat-val warn';}
-}
-
-/* ── Canvas 2D ── */
-function _draw2D(geo,rs,puntas,R,Ht){
-  const cv=document.getElementById('spat-canvas2D');
-  const ctx=cv.getContext('2d');
-  const W=cv.offsetWidth, Hc=cv.offsetHeight||W;
-  cv.width=W*devicePixelRatio; cv.height=Hc*devicePixelRatio;
-  ctx.scale(devicePixelRatio,devicePixelRatio);
-  if(_tab==='planta')_drawPlanta(ctx,W,Hc,geo,rs,puntas);
-  else               _drawCorte(ctx,W,Hc,geo,rs,R,Ht,puntas);
-}
-
-function _bg2D(ctx,W,Hc){
-  ctx.fillStyle='#E9EEF5'; ctx.fillRect(0,0,W,Hc);
-  ctx.strokeStyle='#D0DAE8'; ctx.lineWidth=.5;
-  for(let i=0;i<W;i+=16){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,Hc);ctx.stroke();}
-  for(let j=0;j<Hc;j+=16){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke();}
-}
-
-function _drawPlanta(ctx,W,Hc,geo,rs,puntas){
-  const{pts,L,A}=geo;
-  const sc=Math.min(W*.75/L, Hc*.75/A);
-  const cx=W/2, cy=Hc/2;
-  _bg2D(ctx,W,Hc);
-  /* zonas */
-  const bb={x0:Math.min(...pts.map(p=>p.x)),x1:Math.max(...pts.map(p=>p.x)),y0:Math.min(...pts.map(p=>p.y)),y1:Math.max(...pts.map(p=>p.y))};
-  const step=3;
-  for(let wx=bb.x0;wx<bb.x1;wx+=step/sc)for(let wy=bb.y0;wy<bb.y1;wy+=step/sc){
-    if(!_inPoly(wx,wy,pts))continue;
-    ctx.fillStyle=puntas.some(p=>Math.hypot(p.x-wx,p.z-wy)<=rs)?'rgba(26,140,91,.15)':'rgba(194,59,34,.18)';
-    ctx.fillRect(cx+wx*sc,cy+wy*sc,step+1,step+1);
-  }
-  /* círculos de cobertura */
-  puntas.forEach(p=>{
-    const px=cx+p.x*sc, pz=cy+p.z*sc, r=rs*sc;
-    const g=ctx.createRadialGradient(px,pz,0,px,pz,r);
-    g.addColorStop(0,'rgba(10,61,145,.10)'); g.addColorStop(1,'rgba(10,61,145,0)');
-    ctx.beginPath(); ctx.arc(px,pz,r,0,Math.PI*2);
-    ctx.fillStyle=g; ctx.fill();
-    ctx.strokeStyle='rgba(10,61,145,.35)'; ctx.lineWidth=1; ctx.stroke();
-  });
-  /* perímetro */
-  ctx.beginPath(); ctx.moveTo(cx+pts[0].x*sc,cy+pts[0].y*sc);
-  pts.forEach(p=>ctx.lineTo(cx+p.x*sc,cy+p.y*sc));
-  ctx.closePath(); ctx.strokeStyle='#0A3D91'; ctx.lineWidth=2; ctx.stroke();
-  /* puntas */
-  puntas.forEach(p=>{
-    ctx.beginPath(); ctx.arc(cx+p.x*sc,cy+p.z*sc,4,0,Math.PI*2);
-    ctx.fillStyle='#2F6FCC'; ctx.fill();
-  });
-  /* escala */
-  const em=10,ep=em*sc,ex=W-18,ey=Hc-14;
-  ctx.strokeStyle='#4A5E7A'; ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.moveTo(ex-ep,ey);ctx.lineTo(ex,ey);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(ex-ep,ey-4);ctx.lineTo(ex-ep,ey+4);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(ex,ey-4);ctx.lineTo(ex,ey+4);ctx.stroke();
-  ctx.fillStyle='#4A5E7A';ctx.font='9px "Space Mono",monospace';ctx.textAlign='center';ctx.fillText(em+'m',ex-ep/2,ey-6);
-  /* leyenda */
-  ctx.textAlign='left';ctx.fillStyle='rgba(10,61,145,.8)';ctx.font='bold 8px "Space Mono",monospace';
-  ctx.fillText('PLANTA — r='+rs.toFixed(1)+'m',6,12);
-  ctx.fillStyle='rgba(26,140,91,.9)';ctx.fillRect(6,18,8,7);
-  ctx.fillStyle='#4A5E7A';ctx.font='8px "Space Mono",monospace';ctx.fillText(' protegido',14,25);
-  ctx.fillStyle='rgba(194,59,34,.7)';ctx.fillRect(6,28,8,7);ctx.fillText(' expuesto',14,35);
-}
-
-function _drawCorte(ctx,W,Hc,geo,rs,R,Ht,puntas){
-  const{L}=geo;
-  const Hc2=8, Ae=+document.getElementById('n-equipo').value||6;
-  const scX=W*.78/(L+2*R), scY=Hc*.78/(Ht+R+2), sc=Math.min(scX,scY);
-  const cx=W/2, baseY=Hc*.88;
-  const toX=x=>cx+x*sc, toY=y=>baseY-y*sc;
-  _bg2D(ctx,W,Hc);
-  /* suelo */
-  ctx.strokeStyle='#1E293B';ctx.lineWidth=2.5;
-  ctx.beginPath();ctx.moveTo(0,baseY);ctx.lineTo(W,baseY);ctx.stroke();
-  ctx.strokeStyle='rgba(30,41,59,.22)';ctx.lineWidth=1;
-  for(let i=0;i<W;i+=12){ctx.beginPath();ctx.moveTo(i,baseY);ctx.lineTo(i-8,baseY+10);ctx.stroke();}
-  /* proyectar puntas al eje X */
-  let pXs=[];
-  if(puntas&&puntas.length){
-    const sx=[...puntas].sort((a,b)=>a.x-b.x);
-    pXs=[sx[0].x];
-    for(let i=1;i<sx.length;i++){if(Math.abs(sx[i].x-pXs[pXs.length-1])>.5)pXs.push(sx[i].x);}
-  } else pXs=[-L/2,L/2];
-  /* edificio */
-  const sL=L*sc,sH=Hc2*sc,sX=cx-sL/2;
-  ctx.fillStyle='rgba(10,61,145,.05)'; ctx.fillRect(sX,toY(Hc2),sL,sH);
-  pXs.forEach(px=>{ctx.fillStyle='rgba(10,61,145,.40)';ctx.fillRect(toX(px)-2,toY(Hc2),4,sH);});
-  ctx.strokeStyle='#0A3D91';ctx.lineWidth=1.5;ctx.strokeRect(sX,toY(Hc2),sL,sH);
-  /* transformador */
-  const eqW=Math.min(sL*.22,40),eqH=Ae*sc;
-  ctx.fillStyle='rgba(245,196,0,.15)';ctx.fillRect(cx-eqW/2,toY(Ae),eqW,eqH);
-  ctx.strokeStyle='#C49A00';ctx.lineWidth=1;ctx.strokeRect(cx-eqW/2,toY(Ae),eqW,eqH);
-  ctx.fillStyle='rgba(196,154,0,.75)';ctx.font='bold 7px "Space Mono",monospace';ctx.textAlign='center';
-  ctx.fillText('TRAFO',cx,toY(Ae/2)+3);
-  /* envolvente */
-  const yC=Ht+R, nS=300;
-  const xL=-L/2-R*1.1, xR=L/2+R*1.1;
-  const env=[];
-  for(let si=0;si<=nS;si++){
-    const wx=xL+(si/nS)*(xR-xL); let mY=null;
-    pXs.forEach(px=>{const dx=wx-px;if(Math.abs(dx)<R){const yP=yC-Math.sqrt(R*R-dx*dx);if(mY===null||yP<mY)mY=yP;}});
-    env.push({wx,mY});
-  }
-  /* zona naranja */
-  ctx.beginPath(); let st=false;
-  env.forEach(({wx,mY})=>{if(mY!==null){const px2=toX(wx),py=toY(mY);st?(ctx.lineTo(px2,py)):(ctx.moveTo(px2,py),st=true);}});
-  for(let i=nS;i>=0;i--){const{wx,mY}=env[i];if(mY!==null)ctx.lineTo(toX(wx),baseY);}
-  ctx.closePath();
-  const gZ=ctx.createLinearGradient(0,toY(Ht),0,baseY);
-  gZ.addColorStop(0,'rgba(251,146,60,.50)'); gZ.addColorStop(1,'rgba(251,146,60,.12)');
-  ctx.fillStyle=gZ; ctx.fill();
-  /* esferas */
-  pXs.forEach((px,idx)=>{
-    const cX=toX(px),cY=toY(yC),rP=R*sc;
-    const sg=ctx.createRadialGradient(cX-rP*.25,cY-rP*.25,rP*.05,cX,cY,rP);
-    sg.addColorStop(0,'rgba(143,179,232,.45)');sg.addColorStop(.6,'rgba(47,111,204,.20)');sg.addColorStop(1,'rgba(10,61,145,.02)');
-    ctx.beginPath();ctx.arc(cX,cY,rP,0,Math.PI*2);ctx.fillStyle=sg;ctx.fill();
-    ctx.beginPath();ctx.arc(cX,cY,rP,0,Math.PI*2);
-    ctx.strokeStyle='rgba(10,61,145,.32)';ctx.lineWidth=1.2;ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);
-    if(idx===pXs.length-1){
-      const ang=-Math.PI*.35;
-      ctx.strokeStyle='rgba(10,61,145,.8)';ctx.lineWidth=1.5;
-      ctx.beginPath();ctx.moveTo(cX,cY);ctx.lineTo(cX+Math.cos(ang)*rP,cY+Math.sin(ang)*rP);ctx.stroke();
-      ctx.fillStyle='rgba(10,61,145,.9)';ctx.font='bold 9px "Space Mono",monospace';ctx.textAlign='left';
-      ctx.fillText('R='+R.toFixed(1)+'m',cX+Math.cos(ang)*rP*.55+3,cY+Math.sin(ang)*rP*.55);
-    }
-  });
-  /* envolvente azul */
-  ctx.beginPath();st=false;
-  env.forEach(({wx,mY})=>{if(mY!==null){const px2=toX(wx),py=toY(mY);st?(ctx.lineTo(px2,py)):(ctx.moveTo(px2,py),st=true);}else st=false;});
-  ctx.strokeStyle='rgba(47,111,204,.85)';ctx.lineWidth=2;ctx.setLineDash([7,3]);ctx.stroke();ctx.setLineDash([]);
-  /* mástiles */
-  pXs.forEach(px=>{
-    const cX=toX(px);
-    ctx.strokeStyle='#0A3D91';ctx.lineWidth=2.5;
-    ctx.beginPath();ctx.moveTo(cX,toY(Hc2));ctx.lineTo(cX,toY(Ht));ctx.stroke();
-    ctx.beginPath();ctx.arc(cX,toY(Ht),4.5,0,Math.PI*2);
-    ctx.fillStyle='#0A3D91';ctx.fill();
-    ctx.strokeStyle='#8FB3E8';ctx.lineWidth=1;ctx.stroke();
-    ctx.beginPath();ctx.arc(cX,toY(Ht),10,0,Math.PI*2);
-    ctx.fillStyle='rgba(10,61,145,.10)';ctx.fill();
-  });
-  /* cotas */
-  const cotX=toX(pXs[0])-28;
-  ctx.strokeStyle='#4A5E7A';ctx.lineWidth=1;ctx.setLineDash([3,3]);
-  ctx.beginPath();ctx.moveTo(cotX,baseY);ctx.lineTo(cotX,toY(Ht));ctx.stroke();ctx.setLineDash([]);
-  const arrow=(x,y1,y2,lbl)=>{
-    ctx.strokeStyle='#4A5E7A';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(x,y1);ctx.lineTo(x,y2);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(x-3,y2+6);ctx.lineTo(x,y2);ctx.lineTo(x+3,y2+6);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(x-3,y1-6);ctx.lineTo(x,y1);ctx.lineTo(x+3,y1-6);ctx.stroke();
-    ctx.fillStyle='#4A5E7A';ctx.font='bold 9px "Space Mono",monospace';ctx.textAlign='right';
-    ctx.fillText(lbl,x-5,(y1+y2)/2+3);
-  };
-  arrow(cotX,baseY,toY(Ht),'H='+Ht.toFixed(0)+'m');
-  /* cota He */
-  ctx.setLineDash([2,3]);ctx.strokeStyle='rgba(47,111,204,.5)';ctx.lineWidth=1;
-  const eqW2=Math.min(L*sc*.22,40);
-  ctx.beginPath();ctx.moveTo(cx+eqW2/2+2,toY(Ae));ctx.lineTo(cx+eqW2/2+24,toY(Ae));ctx.stroke();
-  ctx.beginPath();ctx.moveTo(cx+eqW2/2+2,baseY);ctx.lineTo(cx+eqW2/2+24,baseY);ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.fillStyle='rgba(47,111,204,.8)';ctx.font='8px "Space Mono",monospace';ctx.textAlign='left';
-  ctx.fillText('He='+Ae+'m',cx+eqW2/2+27,toY(Ae/2)+3);
-  /* título y leyenda */
-  ctx.fillStyle='rgba(10,61,145,.85)';ctx.font='bold 9px "Space Mono",monospace';ctx.textAlign='left';
-  ctx.fillText('CORTE — IEEE 998-2012 · '+pXs.length+' punt. captadoras',6,12);
-  const leg=[
-    {c:'rgba(251,146,60,.6)',  l:'Zona protegida'},
-    {c:'rgba(47,111,204,.85)', l:'Envolvente esferas', d:true},
-    {c:'rgba(10,61,145,.40)',  l:'Esferas R='+R.toFixed(1)+'m', d:true},
-    {c:'#0A3D91',              l:'Puntas captadoras'},
-  ];
-  leg.forEach(({c,l,d},i)=>{
-    const ly=22+i*11;
-    if(d){ctx.strokeStyle=c;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);ctx.beginPath();ctx.moveTo(6,ly);ctx.lineTo(18,ly);ctx.stroke();ctx.setLineDash([]);}
-    else{ctx.fillStyle=c;ctx.fillRect(6,ly-5,12,7);}
-    ctx.fillStyle='#4A5E7A';ctx.font='8px "Space Mono",monospace';ctx.textAlign='left';ctx.fillText(l,21,ly+1);
-  });
 }
 </script>
 </body>

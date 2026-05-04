@@ -6,26 +6,50 @@
    departamento (GFD, flashes/km²/año).
    ============================================= */
 
-// Ng predefinido por departamento (GFD — Ground Flash Density, flashes/km²/año)
-// Fuente: estudios de CIDET / IDEAM para la Región Caribe colombiana
-const NG_POR_DEPTO = {
-  'La Guajira': 12.4,
-  'Magdalena':  14.8,
-  'Atlántico':  15.2,
-  'Bolívar':    13.6,
-  'Sucre':      16.1,
-  'Córdoba':    17.3,
-  'Cesar':      11.9,
-  'San Andrés': null   // No disponible
-};
+// Grilla Ng — COMB_TRM_ISS AnnualMean (0.1°), cargada desde ng_caribe.json
+let NG_CARIBE_INDEX = null; // Map: "lat_lon" → ng
+
+fetch('ng_caribe.json')
+  .then(r => r.json())
+  .then(json => {
+    NG_CARIBE_INDEX = {};
+    for (const p of json.data) {
+      const key = p.lat.toFixed(2) + '_' + p.lon.toFixed(2);
+      NG_CARIBE_INDEX[key] = p.ng;
+    }
+    console.log(`✓ ng_caribe.json cargado — ${json.data.length} puntos (COMB_TRM_ISS AnnualMean)`);
+  })
+  .catch(() => console.warn('ng_caribe.json no encontrado'));
+
+// Busca el Ng más cercano en la grilla ng_caribe.json para un punto lat/lon
+function getNgFromGrid(lat, lon) {
+  if (!NG_CARIBE_INDEX) return null;
+
+  // Redondear al múltiplo de 0.1 más cercano (resolución de la grilla)
+  const roundTo1 = v => Math.round(v * 10) / 10;
+  const snapLat  = roundTo1(lat);
+  const snapLon  = roundTo1(lon);
+
+  const key = snapLat.toFixed(2) + '_' + snapLon.toFixed(2);
+  if (NG_CARIBE_INDEX[key] !== undefined) return NG_CARIBE_INDEX[key];
+
+  // Fallback: buscar el punto más cercano (por si cae en borde de grilla)
+  let minDist = Infinity, best = null;
+  for (const k of Object.keys(NG_CARIBE_INDEX)) {
+    const [kLat, kLon] = k.split('_').map(Number);
+    const d = (kLat - lat) ** 2 + (kLon - lon) ** 2;
+    if (d < minDist) { minDist = d; best = NG_CARIBE_INDEX[k]; }
+  }
+  return best;
+}
 
 // Datos de suelos IEEE 80 cargados desde el JSON generado por extraer_suelos.py
 let SUELOS_DATA = null;
 
-fetch('suelos_data.json')
+fetch('suelos_data_v2.json')
   .then(r => r.json())
-  .then(data => { SUELOS_DATA = data; console.log('✓ suelos_data.json cargado — fuente IGAC/IEEE 80'); })
-  .catch(() => console.warn('suelos_data.json no encontrado — se usará valor por defecto'));
+  .then(data => { SUELOS_DATA = data; console.log('✓ suelos_data_v2.json cargado — fuente IGAC/IEEE 80'); })
+  .catch(() => console.warn('suelos_data_v2.json no encontrado — se usará valor por defecto'));
 
 // Busca el tipo de suelo IEEE 80 para un punto lat/lon
 function getSueloFromGrid(lat_p, lon_p) {
@@ -33,12 +57,14 @@ function getSueloFromGrid(lat_p, lon_p) {
   const punto = [lon_p, lat_p]; // GeoJSON usa [lon, lat]
 
   for (const pol of SUELOS_DATA.poligonos) {
-    if (!pol.geometry || pol.tipo_suelo === 'No clasificable') continue;
+    if (!pol.geometry) continue;
     if (pointInPolygon(punto, pol.geometry)) {
       return {
-        tipo_suelo: pol.tipo_suelo,
-        rho:        pol.rho,
-        confianza:  pol.confianza
+        tipo_suelo:  pol.tipo_suelo,                // null si no clasificable o ambiguo
+        subtipo_nc:  pol.subtipo_no_clasificable,   // "Zona urbana", "Cuerpo de agua", etc.
+        categoria:   pol.categoria_ieee80,
+        rho:         pol.rho_referencia_ohm_m,
+        confianza:   pol.nivel_consistencia
       };
     }
   }
@@ -87,21 +113,14 @@ const deptData = {
   'Bolívar':    { lat: 10.3910, lon: -75.4794, municipio: 'Cartagena',    ng: 13.6, temp: 28.2 },
   'Sucre':      { lat: 9.3047,  lon: -75.3978, municipio: 'Sincelejo',    ng: 16.1, temp: 29.0 },
   'Córdoba':    { lat: 8.7479,  lon: -75.8814, municipio: 'Montería',     ng: 17.3, temp: 28.8 },
-  'Cesar':      { lat: 10.4631, lon: -73.2532, municipio: 'Valledupar',   ng: 11.9, temp: 30.1 },
-  'San Andrés': { lat: 12.5847, lon: -81.7006, municipio: 'San Andrés',   ng: 8.4,  temp: 27.5 }
+  'Cesar':      { lat: 10.4631, lon: -73.2532, municipio: 'Valledupar',   ng: 11.9, temp: 30.1 }
 };
 
-// Los bounds principales cubren el Caribe continental.
-// San Andrés (~12.58°N, -81.70°W) se verifica por separado.
-const CARIBE_BOUNDS          = { latMin: 8.0, latMax: 12.5, lonMin: -76.5, lonMax: -72.0 };
-const SAN_ANDRES_BOUNDS      = { latMin: 12.4, latMax: 12.75, lonMin: -81.85, lonMax: -81.60 };
+const CARIBE_BOUNDS = { latMin: 8.0, latMax: 12.5, lonMin: -76.5, lonMax: -71.0 };
 
 function isInCaribe(lat, lon) {
-  const continental = lat >= CARIBE_BOUNDS.latMin && lat <= CARIBE_BOUNDS.latMax &&
-                      lon >= CARIBE_BOUNDS.lonMin  && lon <= CARIBE_BOUNDS.lonMax;
-  const sanAndres   = lat >= SAN_ANDRES_BOUNDS.latMin && lat <= SAN_ANDRES_BOUNDS.latMax &&
-                      lon >= SAN_ANDRES_BOUNDS.lonMin  && lon <= SAN_ANDRES_BOUNDS.lonMax;
-  return continental || sanAndres;
+  return lat >= CARIBE_BOUNDS.latMin && lat <= CARIBE_BOUNDS.latMax &&
+         lon >= CARIBE_BOUNDS.lonMin  && lon <= CARIBE_BOUNDS.lonMax;
 }
 
 
@@ -236,7 +255,7 @@ async function validarUbicacion() {
   }
 
   resultTitle.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg> Validando ubicación...`;
-  resultBody.innerHTML  = `<div style="grid-column:1/-1;text-align:center;padding:10px;color:var(--text-mid);">Obteniendo datos de OpenStreetMap y clima...</div>`;
+  resultBody.innerHTML  = `<div style="grid-column:1/-1;text-align:center;padding:10px;color:var(--text-mid);">Obteniendo datos...</div>`;
 
   try {
     // 1. Nominatim
@@ -265,41 +284,45 @@ async function validarUbicacion() {
       if (eRes.ok) { const e = await eRes.json(); if (e.results?.length > 0) altitud = Math.round(e.results[0].elevation); }
     } catch { console.warn('Open-Elevation no disponible'); }
 
-    // 4. Ng — valor predefinido por departamento (GFD, flashes/km²/año)
-    let ng        = null;
-    let ngFuente  = 'Valor de referencia departamental';
-    let ngDisplay = '—';
+    // 4. Ng — grilla COMB_TRM_ISS AnnualMean (ng_caribe.json, resolución 0.1°)
+    let ng        = getNgFromGrid(lat, lon);
+    let ngFuente  = '';
+    let ngDisplay = ng !== null ? ng.toFixed(4) : 'No disponible';
 
-    // Identificar departamento por nombre normalizado
-    const deptKey = Object.keys(NG_POR_DEPTO).find(k =>
-      dept.toLowerCase().includes(k.toLowerCase()) ||
-      k.toLowerCase().includes(dept.toLowerCase().split(',')[0].trim())
-    ) || null;
-
-    if (deptKey !== undefined && deptKey !== null) {
-      ng = NG_POR_DEPTO[deptKey];
-    }
-
-    if (ng === null) {
-      ngDisplay = 'No disponible';
-      ngFuente  = 'Sin datos para esta zona';
-    } else {
-      ngDisplay = ng.toString();
-    }
-
-    // 5. Tipo de suelo IEEE 80 — desde suelos_data.json o fallback
-    let tipoSuelo    = 'Suelo Húmedo'; // fallback por defecto (Moist Soil)
-    let rhoSuelo     = 100;
-    let sueloFuente  = 'Valor por defecto (Moist Soil)';
-    const sueloData  = getSueloFromGrid(lat, lon);
+    // 5. Tipo de suelo IEEE 80 — desde suelos_data_v2.json o fallback
+    let tipoSuelo   = 'Suelo Húmedo'; // fallback por defecto (Moist Soil)
+    let rhoSuelo    = 100;
+    let sueloFuente = 'Valor por defecto (Moist Soil)';
+    let sueloNota   = null; // mensaje explicativo cuando no es clasificable
+    const sueloData = getSueloFromGrid(lat, lon);
     if (sueloData) {
-      tipoSuelo   = sueloData.tipo_suelo;
-      rhoSuelo    = sueloData.rho;
-      sueloFuente = `IGAC/IEEE 80 (confianza: ${sueloData.confianza})`;
+      if (sueloData.subtipo_nc) {
+        // Zona urbana, cuerpo de agua, etc.
+        tipoSuelo   = 'No clasificable';
+        rhoSuelo    = null;
+        sueloFuente = null;
+        sueloNota   = 'Este punto se encuentra en un área no clasificable para estimación preliminar de suelo.';
+      } else if (!sueloData.tipo_suelo) {
+        // Ambigüedad o sin convergencia
+        tipoSuelo   = 'No clasificable';
+        rhoSuelo    = null;
+        sueloFuente = null;
+        sueloNota   = 'La información encontrada para este punto es ambigua y no permite una clasificación preliminar confiable.';
+      } else {
+        tipoSuelo   = sueloData.tipo_suelo;
+        rhoSuelo    = sueloData.rho;
+        sueloFuente = null;
+      }
+    } else {
+      // Sin polígono coincidente
+      tipoSuelo   = 'No clasificable';
+      rhoSuelo    = null;
+      sueloFuente = null;
+      sueloNota   = 'No hay datos suficientes para clasificar el tipo de suelo en este punto.';
     }
 
     AppState.locationValidated = true;
-    AppState.validatedData = { lat, lon, departamento: dept, municipio, ng, ngDisplay, temp, tipoSuelo, rhoSuelo, altitud, humedad, ngFuente, sueloFuente };
+    AppState.validatedData = { lat, lon, departamento: dept, municipio, ng, ngDisplay, temp, tipoSuelo, rhoSuelo, altitud, humedad, ngFuente, sueloFuente, sueloNota };
 
     resultTitle.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 11 12 14 22 4"/></svg> Ubicación validada — Región Caribe`;
     showLeafletMap(lat, lon, municipio, dept);
@@ -307,15 +330,15 @@ async function validarUbicacion() {
     resultBody.innerHTML  = `
       <div class="result-item"><div class="ri-label">Departamento</div><div class="ri-val">${dept}</div></div>
       <div class="result-item"><div class="ri-label">Municipio ref.</div><div class="ri-val">${municipio}</div></div>
-      <div class="result-item"><div class="ri-label">Tipo de suelo (IEEE 80)</div><div class="ri-val">${tipoSuelo} <span style="font-size:0.6rem;color:var(--text-light);display:block;">ρ ≈ ${rhoSuelo !== null ? rhoSuelo.toLocaleString() + ' Ω·m' : '—'} · ${sueloFuente}</span></div></div>
-      <div class="result-item"><div class="ri-label">Latitud</div><div class="ri-val">${lat.toFixed(4)}°N</div></div>
-      <div class="result-item"><div class="ri-label">Longitud</div><div class="ri-val">${lon.toFixed(4)}°W</div></div>
+      <div class="result-item"><div class="ri-label">Tipo de suelo (IEEE 80)</div><div class="ri-val">${tipoSuelo}${sueloNota ? `<span style="font-size:0.6rem;color:var(--text-light);display:block;margin-top:2px;">${sueloNota}</span>` : rhoSuelo !== null ? `<span style="font-size:0.6rem;color:var(--text-light);display:block;">ρ ≈ ${rhoSuelo.toLocaleString()} Ω·m${sueloFuente ? ' · ' + sueloFuente : ''}</span>` : ''}</div></div>
+      <div class="result-item"><div class="ri-label">Altitud est.</div><div class="ri-val">~${altitud} msnm</div></div>
+      <div class="result-item"><div class="ri-label">Temperatura est.</div><div class="ri-val">${temp.toFixed(1)} °C</div></div>
       <div class="result-item">
         <div class="ri-label">Ng — GFD (flashes/km²/año)</div>
-        <div class="ri-val">${ngDisplay} <span style="font-size:0.6rem;color:var(--text-light);display:block;">${ngFuente}</span></div>
+        <div class="ri-val">${ngDisplay}</div>
       </div>
-      <div class="result-item"><div class="ri-label">Temperatura est.</div><div class="ri-val">${temp.toFixed(1)} °C</div></div>
-      <div class="result-item"><div class="ri-label">Altitud est.</div><div class="ri-val">~${altitud} msnm</div></div>
+      <div class="result-item"><div class="ri-label">Latitud</div><div class="ri-val">${lat.toFixed(4)}°N</div></div>
+      <div class="result-item"><div class="ri-label">Longitud</div><div class="ri-val">${lon.toFixed(4)}°W</div></div>
       <div class="result-item"><div class="ri-label">Humedad rel. est.</div><div class="ri-val">${humedad}%</div></div>
     `;
 
